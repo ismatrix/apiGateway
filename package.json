@@ -7,7 +7,7 @@
     "start": "node lib/app",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel src -d lib",
-    "dev": "DEBUG=* nodemon src/index.js"
+    "dev": "DEBUG=*,-babel nodemon src/index.js"
   },
   "repository": {
     "type": "git",
