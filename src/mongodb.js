@@ -17,12 +17,19 @@ export async function connect(url) {
   }
 }
 
-export function getdb(cb) {
+export function getdb() {
   if (connectionInstance) {
-    cb(connectionInstance);
-  } else {
-    event.on('connect', () => {
-      cb(connectionInstance);
-    });
+    debug('existing connection');
+    return connectionInstance;
   }
+  return new Promise((resolve, reject) => {
+    event.on('connect', () => {
+      debug('new connection with instance: %o', connectionInstance);
+      resolve(connectionInstance);
+    });
+    event.on('error', () => {
+      debug('new connection with instance: %o', connectionInstance);
+      reject(new Error('Error connection'));
+    });
+  });
 }
