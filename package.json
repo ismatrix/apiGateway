@@ -29,6 +29,7 @@
     "nodemon": "^1.9.1"
   },
   "dependencies": {
+    "debug": "^2.2.0",
     "mongodb": "^2.1.16"
   }
 }

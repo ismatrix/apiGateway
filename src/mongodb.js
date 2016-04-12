@@ -1,6 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const events = require('events');
 const event = new events.EventEmitter();
+const debug = require('debug')('mongodb.js');
 
 let connectionInstance;
 let gurl;
@@ -11,7 +12,7 @@ export async function connect(url) {
     connectionInstance = await MongoClient.connect(gurl);
     event.emit('connect');
   } catch (err) {
-    console.log('Mongodb connect Err: %s', err);
+    debug('Mongodb connect Err: %s', err);
     event.emit('error');
   }
 }
