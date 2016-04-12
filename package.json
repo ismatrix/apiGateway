@@ -1,0 +1,34 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Serve Frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node lib/app",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "babel src -d lib",
+    "dev": "DEBUG=* nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@sharelbs.com:8800/smartwin/backend"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.7.5",
+    "babel-eslint": "^6.0.2",
+    "babel-preset-es2015-node5": "^1.2.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.7.2",
+    "eslint": "^2.7.0",
+    "eslint-config-airbnb": "^6.2.0",
+    "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-import": "^1.4.0",
+    "eslint-plugin-react": "^4.3.0",
+    "nodemon": "^1.9.1"
+  },
+  "dependencies": {
+    "mongodb": "^2.1.16"
+  }
+}
