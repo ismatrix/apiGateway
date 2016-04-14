@@ -1,3 +1,5 @@
+// http://mongodb.github.io/node-mongodb-native/2.1/reference/ecmascript6/crud/
+// http://mongodb.github.io/node-mongodb-native/2.1/api/index.html
 const MongoClient = require('mongodb').MongoClient;
 const events = require('events');
 const event = new events.EventEmitter();
