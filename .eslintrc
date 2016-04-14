@@ -10,6 +10,7 @@
     "react/jsx-quotes": 0,
     "jsx-quotes": [2, "prefer-double"],
     "no-param-reassign": [2, {"props": false}],
-    "no-console": 0
+    "no-console": 0,
+    "consistent-return": 0,
   }
 }
