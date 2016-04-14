@@ -14,7 +14,7 @@ const onMdServerCallback = Ice.Class(MD.MdCallback, {
     debug('notifyToClient %o', data);
   },
   OnTick(data) {
-    debug('OnTick %o', data);
+    // debug('OnTick %o', data);
   },
 });
 
