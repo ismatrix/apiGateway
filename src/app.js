@@ -12,13 +12,16 @@ const mongoUrl = 'mongodb://localhost:27017/smartwin';
 mongodb.connect(mongoUrl);
 
 // createMdSession();
-const iceUrl = 'MDGlacier2/router:tcp -p 8852 -h fofs.cc';
+const iceUrl = 'DemoGlacier2/router:tcp -p 4502 -h code.invesmart.net';
 const mdClient = createIceClient(iceUrl, 'MD');
 
 async function subscribe() {
   try {
     await mdClient.createSession();
-    mdClient.SubscribeMd('RiskControl', 'T', ['IF1511', 'MA605']);
+    mdClient.subscribeMd('IF1605', 'A', 0);
+    mdClient.subscribeMd('IF1606', 'A', 0);
+    mdClient.subscribeMd('IF1604', 'T', 0);
+    mdClient.subscribeMd('IF1604', 'K', 1);
   } catch (error) {
     debug('Error subscribe() : %s', error);
   }

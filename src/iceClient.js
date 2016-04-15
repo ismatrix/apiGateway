@@ -1,6 +1,6 @@
 import { Ice, Glacier2 } from 'ice';
-import { MD } from './ice/mdsession';
-import { TD } from './ice/tdsession';
+import { MdLive as MD } from './ice/MdLiveSession';
+import TD from './ice/MdLiveSession';
 const debug = require('debug')('MDclient.js');
 
 export function createIceClient(url, iceServerType) {
@@ -9,8 +9,10 @@ export function createIceClient(url, iceServerType) {
   let session;
 
   if (iceServerType === 'MD') {
+    debug('iceServer is MD');
     iceServer = MD;
   } else {
+    debug('iceServer is TD');
     iceServer = TD;
   }
 
@@ -22,12 +24,21 @@ export function createIceClient(url, iceServerType) {
   id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
   const communicator = Ice.initialize(process.argv, id);
 
-  const OnMdServerCallback = Ice.Class(iceServer.MdCallback, {
-    notifyToClient(data) {
-      debug('notifyToClient %o', data);
+  const OnMdServerCallback = Ice.Class(iceServer.MdSessionCallBack, {
+    InstrumentStatic(ins) {
+      debug('OnInstrumentStatic: notifyToClient %o', ins);
     },
-    OnTick(data) {
-      debug('OnTick %o', data);
+    TickerItem(InstrumentID, Ticker) {
+      debug('OnTickerItem: Tick %s', InstrumentID);
+      debug('OnTickerItem: Tick %o', Ticker);
+    },
+    KlineItem(InstrumentID, kline, klineType) {
+      debug('OnKlineItem: InstrumentID %s', InstrumentID);
+      debug('OnKlineItem: kline %o', kline);
+      debug('OnKlineItem: klineType %o', klineType);
+    },
+    NotifySub(ret, msg) {
+      debug('onNotifySub %s', msg);
     },
   });
 
@@ -39,7 +50,7 @@ export function createIceClient(url, iceServerType) {
     }
   });
 
-  async function runWithSession(router, session) {
+  async function runWithSession(router) {
     try {
       debug('invoke runWithSession function');
       // Get the session timeout, the router client category and
@@ -59,11 +70,11 @@ export function createIceClient(url, iceServerType) {
       refreshSession();
 
         // Create the MdCallback servant and add it to the ObjectAdapter.
-      const callback = iceServer.MdCallbackPrx.uncheckedCast(
+      const callback = iceServer.MdSessionCallBackPrx.uncheckedCast(
         adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
       );
         // Set the Md session callback.
-      session.setCallback(callback);
+      session.setCallBack(callback);
       // session.SubscribeMd('RiskControl', 'T', ['IF1511', 'MA605']);
     } catch (error) {
       debug('Error %s', error);
@@ -76,7 +87,7 @@ export function createIceClient(url, iceServerType) {
       router = await Glacier2.RouterPrx.checkedCast(router);
       session = await router.createSession('RiskControl', 'cu16033');
       session = await iceServer.MdSessionPrx.uncheckedCast(session);
-      await runWithSession(router, session);
+      await runWithSession(router);
     } catch (error) {
       debug('Error %s', error);
     }
@@ -85,7 +96,7 @@ export function createIceClient(url, iceServerType) {
     debug('Start MD session');
     self = {
       createSession,
-      SubscribeMd: () => session.SubscribeMd,
+      subscribeMd: (a, b, c) => session.subscribeMd(a, b, c),
     };
   } else if (iceServerType === 'TD') {
     self = {
