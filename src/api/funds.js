@@ -1,29 +1,31 @@
 const debug = require('debug')('funds.js');
 import * as mongodb from '../mongodb';
 
-export async function getAllFund() {
+export async function getFunds() {
   try {
-    const db = await mongodb.getdb();
-    const collection = await db.collection('FUND');
+    const smartwin = await mongodb.getdb();
+    const fund = smartwin.collection('FUND');
     const projection = { _id: 0, fundid: 1, fundname: 1 };
-    return await collection.find({}, projection).toArray();
+    return await fund.find({}, projection).toArray();
   } catch (err) {
     debug('Error mongo find: %s', err);
   }
 }
 
-export async function getFundById(fundid) {
+export async function getFund(fundid) {
   try {
-    const db = await mongodb.getdb();
-    const collection = await db.collection('FUND');
+    const smartwin = await mongodb.getdb();
+    const fund = smartwin.collection('FUND');
     const projection = { _id: 0 };
-    return await collection.find({ fundid }, projection).toArray();
+    return await fund.find({ fundid }, projection).toArray();
   } catch (err) {
     debug('Error mongo find: %s', err);
   }
 }
 
-export async function getAllPositionLevel() { return 'getAllPositionLevel'; }
+export async function getAllPositionLevel() {
+  return 'getAllPositionLevel';
+}
 export async function checkreport() { return 'checkreport'; }
 export async function getRealTimeEquity() { return 'getRealTimeEquity'; }
 export async function getEquity() { return 'getEquity'; }

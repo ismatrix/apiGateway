@@ -1,7 +1,7 @@
 import * as funds from './api/funds';
 import * as marketData from './api/marketData';
 import * as instruments from './api/instruments';
-const router = require('koa-router')();
+const router = require('koa-router')({ prefix: '/api' });
 const debug = require('debug')('rest.js');
 
 router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
@@ -11,8 +11,8 @@ router
   ;
 
 router
-  .get('/fund', async ctx => { ctx.body = await funds.getAllFund();})
-  .get('/fund/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid);})
+  .get('/fund', async ctx => { ctx.body = await funds.getFunds();})
+  .get('/fund/:fundid', async ctx => { ctx.body = await funds.getFund(ctx.params.fundid);})
   .get('/fund/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
   .get('/fund/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport();})
   .get('/fund/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity();})
