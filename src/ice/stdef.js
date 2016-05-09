@@ -27,188 +27,136 @@
     var psd = __M.module("psd");
 
     psd.Ticker = Slice.defineStruct(
-        function(key, price, volum, turnover, bidprice1, bidprice2, bidprice3, bidprice4, bidprice5, askprice1, askprice2, askprice3, askprice4, askprice5, bidvolum1, bidvolum2, bidvolum3, bidvolum4, bidvolum5, askvolum1, askvolum2, askvolum3, askvolum4, askvolum5)
+        function(Timestamp, Price, Volume, Turnover, OpenInterest, TotalVolume, TotalTurnover, BidPrice1, AskPrice1, BidVolume1, AskVolume1)
         {
-            this.key = key !== undefined ? key : 0;
-            this.price = price !== undefined ? price : 0.0;
-            this.volum = volum !== undefined ? volum : 0;
-            this.turnover = turnover !== undefined ? turnover : 0.0;
-            this.bidprice1 = bidprice1 !== undefined ? bidprice1 : 0.0;
-            this.bidprice2 = bidprice2 !== undefined ? bidprice2 : 0.0;
-            this.bidprice3 = bidprice3 !== undefined ? bidprice3 : 0.0;
-            this.bidprice4 = bidprice4 !== undefined ? bidprice4 : 0.0;
-            this.bidprice5 = bidprice5 !== undefined ? bidprice5 : 0.0;
-            this.askprice1 = askprice1 !== undefined ? askprice1 : 0.0;
-            this.askprice2 = askprice2 !== undefined ? askprice2 : 0.0;
-            this.askprice3 = askprice3 !== undefined ? askprice3 : 0.0;
-            this.askprice4 = askprice4 !== undefined ? askprice4 : 0.0;
-            this.askprice5 = askprice5 !== undefined ? askprice5 : 0.0;
-            this.bidvolum1 = bidvolum1 !== undefined ? bidvolum1 : 0;
-            this.bidvolum2 = bidvolum2 !== undefined ? bidvolum2 : 0;
-            this.bidvolum3 = bidvolum3 !== undefined ? bidvolum3 : 0;
-            this.bidvolum4 = bidvolum4 !== undefined ? bidvolum4 : 0;
-            this.bidvolum5 = bidvolum5 !== undefined ? bidvolum5 : 0;
-            this.askvolum1 = askvolum1 !== undefined ? askvolum1 : 0;
-            this.askvolum2 = askvolum2 !== undefined ? askvolum2 : 0;
-            this.askvolum3 = askvolum3 !== undefined ? askvolum3 : 0;
-            this.askvolum4 = askvolum4 !== undefined ? askvolum4 : 0;
-            this.askvolum5 = askvolum5 !== undefined ? askvolum5 : 0;
+            this.Timestamp = Timestamp !== undefined ? Timestamp : 0;
+            this.Price = Price !== undefined ? Price : 0.0;
+            this.Volume = Volume !== undefined ? Volume : 0;
+            this.Turnover = Turnover !== undefined ? Turnover : 0.0;
+            this.OpenInterest = OpenInterest !== undefined ? OpenInterest : 0.0;
+            this.TotalVolume = TotalVolume !== undefined ? TotalVolume : 0.0;
+            this.TotalTurnover = TotalTurnover !== undefined ? TotalTurnover : 0.0;
+            this.BidPrice1 = BidPrice1 !== undefined ? BidPrice1 : 0.0;
+            this.AskPrice1 = AskPrice1 !== undefined ? AskPrice1 : 0.0;
+            this.BidVolume1 = BidVolume1 !== undefined ? BidVolume1 : 0;
+            this.AskVolume1 = AskVolume1 !== undefined ? AskVolume1 : 0;
         },
         false,
         function(__os)
         {
-            __os.writeLong(this.key);
-            __os.writeDouble(this.price);
-            __os.writeInt(this.volum);
-            __os.writeDouble(this.turnover);
-            __os.writeDouble(this.bidprice1);
-            __os.writeDouble(this.bidprice2);
-            __os.writeDouble(this.bidprice3);
-            __os.writeDouble(this.bidprice4);
-            __os.writeDouble(this.bidprice5);
-            __os.writeDouble(this.askprice1);
-            __os.writeDouble(this.askprice2);
-            __os.writeDouble(this.askprice3);
-            __os.writeDouble(this.askprice4);
-            __os.writeDouble(this.askprice5);
-            __os.writeInt(this.bidvolum1);
-            __os.writeInt(this.bidvolum2);
-            __os.writeInt(this.bidvolum3);
-            __os.writeInt(this.bidvolum4);
-            __os.writeInt(this.bidvolum5);
-            __os.writeInt(this.askvolum1);
-            __os.writeInt(this.askvolum2);
-            __os.writeInt(this.askvolum3);
-            __os.writeInt(this.askvolum4);
-            __os.writeInt(this.askvolum5);
+            __os.writeLong(this.Timestamp);
+            __os.writeDouble(this.Price);
+            __os.writeInt(this.Volume);
+            __os.writeDouble(this.Turnover);
+            __os.writeDouble(this.OpenInterest);
+            __os.writeDouble(this.TotalVolume);
+            __os.writeDouble(this.TotalTurnover);
+            __os.writeDouble(this.BidPrice1);
+            __os.writeDouble(this.AskPrice1);
+            __os.writeInt(this.BidVolume1);
+            __os.writeInt(this.AskVolume1);
         },
         function(__is)
         {
-            this.key = __is.readLong();
-            this.price = __is.readDouble();
-            this.volum = __is.readInt();
-            this.turnover = __is.readDouble();
-            this.bidprice1 = __is.readDouble();
-            this.bidprice2 = __is.readDouble();
-            this.bidprice3 = __is.readDouble();
-            this.bidprice4 = __is.readDouble();
-            this.bidprice5 = __is.readDouble();
-            this.askprice1 = __is.readDouble();
-            this.askprice2 = __is.readDouble();
-            this.askprice3 = __is.readDouble();
-            this.askprice4 = __is.readDouble();
-            this.askprice5 = __is.readDouble();
-            this.bidvolum1 = __is.readInt();
-            this.bidvolum2 = __is.readInt();
-            this.bidvolum3 = __is.readInt();
-            this.bidvolum4 = __is.readInt();
-            this.bidvolum5 = __is.readInt();
-            this.askvolum1 = __is.readInt();
-            this.askvolum2 = __is.readInt();
-            this.askvolum3 = __is.readInt();
-            this.askvolum4 = __is.readInt();
-            this.askvolum5 = __is.readInt();
+            this.Timestamp = __is.readLong();
+            this.Price = __is.readDouble();
+            this.Volume = __is.readInt();
+            this.Turnover = __is.readDouble();
+            this.OpenInterest = __is.readDouble();
+            this.TotalVolume = __is.readDouble();
+            this.TotalTurnover = __is.readDouble();
+            this.BidPrice1 = __is.readDouble();
+            this.AskPrice1 = __is.readDouble();
+            this.BidVolume1 = __is.readInt();
+            this.AskVolume1 = __is.readInt();
         },
-        148, 
+        76, 
         true);
 
-    psd.KlineItem = Slice.defineStruct(
-        function(key, high, low, open, close, volum, turnover)
+    psd.Bar = Slice.defineStruct(
+        function(Timestamp, High, Low, Open, Close, Volume, Turnover)
         {
-            this.key = key !== undefined ? key : 0;
-            this.high = high !== undefined ? high : 0.0;
-            this.low = low !== undefined ? low : 0.0;
-            this.open = open !== undefined ? open : 0.0;
-            this.close = close !== undefined ? close : 0.0;
-            this.volum = volum !== undefined ? volum : 0;
-            this.turnover = turnover !== undefined ? turnover : 0.0;
+            this.Timestamp = Timestamp !== undefined ? Timestamp : 0;
+            this.High = High !== undefined ? High : 0.0;
+            this.Low = Low !== undefined ? Low : 0.0;
+            this.Open = Open !== undefined ? Open : 0.0;
+            this.Close = Close !== undefined ? Close : 0.0;
+            this.Volume = Volume !== undefined ? Volume : 0;
+            this.Turnover = Turnover !== undefined ? Turnover : 0.0;
         },
         false,
         function(__os)
         {
-            __os.writeLong(this.key);
-            __os.writeDouble(this.high);
-            __os.writeDouble(this.low);
-            __os.writeDouble(this.open);
-            __os.writeDouble(this.close);
-            __os.writeInt(this.volum);
-            __os.writeDouble(this.turnover);
+            __os.writeLong(this.Timestamp);
+            __os.writeDouble(this.High);
+            __os.writeDouble(this.Low);
+            __os.writeDouble(this.Open);
+            __os.writeDouble(this.Close);
+            __os.writeInt(this.Volume);
+            __os.writeDouble(this.Turnover);
         },
         function(__is)
         {
-            this.key = __is.readLong();
-            this.high = __is.readDouble();
-            this.low = __is.readDouble();
-            this.open = __is.readDouble();
-            this.close = __is.readDouble();
-            this.volum = __is.readInt();
-            this.turnover = __is.readDouble();
+            this.Timestamp = __is.readLong();
+            this.High = __is.readDouble();
+            this.Low = __is.readDouble();
+            this.Open = __is.readDouble();
+            this.Close = __is.readDouble();
+            this.Volume = __is.readInt();
+            this.Turnover = __is.readDouble();
         },
         52, 
         true);
 
-    psd.InstrumentStatic = Slice.defineStruct(
-        function(InstrumentID, TradingDay, ExchangeID, ExchangeInstID, Price, PreClosePrice, PreOpenInterest, OpenInterest, ClosePrice, UpperLimitPrice, LowerLimitPrice, PreDelta, CurrDelta, AveragePrice, ActionDay)
+    psd.DayBar = Slice.defineStruct(
+        function(Timestamp, High, Low, Open, Close, Average, Volume, Turnover, Settlement, PreSettlement, PreClose, PreoOpenInterest)
         {
-            this.InstrumentID = InstrumentID !== undefined ? InstrumentID : "";
-            this.TradingDay = TradingDay !== undefined ? TradingDay : "";
-            this.ExchangeID = ExchangeID !== undefined ? ExchangeID : "";
-            this.ExchangeInstID = ExchangeInstID !== undefined ? ExchangeInstID : "";
-            this.Price = Price !== undefined ? Price : 0.0;
-            this.PreClosePrice = PreClosePrice !== undefined ? PreClosePrice : 0.0;
-            this.PreOpenInterest = PreOpenInterest !== undefined ? PreOpenInterest : 0.0;
-            this.OpenInterest = OpenInterest !== undefined ? OpenInterest : 0.0;
-            this.ClosePrice = ClosePrice !== undefined ? ClosePrice : 0.0;
-            this.UpperLimitPrice = UpperLimitPrice !== undefined ? UpperLimitPrice : 0.0;
-            this.LowerLimitPrice = LowerLimitPrice !== undefined ? LowerLimitPrice : 0.0;
-            this.PreDelta = PreDelta !== undefined ? PreDelta : 0.0;
-            this.CurrDelta = CurrDelta !== undefined ? CurrDelta : 0.0;
-            this.AveragePrice = AveragePrice !== undefined ? AveragePrice : 0.0;
-            this.ActionDay = ActionDay !== undefined ? ActionDay : "";
+            this.Timestamp = Timestamp !== undefined ? Timestamp : 0;
+            this.High = High !== undefined ? High : 0.0;
+            this.Low = Low !== undefined ? Low : 0.0;
+            this.Open = Open !== undefined ? Open : 0.0;
+            this.Close = Close !== undefined ? Close : 0.0;
+            this.Average = Average !== undefined ? Average : 0.0;
+            this.Volume = Volume !== undefined ? Volume : 0;
+            this.Turnover = Turnover !== undefined ? Turnover : 0.0;
+            this.Settlement = Settlement !== undefined ? Settlement : 0.0;
+            this.PreSettlement = PreSettlement !== undefined ? PreSettlement : 0.0;
+            this.PreClose = PreClose !== undefined ? PreClose : 0.0;
+            this.PreoOpenInterest = PreoOpenInterest !== undefined ? PreoOpenInterest : 0.0;
         },
         false,
         function(__os)
         {
-            __os.writeString(this.InstrumentID);
-            __os.writeString(this.TradingDay);
-            __os.writeString(this.ExchangeID);
-            __os.writeString(this.ExchangeInstID);
-            __os.writeDouble(this.Price);
-            __os.writeDouble(this.PreClosePrice);
-            __os.writeDouble(this.PreOpenInterest);
-            __os.writeDouble(this.OpenInterest);
-            __os.writeDouble(this.ClosePrice);
-            __os.writeDouble(this.UpperLimitPrice);
-            __os.writeDouble(this.LowerLimitPrice);
-            __os.writeDouble(this.PreDelta);
-            __os.writeDouble(this.CurrDelta);
-            __os.writeDouble(this.AveragePrice);
-            __os.writeString(this.ActionDay);
+            __os.writeLong(this.Timestamp);
+            __os.writeDouble(this.High);
+            __os.writeDouble(this.Low);
+            __os.writeDouble(this.Open);
+            __os.writeDouble(this.Close);
+            __os.writeDouble(this.Average);
+            __os.writeInt(this.Volume);
+            __os.writeDouble(this.Turnover);
+            __os.writeDouble(this.Settlement);
+            __os.writeDouble(this.PreSettlement);
+            __os.writeDouble(this.PreClose);
+            __os.writeDouble(this.PreoOpenInterest);
         },
         function(__is)
         {
-            this.InstrumentID = __is.readString();
-            this.TradingDay = __is.readString();
-            this.ExchangeID = __is.readString();
-            this.ExchangeInstID = __is.readString();
-            this.Price = __is.readDouble();
-            this.PreClosePrice = __is.readDouble();
-            this.PreOpenInterest = __is.readDouble();
-            this.OpenInterest = __is.readDouble();
-            this.ClosePrice = __is.readDouble();
-            this.UpperLimitPrice = __is.readDouble();
-            this.LowerLimitPrice = __is.readDouble();
-            this.PreDelta = __is.readDouble();
-            this.CurrDelta = __is.readDouble();
-            this.AveragePrice = __is.readDouble();
-            this.ActionDay = __is.readString();
+            this.Timestamp = __is.readLong();
+            this.High = __is.readDouble();
+            this.Low = __is.readDouble();
+            this.Open = __is.readDouble();
+            this.Close = __is.readDouble();
+            this.Average = __is.readDouble();
+            this.Volume = __is.readInt();
+            this.Turnover = __is.readDouble();
+            this.Settlement = __is.readDouble();
+            this.PreSettlement = __is.readDouble();
+            this.PreClose = __is.readDouble();
+            this.PreoOpenInterest = __is.readDouble();
         },
-        85, 
-        false);
-
-    psd.KlineType = Slice.defineEnum([
-        ['K1MINUTE', 0], ['K3MINUTE', 1], ['K5MINUTE', 2], ['K10MINUTE', 3], ['K15MINUTE', 4],
-        ['K30MINUTE', 5], ['K60MINUTE', 6], ['KDAY', 7], ['KMONTH', 8], ['KNONE', 9]]);
+        92, 
+        true);
     exports.psd = psd;
 }
 (typeof(global) !== "undefined" && typeof(global.process) !== "undefined" ? module : undefined,

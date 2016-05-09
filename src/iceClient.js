@@ -25,20 +25,20 @@ export function createIceClient(url, iceServerType) {
   const communicator = Ice.initialize(process.argv, id);
 
   const OnMdServerCallback = Ice.Class(iceServer.MdSessionCallBack, {
-    InstrumentStatic(ins) {
-      debug('OnInstrumentStatic: notifyToClient %o', ins);
+    onTick(tradingDay, instrumentID, ticker) {
+      debug('onTick: tradingDay %s, instrumentID %s', tradingDay, instrumentID);
+      debug('onTick: tick %o', ticker.Timestamp);
+      debug('onTick: tick %o', ticker.high);
     },
-    TickerItem(InstrumentID, Ticker) {
-      debug('OnTickerItem: Tick %s', InstrumentID);
-      debug('OnTickerItem: Tick %o', Ticker);
+    onBar(tradingDay, instrumentID, bar) {
+      debug('onBar: tradingDay %s', tradingDay);
+      debug('onBar: instrumentID %s', instrumentID);
+      debug('onBar: bar %o', bar);
     },
-    KlineItem(InstrumentID, kline, klineType) {
-      debug('OnKlineItem: InstrumentID %s', InstrumentID);
-      debug('OnKlineItem: kline %o', kline);
-      debug('OnKlineItem: klineType %o', klineType);
-    },
-    NotifySub(ret, msg) {
-      debug('onNotifySub %s', msg);
+    onDay(tradingDay, instrumentID, day) {
+      debug('onDay: tradingDay %s', tradingDay);
+      debug('onDay: instrumentID %s', instrumentID);
+      debug('onDay: bar %o', day);
     },
   });
 
@@ -96,7 +96,7 @@ export function createIceClient(url, iceServerType) {
     debug('Start MD session');
     self = {
       createSession,
-      subscribeMd: (a, b, c) => session.subscribeMd(a, b, c),
+      subscribeMd: (a, b) => session.subscribeMd(a, b),
     };
   } else if (iceServerType === 'TD') {
     self = {

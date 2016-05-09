@@ -41,10 +41,9 @@
 
     Slice.defineOperations(MdLive.MdSessionCallBack, MdLive.MdSessionCallBackPrx,
     {
-        "InstrumentStatic": [, , , , , [3], [[psd.InstrumentStatic]], , , , ],
-        "TickerItem": [, , , , , [3], [[7], [psd.Ticker]], , , , ],
-        "KlineItem": [, , , , , [3], [[7], [psd.KlineItem], [psd.KlineType.__helper]], , , , ],
-        "NotifySub": [, , , , , [3], [[3], [7]], , , , ]
+        "onTick": [, , , , , [3], [[7], [7], [psd.Ticker]], , , , ],
+        "onBar": [, , , , , [3], [[7], [7], [psd.Bar]], , , , ],
+        "onDay": [, , , , , [3], [[7], [7], [psd.DayBar]], , , , ]
     });
 
     MdLive.MdSession = Slice.defineObject(
@@ -66,9 +65,9 @@
     Slice.defineOperations(MdLive.MdSession, MdLive.MdSessionPrx,
     {
         "setCallBack": [, , , , , [3], [["MdLive.MdSessionCallBackPrx"]], , , , ],
-        "refresh": [, , , , , , , , , , ],
-        "subscribeMd": [, , , , , [3], [[7], [7], [3]], , , , ],
-        "unSubscribeMd": [, , , , , [3], [[7], [7], [3]], , , , ],
+        "heartBeat": [, , , , , , , , , , ],
+        "subscribeMd": [, , , , , [3], [[7], [7]], , , , ],
+        "unSubscribeMd": [, , , , , [3], [[7], [7]], , , , ],
         "QuerySession": [, , , , , [7], , , , , ],
         "QuerySubCurrent": [, , , , , [7], , , , , ],
         "QueryTicker": [, , , , , [7], [[7]], , , , ],

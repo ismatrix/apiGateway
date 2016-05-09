@@ -18,10 +18,16 @@ const mdClient = createIceClient(iceUrl, 'MD');
 async function subscribe() {
   try {
     await mdClient.createSession();
-    mdClient.subscribeMd('IF1605', 'A', 0);
-    mdClient.subscribeMd('IF1606', 'A', 0);
-    mdClient.subscribeMd('IF1604', 'T', 0);
-    mdClient.subscribeMd('IF1604', 'K', 1);
+    mdClient.subscribeMd('FG606', 'M');
+    // debug('result from subscribeMd %o', res);
+    mdClient.subscribeMd('IF1606', 'M');
+    mdClient.subscribeMd('FG606', 'T');
+    mdClient.subscribeMd('IF1604', 'T');
+    mdClient.subscribeMd('IF1605', 'T');
+    mdClient.subscribeMd('IF1606', 'T');
+    mdClient.subscribeMd('IC1605', 'T');
+    mdClient.subscribeMd('IC1606', 'T');
+    mdClient.subscribeMd('IH1605', 'T');
   } catch (error) {
     debug('Error subscribe() : %s', error);
   }
