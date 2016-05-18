@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "API Gateway",
   "version": "1.0.0",
-  "description": "Serve Frontend",
+  "description": "Provide access to system services",
   "main": "lib/app",
   "scripts": {
     "start": "node lib/app",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@sharelbs.com:8800/smartwin/backend"
+    "url": "ssh://git@code.invesmart.net:8800/smartwin/apiGateway.git"
   },
   "author": "",
   "license": "ISC",
