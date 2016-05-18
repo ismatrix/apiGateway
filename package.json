@@ -26,12 +26,10 @@
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-import": "^1.4.0",
     "eslint-plugin-react": "^4.3.0",
-    "nodemon": "^1.9.1",
-    "slice2js": "^3.6.2"
+    "nodemon": "^1.9.1"
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "ice": "^3.6.2",
     "koa": "^2.0.0",
     "koa-bodyparser": "^3.0.0",
     "koa-logger": "^2.0.0",
