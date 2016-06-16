@@ -13,7 +13,7 @@ job1:
   stage: build
   script:
     - npm install
-    - npm run build
+    - npm run compile
   only:
     - master
   tags:
