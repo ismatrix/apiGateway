@@ -1,5 +1,5 @@
 {
-  "name": "API Gateway",
+  "name": "api-gateway",
   "version": "1.0.0",
   "description": "Provide access to system services",
   "main": "lib/app",
