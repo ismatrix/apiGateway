@@ -1,0 +1,20 @@
+image: node
+
+cache:
+  paths:
+    - node_modules/
+
+stages:
+  - build
+  - test
+  - deploy
+
+job1:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+  only:
+    - master
+  tags:
+    - node
