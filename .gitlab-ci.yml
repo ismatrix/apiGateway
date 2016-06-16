@@ -18,3 +18,16 @@ job1:
     - master
   tags:
     - build-node
+
+job2:
+  stage: deploy
+  script:
+    - cd /home/ops/victor/apiGateway
+    - git pull
+    - npm install
+    - npm run compile
+    - pm2 restart apiGateway
+  only:
+    - master
+  tags:
+    - deploy-ssh
