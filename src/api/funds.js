@@ -7,8 +7,8 @@ export async function getFunds() {
     const fund = smartwin.collection('FUND');
     const projection = { _id: 0, fundid: 1, fundname: 1 };
     return await fund.find({}, projection).toArray();
-  } catch (err) {
-    debug('Error mongo find: %s', err);
+  } catch (error) {
+    debug('Error mongo find: %s', error);
   }
 }
 
@@ -18,8 +18,8 @@ export async function getFund(fundid) {
     const fund = smartwin.collection('FUND');
     const projection = { _id: 0 };
     return await fund.find({ fundid }, projection).toArray();
-  } catch (err) {
-    debug('Error mongo find: %s', err);
+  } catch (error) {
+    debug('Error mongo find: %s', error);
   }
 }
 

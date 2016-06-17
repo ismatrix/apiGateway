@@ -1,10 +1,16 @@
 import * as funds from './api/funds';
 import * as marketData from './api/marketData';
 import * as instruments from './api/instruments';
+import * as auth from './api/auth';
 const router = require('koa-router')({ prefix: '/api' });
 const debug = require('debug')('rest.js');
 
 router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
+
+router
+    .get('/login', instruments.getMain)
+    .get('/wechat/AuthorizeCallback', async ctx => { ctx.body = await auth.createLoginToken();})
+  ;
 
 router
     .get('/instruments/:mainid', instruments.getMain)

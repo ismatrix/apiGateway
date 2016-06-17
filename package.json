@@ -32,8 +32,10 @@
     "debug": "^2.2.0",
     "koa": "^2.0.0",
     "koa-bodyparser": "^3.0.0",
+    "koa-jwt": "^2.0.1",
     "koa-logger": "^2.0.0",
     "koa-router": "^7.0.1",
-    "mongodb": "^2.1.16"
+    "mongodb": "^2.1.16",
+    "wechat-enterprise": "^0.1.1"
   }
 }
