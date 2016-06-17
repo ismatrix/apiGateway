@@ -3,6 +3,10 @@ import { jwtSecret, wechatConfig } from '../config';
 import jsonwebtoken from 'jsonwebtoken';
 import * as mongodb from '../mongodb';
 import wechat from 'wechat-enterprise';
+import WXBizMsgCrypt from 'wechat-crypto';
+const cryptor = new WXBizMsgCrypt(
+  wechatConfig.token, wechatConfig.encodingAESKey, wechatConfig.corpId);
+
 
 export async function createLoginToken() {
   try {
@@ -21,20 +25,13 @@ export async function createLoginToken() {
   }
 }
 
+
 export async function handleWechatCallback(params) {
   try {
-    const code = params.code;
-    const state = params.state;
-    const api = new wechat.API(wechatConfig.corpId, wechatConfig.corpsecret, 0);
-    api.getLatestToken((err, token) => {
-      if (err) debug(`wechat get token error: ${err}`);
-      debug(`token: ${token}`);
-      api.getUserIdByCode(code, (error, result) => {
-        if (err) console.log(`wechat getUserIdByCode error: ${error}`);
-        debug(`getUserIdByCode return: ${JSON.stringify(result)}`);
-        return { code, state };
-      });
-    });
+    debug(`params: ${params}`);
+    const decrypted = cryptor.decrypt(params.msg_signature);
+    debug(`decrypted: ${decrypted}`);
+    return decrypted;
   } catch (error) {
     debug(`Error mongo find: ${error}`);
   }
