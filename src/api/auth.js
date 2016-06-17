@@ -28,11 +28,12 @@ export async function createLoginToken() {
 
 export async function handleWechatCallback(params) {
   try {
-    debug(`params: ${params}`);
-    const decrypted = cryptor.decrypt(params.msg_signature);
+    debug(`params.echostr: ${params.echostr}, params.msg_signature: ${params.msg_signature}`);
+    debug(`cryptor key: ${cryptor.key}`);
+    const decrypted = cryptor.decrypt(params.echostr);
     debug(`decrypted: ${decrypted}`);
     return decrypted;
   } catch (error) {
-    debug(`Error mongo find: ${error}`);
+    debug(`Error wechat auth callback: ${error}`);
   }
 }
