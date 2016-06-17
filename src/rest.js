@@ -9,7 +9,10 @@ router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
 
 router
     .get('/login', instruments.getMain)
-    .get('/wechat/AuthorizeCallback', async ctx => { ctx.body = await auth.createLoginToken();})
+    .get('/createLoginToken', async ctx => { ctx.body = await auth.createLoginToken();})
+    .get('/wechat/AuthorizeCallback', async ctx => {
+      ctx.body = await auth.handleWechatCallback(ctx.params);
+    })
   ;
 
 router

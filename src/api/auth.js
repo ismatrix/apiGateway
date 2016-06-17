@@ -20,3 +20,22 @@ export async function createLoginToken() {
     debug(`Error mongo find: ${error}`);
   }
 }
+
+export async function handleWechatCallback(params) {
+  try {
+    const code = params.code;
+    const state = params.state;
+    const api = new wechat.API(wechatConfig.corpId, wechatConfig.corpsecret, 0);
+    api.getLatestToken((err, token) => {
+      if (err) debug(`wechat get token error: ${err}`);
+      debug(`token: ${token}`);
+      api.getUserIdByCode(code, (error, result) => {
+        if (err) console.log(`wechat getUserIdByCode error: ${error}`);
+        debug(`getUserIdByCode return: ${JSON.stringify(result)}`);
+        return { code, state };
+      });
+    });
+  } catch (error) {
+    debug(`Error mongo find: ${error}`);
+  }
+}
