@@ -26,13 +26,11 @@ export async function createLoginToken() {
 }
 
 
-export async function handleWechatCallback(params) {
+export async function handleWechatCallback(ctx) {
   try {
-    debug(`params.echostr: ${params.echostr}, params.msg_signature: ${params.msg_signature}`);
-    debug(`cryptor key: ${cryptor.key}`);
-    const decrypted = cryptor.decrypt(params.echostr);
-    debug(`decrypted: ${decrypted}`);
-    return decrypted;
+    const decrypted = cryptor.decrypt(ctx.query.echostr);
+    debug(`decrypted: ${decrypted.message}`);
+    return decrypted.message.slice(0, -1);
   } catch (error) {
     debug(`Error wechat auth callback: ${error}`);
   }

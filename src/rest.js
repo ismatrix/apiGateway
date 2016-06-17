@@ -11,7 +11,7 @@ router
     .get('/login', instruments.getMain)
     .get('/createLoginToken', async ctx => { ctx.body = await auth.createLoginToken();})
     .get('/wechat/auth', async ctx => {
-      ctx.body = await auth.handleWechatCallback(ctx.params);
+      ctx.body = await auth.handleWechatCallback(ctx);
     })
   ;
 
