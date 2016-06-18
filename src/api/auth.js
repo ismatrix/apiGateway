@@ -36,10 +36,11 @@ export async function handleWechatCallback(ctx) {
   try {
     const code = ctx.query.code;
     const atRes = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${wechatConfig.corpId}&corpsecret=${wechatConfig.corpSecret}`);
-    const accessToken = JSON.parse(atRes).access_token;
-    debug(atRes.text());
+    debug('atRes from fetch: %o', atRes);
+    const accessToken = await atRes.json().access_token;
     const userRes = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=${accessToken}&code=${code}`);
-    debug(JSON.parse(userRes));
+    const userObj = await userRes.json();
+    debug('userobj: %o', userObj);
   } catch (error) {
     debug(`Error wechat auth callback: ${error}`);
   }
