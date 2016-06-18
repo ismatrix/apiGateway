@@ -4,6 +4,6 @@ export const wechatConfig = {
   encodingAESKey: 'toaQHQrzkUsgsV68QpbwwFpaEmpf9Cm3jWoc2EBvSMl',
   token: 'WmAOTUuqIWjKkRkHZwgQ',
   corpId: 'wxf81392ac6d39f547',
-  corpsecret: 'cWd1SUkX8hU-sLyuGovGwvFzHcVqpXfufpomDhOtc_5hcGVUKc6wJJTb4yo3k3tJ',
-  AuthorizeCallbackURL: 'https://invesmart.win/api/wechat/auth',
+  corpSecret: 'cWd1SUkX8hU-sLyuGovGwvFzHcVqpXfufpomDhOtc_5hcGVUKc6wJJTb4yo3k3tJ',
+  authorizeCallbackURL: 'https://invesmart.win/api/wechat/auth',
 };
