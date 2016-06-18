@@ -30,7 +30,7 @@ export async function handleWechatCallback(ctx) {
   try {
     const decrypted = cryptor.decrypt(ctx.query.echostr);
     debug(`decrypted: ${decrypted.message}`);
-    return decrypted;
+    return decrypted.message;
   } catch (error) {
     debug(`Error wechat auth callback: ${error}`);
   }
