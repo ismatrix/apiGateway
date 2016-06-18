@@ -35,9 +35,12 @@ export async function createLoginToken() {
 export async function handleWechatCallback(ctx) {
   try {
     const code = ctx.query.code;
+    debug('code from callback: %o', code);
     const atRes = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${wechatConfig.corpId}&corpsecret=${wechatConfig.corpSecret}`);
-    debug('atRes from fetch: %o', atRes);
-    const accessToken = await atRes.json().access_token;
+    const atJson = await atRes.json();
+    debug('atRes from fetch: %o', atJson);
+    const accessToken = atJson.access_token;
+    debug('accessToken from fetch: %o', atJson.access_token);
     const userRes = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=${accessToken}&code=${code}`);
     const userObj = await userRes.json();
     debug('userobj: %o', userObj);
