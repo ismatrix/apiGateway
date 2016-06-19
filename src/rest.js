@@ -1,18 +1,16 @@
+const debug = require('debug')('rest.js');
 import * as funds from './api/funds';
 import * as marketData from './api/marketData';
 import * as instruments from './api/instruments';
-import * as auth from './api/auth';
+import * as wechat from './api/wechat';
 const router = require('koa-router')({ prefix: '/api' });
-const debug = require('debug')('rest.js');
 
 router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
 
 router
-    .get('/login', instruments.getMain)
-    .get('/public/createLoginToken', async ctx => { ctx.body = await auth.createLoginToken();})
-    .get('/public/loggedInMessage', async ctx => { ctx.body = 'Smartwin登陆成功！';})
-    .get('/public/wechat/callback',
-      async ctx => { ctx.body = await auth.handleWechatCallback(ctx); })
+    .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token';})
+    .get('/public/wechat/auth', async ctx => { ctx.body = await wechat.authCallback(ctx);})
+    .get('/public/wechat/app/register', async ctx => { ctx.body = await wechat.appRegister(ctx); })
     ;
 
 router
