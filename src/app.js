@@ -16,8 +16,7 @@ mongodb.connect(mongoUrl);
 
 // http middleware
 app.use(logger());
-app.use(jwt({ secret: jwtSecret })
-.unless({ path: ['/api', '/api/wechat/auth', '/api/createLoginToken'] }));
+app.use(jwt({ secret: jwtSecret }).unless({ path: ['/api', /^\/api\/public/] }));
 app.use(rest.routes(), rest.allowedMethods());
 // app.use(bodyparser);
 app.listen(3000);

@@ -9,15 +9,15 @@ router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
 
 router
     .get('/login', instruments.getMain)
-    .get('/createLoginToken', async ctx => { ctx.body = await auth.createLoginToken();})
-    .get('/wechat/auth', async ctx => {
-      ctx.body = await auth.handleWechatCallback(ctx);
-    })
-  ;
+    .get('/public/createLoginToken', async ctx => { ctx.body = await auth.createLoginToken();})
+    .get('/public/loggedInMessage', async ctx => { ctx.body = 'Smartwin登陆成功！';})
+    .get('/public/wechat/callback',
+      async ctx => { ctx.body = await auth.handleWechatCallback(ctx); })
+    ;
 
 router
     .get('/instruments/:mainid', instruments.getMain)
-  ;
+    ;
 
 router
   .get('/fund', async ctx => { ctx.body = await funds.getFunds();})
