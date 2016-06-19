@@ -29,7 +29,7 @@ export async function createLoginToken() {
 
 export async function handleWechatCallback(ctx) {
   try {
-    if (ctx.query.echostr) return cryptor.decrypt(ctx.query.echostr);
+    if (ctx.query.echostr) return cryptor.decrypt(ctx.query.echostr).message;
     // const code = ctx.query.code;
     // const state = ctx.query.state;
     // const user = await qydev.getUser(code);
