@@ -7,3 +7,5 @@ export const wechatConfig = {
   corpSecret: 'cWd1SUkX8hU-sLyuGovGwvFzHcVqpXfufpomDhOtc_5hcGVUKc6wJJTb4yo3k3tJ',
   authorizeCallbackURL: 'https://invesmart.win/api/wechat/auth',
 };
+
+export const mongoUrl = 'mongodb://localhost:27017/smartwin';

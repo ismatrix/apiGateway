@@ -1,4 +1,4 @@
-const debug = require('debug')('sw-wechat-qydev.js');
+const debug = require('debug')('qydev:index');
 import common from './common';
 import user from './user';
 import department from './department';

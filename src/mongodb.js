@@ -3,7 +3,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const events = require('events');
 const event = new events.EventEmitter();
-const debug = require('debug')('mongodb.js');
+const debug = require('debug')('mongodb');
 
 let connectionInstance;
 let gurl;

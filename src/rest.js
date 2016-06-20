@@ -1,4 +1,4 @@
-const debug = require('debug')('rest.js');
+const debug = require('debug')('rest');
 import * as funds from './api/funds';
 import * as marketData from './api/marketData';
 import * as instruments from './api/instruments';
@@ -9,7 +9,7 @@ router.get('/', async ctx => { ctx.body = 'Welcome to SmartWin REST API';});
 
 router
     .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token';})
-    .get('/public/wechat/auth', async ctx => { ctx.body = await wechat.authCallback(ctx);})
+    .get('/public/wechat/auth', async ctx => { ctx.body = await wechat.authRedirectUri(ctx);})
     .get('/public/wechat/app/register', async ctx => { ctx.body = await wechat.appRegister(ctx); })
     ;
 

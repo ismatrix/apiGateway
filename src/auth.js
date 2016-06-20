@@ -1,27 +1,52 @@
-const debug = require('debug')('auth.js');
-import jsonwebtoken from 'jsonwebtoken';
+const debug = require('debug')('auth');
+import jwt from 'jsonwebtoken';
 import * as mongodb from './mongodb';
 import { jwtSecret, wechatConfig } from './config';
 import makeQydev from './sw-wechat-qydev';
 
 const qydev = makeQydev(wechatConfig);
 
-export async function loginWechatUser(code, state) {
+export async function createUserToken(userObj) {
   try {
-    const user = await qydev.getUser(code);
-    debug('loginWechatUser() user: %o', user);
+    const jwtTokenData = {
+      _id: userObj._id,
+      userid: userObj.userid,
+    };
+    const jwtToken = jwt.sign(jwtTokenData, jwtSecret);
+    debug(`createUserToken() jwtToken: ${jwtToken}`);
+    return jwtToken;
+  } catch (error) {
+    debug(`createUserToken() Error: ${error}`);
+  }
+}
+
+export async function upsertDbUser(userObj) {
+  try {
     const smartwin = await mongodb.getdb();
     const users = smartwin.collection('USER');
-    const condition = { name: users.weixinid };
-    const upsert = { $set: users };
-    const result = await users.updateOne(condition, upsert, { upsert: true });
-    debug('loginWechatUser() mongodb user upsert result: %o', user);
-    const jwtTokenData = {
-      _id: result._id,
-      name: result.name,
-    };
-    const jwtToken = jsonwebtoken.sign(jwtTokenData, jwtSecret);
-    return jwtToken;
+    const filter = { mobile: userObj.mobile };
+    const update = { $set: userObj };
+    const options = { upsert: true, returnNewDocument: true };
+    const result = await users.findOneAndUpdate(filter, update, options);
+    debug('upsertDbUser() mongodb user upsert result: %o', result);
+    return result.value;
+  } catch (error) {
+    debug(`upsertDbUser() Error: ${error}`);
+  }
+}
+
+export async function loginWechatUser(code, state) {
+  try {
+    const qyUserObj = await qydev.getUser(code);
+    debug('loginWechatUser() user: %o', qyUserObj);
+    if (qyUserObj.errcode !== 0) return qyUserObj;
+    const departments = await qydev.getDepartmentById(qyUserObj.department);
+    qyUserObj.department = departments;
+    debug('loginWechatUser() qyUserObj + departments: %o', qyUserObj);
+    const dbUserObj = await upsertDbUser(qyUserObj);
+    const token = await createUserToken(dbUserObj);
+    debug('loginWechatUser() token: %o', token);
+    return qyUserObj;
   } catch (error) {
     debug(`loginWechatUser() Error: ${error}`);
   }

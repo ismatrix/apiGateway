@@ -1,4 +1,4 @@
-const debug = require('debug')('funds.js');
+const debug = require('debug')('api:marketData');
 import * as mongodb from '../mongodb';
 
 export async function getCandleStick() { return 'getCandleStick'; }

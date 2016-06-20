@@ -1,4 +1,4 @@
-const debug = require('debug')('department.js');
+const debug = require('debug')('qydev:department');
 import fetch from 'node-fetch';
 
 
