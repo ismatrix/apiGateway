@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import * as mongodb from './mongodb';
 import { jwtSecret, wechatConfig } from './config';
 import makeQydev from './sw-wechat-qydev';
+import { io } from './app.js';
 
 const qydev = makeQydev(wechatConfig);
 
@@ -46,6 +47,8 @@ export async function loginWechatUser(code, state) {
     const dbUserObj = await upsertDbUser(qyUserObj);
     const token = await createUserToken(dbUserObj);
     debug('loginWechatUser() token: %o', token);
+    const data = { token };
+    io.to(`/#${state}`).emit('token', { data });
     return qyUserObj;
   } catch (error) {
     debug(`loginWechatUser() Error: ${error}`);
