@@ -27,10 +27,10 @@ io.on('connection', (socket) => {
 mongodb.connect(mongoUrl);
 
 staticRouter.get('/index.html',
-  async ctx => { await send(ctx, ctx.path, { root: `${__dirname}/static` });},
+  async ctx => { await send(ctx, ctx.path, { root: `${__dirname}/../static` });},
 );
 staticRouter.get('/script.js',
-  async ctx => { await send(ctx, ctx.path, { root: `${__dirname}/static` });},
+  async ctx => { await send(ctx, ctx.path, { root: `${__dirname}/../static` });},
 );
 
 // http middleware
