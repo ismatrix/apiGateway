@@ -4,6 +4,7 @@ import Koa from 'koa';
 import send from 'koa-send';
 import jwt from 'koa-jwt';
 import logger from 'koa-logger';
+import cors from 'kcors';
 import rest from './rest';
 import socketio from 'socket.io';
 import * as mongodb from './mongodb';
@@ -34,6 +35,7 @@ staticRouter.get('/script.js',
 );
 
 // http middleware
+app.use(cors());
 app.use(logger());
 app.use(staticRouter.routes(), staticRouter.allowedMethods());
 app.use(jwt({ secret: jwtSecret }).unless({ path: ['/api', /^\/api\/public/] }));
