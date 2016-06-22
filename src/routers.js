@@ -16,7 +16,7 @@ apiRouter
       ctx.body = await auth.getTokenByWechatScan(ctx.query.code, ctx.query.state);
     })
     .post('/public/auth/password', async ctx => {
-      const userid = ctx.request.body.userid.toLowerCase();
+      const userid = ctx.request.body.userid;
       const password = ctx.request.body.password;
       ctx.body = await auth.getTokenByPassword(userid, password);
     })
@@ -24,7 +24,6 @@ apiRouter
 
 apiRouter
     .put('/users/:userid/password', async ctx => {
-      debug('apiRouter %o', ctx.body);
       ctx.body = await users.setDbUserPassword(ctx.state.user.userid, ctx.request.body.password);
     })
     ;

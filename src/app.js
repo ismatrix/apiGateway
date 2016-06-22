@@ -5,6 +5,7 @@ import bodyParser from 'koa-bodyparser';
 import jsonResObj from 'koa-json';
 import jwt from 'koa-jwt';
 import logger from 'koa-logger';
+import { koaError } from './errors';
 import cors from 'kcors';
 import { apiRouter, staticRouter } from './routers';
 import socketio from 'socket.io';
@@ -28,6 +29,7 @@ mongodb.connect(mongoUrl);
 
 // http middleware
 app.use(logger());
+app.use(koaError);
 app.use(cors());
 app.use(bodyParser());
 app.use(jsonResObj());
