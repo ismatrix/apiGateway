@@ -25,3 +25,6 @@ lib
 
 # Optional REPL history
 .node_repl_history
+
+# ignore this test file
+src/test.js
