@@ -17,12 +17,13 @@ export async function upsertDbUser(userObj) {
   }
 }
 
-export async function getDbUserByFilter(filter) {
+export async function getDbUserByFilter(filter, proj) {
   try {
     debug('filter %o', filter);
     const smartwin = await mongodb.getdb();
     const users = smartwin.collection('USER');
-    const result = await users.findOne(filter);
+    const projection = proj || {};
+    const result = await users.findOne(filter, projection);
     debug('getDbUserByFilter() findOne result : %o', result);
     return result;
   } catch (error) {
@@ -43,5 +44,18 @@ export async function setDbUserPassword(userid, password) {
     return;
   } catch (error) {
     debug(`setDbUserPassword() Error: ${error}`);
+  }
+}
+
+export async function getDbUser(filter) {
+  try {
+    debug('filter %o', filter);
+    const smartwin = await mongodb.getdb();
+    const users = smartwin.collection('USER');
+    const result = await users.findOne(filter);
+    debug('getDbUserByFilter() findOne result : %o', result);
+    return result;
+  } catch (error) {
+    debug(`getDbUserByFilter() Error: ${error}`);
   }
 }

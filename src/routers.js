@@ -23,6 +23,12 @@ apiRouter
     ;
 
 apiRouter
+    .get('/users/:userid', async ctx => {
+      const userid = ctx.state.user.userid;
+      const projection = { _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1 };
+      const user = await users.getDbUserByFilter({ userid }, projection);
+      ctx.body = { data: user };
+    })
     .put('/users/:userid/password', async ctx => {
       ctx.body = await users.setDbUserPassword(ctx.state.user.userid, ctx.request.body.password);
     })
