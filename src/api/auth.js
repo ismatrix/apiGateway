@@ -30,7 +30,7 @@ export async function getTokenByWechatScan(code, state) {
       const error = { code: 401, message: 'Cannot auth user against Wechat' };
       return { error };
     }
-    qyUserObj.userid = qyUserObj.userid.toLowerCase();
+    qyUserObj.userid = qyUserObj.userid;
     const departments = await qydev.getDepartmentById(qyUserObj.department);
     qyUserObj.department = departments.department;
     debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
