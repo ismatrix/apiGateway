@@ -8,14 +8,22 @@ export async function koaError(ctx, next) {
       debug('error %o', error.output);
       ctx.status = error.output.statusCode;
       ctx.body = error.output.payload;
-    } else {
-      ctx.status = error.status || 500;
+      return;
+    } else if (error.status === 401 && error.message === `Invalid token\n`) {
+      ctx.status = 401;
       ctx.body = {
         statusCode: ctx.status,
-        error: 'Internal Server Error',
-        message: error.message,
+        error: 'Unauthorized',
+        message: 'Invalid token',
       };
+      return;
     }
+    ctx.status = 500;
+    ctx.body = {
+      statusCode: ctx.status,
+      error: 'Internal Server Error',
+      message: error.message,
+    };
     debug('erros %s', error.message);
   }
 }
