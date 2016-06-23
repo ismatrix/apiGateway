@@ -1,4 +1,5 @@
 const debug = require('debug')('api:users');
+import Boom from 'boom';
 import * as mongodb from '../mongodb';
 import argon2 from 'argon2';
 
@@ -31,19 +32,33 @@ export async function getDbUserByFilter(filter, proj) {
   }
 }
 
-export async function setDbUserPassword(userid, password) {
+export async function setDbUserPassword(userid, newPassword, password) {
   try {
-    debug('1 %o', password);
-    const salt = await argon2.generateSalt();
-    debug('2 %o', userid);
-    const hashedPassword = await argon2.hash(password, salt);
-    debug('hasshedPassword %o', hashedPassword);
-    const userObj = { userid, password: hashedPassword };
-    debug('setDbUserPassword() userObj: %o', userObj);
-    await upsertDbUser(userObj);
-    return;
+    const dbUser = await getDbUserByFilter({ userid }, { password: 1 });
+    if (newPassword && !dbUser.password) {
+      const salt = await argon2.generateSalt();
+      const hashedPassword = await argon2.hash(password, salt);
+      debug(`First time the user ${userid} set his password`);
+      const userObj = { userid, password: hashedPassword };
+      debug('setDbUserPassword() userObj: %o', userObj);
+      await upsertDbUser(userObj);
+      return;
+    } else if (newPassword && password && dbUser.password) {
+      const dbHashedPassword = dbUser.password;
+      if (await argon2.verify(dbHashedPassword, password)) {
+        debug(`getTokenByPassword(). ${userid} oldPassword is correct. Changing for new one`);
+        const salt = await argon2.generateSalt();
+        const hashedPassword = await argon2.hash(newPassword, salt);
+        const userObj = { userid, password: hashedPassword };
+        await upsertDbUser(userObj);
+        return;
+      }
+      throw Boom.unauthorized('invalid password');
+    }
+    throw Boom.notImplemented('method not implemented');
   } catch (error) {
-    debug(`setDbUserPassword() Error: ${error}`);
+    debug(`setDbUserPassword(): ${error}`);
+    throw error;
   }
 }
 
@@ -56,6 +71,7 @@ export async function getDbUser(filter) {
     debug('getDbUserByFilter() findOne result : %o', result);
     return result;
   } catch (error) {
-    debug(`getDbUserByFilter() Error: ${error}`);
+    debug(`getDbUserByFilter() ${error}`);
+    throw error;
   }
 }

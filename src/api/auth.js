@@ -51,8 +51,8 @@ export async function getTokenByWechatScan(code, state) {
 export async function getTokenByPassword(userid, password) {
   try {
     const dbUserObj = await getDbUserByFilter({ userid });
-    const hashedPassword = dbUserObj.password;
-    if (await argon2.verify(hashedPassword, password)) {
+    const dbHashedPassword = dbUserObj.password;
+    if (await argon2.verify(dbHashedPassword, password)) {
       const token = await createUserToken(dbUserObj);
       debug('getTokenByPassword() token: %s', token);
       const data = { token };
