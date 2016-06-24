@@ -5,7 +5,7 @@ import * as instruments from './api/instruments';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
-// import send from 'koa-send';
+import send from 'koa-send';
 const apiRouter = require('koa-router')({ prefix: '/api' });
 const staticRouter = require('koa-router')();
 import serve from 'koa-static';
@@ -66,13 +66,13 @@ apiRouter
   ;
 
 
-// staticRouter
-//   .get('/index.html', async ctx => {
-//     await send(ctx, ctx.path, { root: `${__dirname}/../static` });
-//   })
-//   .get('/script.js', async ctx => {
-//     await send(ctx, ctx.path, { root: `${__dirname}/../static` });
-//   })
-//   ;
+staticRouter
+  .get('/index.html', async ctx => {
+    await send(ctx, ctx.path, { root: `${__dirname}/../static` });
+  })
+  .get('/script.js', async ctx => {
+    await send(ctx, ctx.path, { root: `${__dirname}/../static` });
+  })
+  ;
 
 export { apiRouter, staticRouter };
