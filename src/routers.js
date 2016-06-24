@@ -5,9 +5,14 @@ import * as instruments from './api/instruments';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
-import send from 'koa-send';
+// import send from 'koa-send';
 const apiRouter = require('koa-router')({ prefix: '/api' });
 const staticRouter = require('koa-router')();
+import serve from 'koa-static';
+
+apiRouter
+    .get('/public/doc', serve(`${__dirname}/../static/swagger-ui`))
+    ;
 
 apiRouter
     .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token';})
@@ -33,10 +38,10 @@ apiRouter
       ctx.body = { data: user };
     })
     .put('/users/:userid/password', async ctx => {
-      const oldPassword = ctx.request.body.password;
-      const password = ctx.request.body.newPassword;
+      const password = ctx.request.body.password;
+      const newPassword = ctx.request.body.newPassword;
       const userid = ctx.state.user.userid;
-      ctx.body = await users.setDbUserPassword(userid, password, oldPassword);
+      ctx.body = await users.setDbUserPassword(userid, newPassword, password);
     })
     ;
 
@@ -61,13 +66,13 @@ apiRouter
   ;
 
 
-staticRouter
-  .get('/index.html', async ctx => {
-    await send(ctx, ctx.path, { root: `${__dirname}/../static` });
-  })
-  .get('/script.js', async ctx => {
-    await send(ctx, ctx.path, { root: `${__dirname}/../static` });
-  })
-  ;
+// staticRouter
+//   .get('/index.html', async ctx => {
+//     await send(ctx, ctx.path, { root: `${__dirname}/../static` });
+//   })
+//   .get('/script.js', async ctx => {
+//     await send(ctx, ctx.path, { root: `${__dirname}/../static` });
+//   })
+//   ;
 
 export { apiRouter, staticRouter };
