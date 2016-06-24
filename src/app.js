@@ -30,17 +30,19 @@ io.on('connection', (socket) => {
 
 mongodb.connect(mongoUrl);
 
-const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
-const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
-// http middleware
+// Koa app middleware
 app.use(logger());
 app.use(koaError);
 app.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
-app.use(mount('/api/public/client', clientMw));
-app.use(mount('/api/public/doc', docMw));
 app.use(cors());
 app.use(bodyParser());
 app.use(jsonResObj());
 app.use(apiRouter.routes(), apiRouter.allowedMethods());
+
+// Static files middleware
+const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
+const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
+app.use(mount('/api/public/client', clientMw));
+app.use(mount('/api/public/doc', docMw));
 
 server.listen(3000);
