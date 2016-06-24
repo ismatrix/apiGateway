@@ -37,7 +37,7 @@ export async function setDbUserPassword(userid, newPassword, password) {
     const dbUser = await getDbUserByFilter({ userid }, { password: 1 });
     if (newPassword && !dbUser.password) {
       const salt = await argon2.generateSalt();
-      const hashedPassword = await argon2.hash(password, salt);
+      const hashedPassword = await argon2.hash(newPassword, salt);
       debug(`First time the user ${userid} set his password`);
       const userObj = { userid, password: hashedPassword };
       debug('setDbUserPassword() userObj: %o', userObj);
