@@ -17,6 +17,14 @@ export async function koaError(ctx, next) {
         message: 'Invalid token',
       };
       return;
+    } else if (ctx.status === 404 && error.message === `No authentication token found\n`) {
+      ctx.status = 404;
+      ctx.body = {
+        statusCode: ctx.status,
+        error: 'Not Found',
+        message: 'Missing token',
+      };
+      return;
     }
     ctx.status = 500;
     ctx.body = {

@@ -20,7 +20,6 @@ export async function upsertDbUser(userObj) {
 
 export async function getDbUserByFilter(filter, proj) {
   try {
-    debug('filter %o', filter);
     const smartwin = await mongodb.getdb();
     const users = smartwin.collection('USER');
     const projection = proj || {};
@@ -34,7 +33,12 @@ export async function getDbUserByFilter(filter, proj) {
 
 export async function setDbUserPassword(userid, newPassword, password) {
   try {
+    if (!userid) throw Boom.badRequest('Missing userid parameter');
+    if (!newPassword) throw Boom.badRequest('Missing newPassword parameter');
+
     const dbUser = await getDbUserByFilter({ userid }, { password: 1 });
+    if (!dbUser) throw Boom.notFound('User not found');
+
     if (newPassword && !dbUser.password) {
       const salt = await argon2.generateSalt();
       const hashedPassword = await argon2.hash(newPassword, salt);
@@ -53,25 +57,30 @@ export async function setDbUserPassword(userid, newPassword, password) {
         await upsertDbUser(userObj);
         return;
       }
-      throw Boom.unauthorized('invalid password');
+      throw Boom.unauthorized('Invalid password');
     }
-    throw Boom.notImplemented('method not implemented');
+    throw Boom.badImplementation('Method not implemented');
   } catch (error) {
     debug(`setDbUserPassword(): ${error}`);
     throw error;
   }
 }
 
-export async function getDbUser(filter) {
+export async function getViewerData(userid) {
   try {
-    debug('filter %o', filter);
-    const smartwin = await mongodb.getdb();
-    const users = smartwin.collection('USER');
-    const result = await users.findOne(filter);
-    debug('getDbUserByFilter() findOne result : %o', result);
-    return result;
+    if (!userid) throw Boom.badRequest('Missing userid parameter');
+
+    const projection = {
+      _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1, password: 1,
+    };
+    const data = await getDbUserByFilter({ userid }, projection);
+
+    if (!data) throw Boom.notFound('User not found');
+
+    data.password = data.password ? 1 : 0;
+    return { data };
   } catch (error) {
-    debug(`getDbUserByFilter() ${error}`);
+    debug(`getViewerData() ${error}`);
     throw error;
   }
 }

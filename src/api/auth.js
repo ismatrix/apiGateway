@@ -1,4 +1,5 @@
 const debug = require('debug')('api:auth');
+import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import { getDbUserByFilter, upsertDbUser } from './users';
 import { jwtSecret, wechatConfig } from '../config';
@@ -24,43 +25,52 @@ export async function createUserToken(userObj) {
 
 export async function getTokenByWechatScan(code, state) {
   try {
+    if (!code) throw Boom.badRequest('Missing code query string');
+    if (!state) throw Boom.badRequest('Missing state query string');
+
     const qyUserObj = await qydev.getUser(code);
     debug('getTokenByWechatScan() user: %o', qyUserObj);
     if (qyUserObj.errcode !== 0) {
-      const error = { code: 401, message: 'Cannot auth user against Wechat' };
-      return { error };
+      throw Boom.unauthorized('Invalid user');
     }
     qyUserObj.userid = qyUserObj.userid;
     const departments = await qydev.getDepartmentById(qyUserObj.department);
     qyUserObj.department = departments.department;
     debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
     const dbUserObj = await upsertDbUser(qyUserObj);
+
+    if (!dbUserObj) throw Boom.badImplementation('Cannot add user to database');
+
     const token = await createUserToken(dbUserObj);
-    debug('getTokenByWechatScan() token: %o', token);
-    const decoded = jwt.decode(token);
     const data = { token };
-    const error = { code: 500, message: 'Cannot create token' };
-    const resObj = decoded.userid === qyUserObj.userid ? { data } : { error };
-    io.to(`/#${state}`).emit('token', resObj);
-    return resObj;
+
+    io.to(`/#${state}`).emit('token', { data });
+    return { data };
   } catch (error) {
     debug(`getTokenByWechatScan() Error: ${error}`);
+    throw error;
   }
 }
 
 export async function getTokenByPassword(userid, password) {
   try {
+    if (!userid) throw Boom.badRequest('Missing userid parameter');
+    if (!password) throw Boom.badRequest('Missing password parameter');
+
     const dbUserObj = await getDbUserByFilter({ userid });
+
+    if (!dbUserObj) throw Boom.notFound('User not found');
+    if (!dbUserObj.password) throw Boom.notFound('User must set a password first');
+
     const dbHashedPassword = dbUserObj.password;
     if (await argon2.verify(dbHashedPassword, password)) {
       const token = await createUserToken(dbUserObj);
-      debug('getTokenByPassword() token: %s', token);
       const data = { token };
       return { data };
     }
-    const error = { code: 500, message: 'Cannot authenticate user' };
-    return { error };
+    throw Boom.unauthorized('Invalid password');
   } catch (error) {
     debug(`getTokenByPassword() Error: ${error}`);
+    throw error;
   }
 }

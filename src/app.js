@@ -5,12 +5,15 @@ import bodyParser from 'koa-bodyparser';
 import jsonResObj from 'koa-json';
 import jwt from 'koa-jwt';
 import logger from 'koa-logger';
+import compose from 'koa-compose';
 import { koaError } from './errors';
 import cors from 'kcors';
-import { apiRouter, staticRouter } from './routers';
+import { apiRouter } from './routers';
 import socketio from 'socket.io';
 import * as mongodb from './mongodb';
 import { jwtSecret, mongoUrl } from './config';
+import serve from 'koa-static';
+import mount from 'koa-mount';
 
 debug('API Gateway starting...');
 
@@ -27,14 +30,17 @@ io.on('connection', (socket) => {
 
 mongodb.connect(mongoUrl);
 
+const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
+const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
 // http middleware
 app.use(logger());
 app.use(koaError);
+app.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
+app.use(mount('/api/public/client', clientMw));
+app.use(mount('/api/public/doc', docMw));
 app.use(cors());
 app.use(bodyParser());
 app.use(jsonResObj());
-app.use(staticRouter.routes(), staticRouter.allowedMethods());
-app.use(jwt({ secret: jwtSecret }).unless({ path: ['/api', /^\/api\/public/] }));
 app.use(apiRouter.routes(), apiRouter.allowedMethods());
 
 server.listen(3000);
