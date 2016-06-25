@@ -1,0 +1,291 @@
+swagger: '2.0'
+info:
+  title: Smartwin API doc
+  description: >-
+    Feed your trading app with Smartwin API.
+    [Edit](http://editor.swagger.io/#/?import=https://api.invesmart.net/api/public/doc/swagger.yaml)
+  version: 1.0.0
+host: api.invesmart.net
+schemes:
+  - https
+basePath: /api
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /public/auth/wechat:
+    get:
+      summary: Create a token for the user by Wechat QRcode scan
+      description: >
+        The Wechat auth endpoint is called by qiyehao, following a QRcode scan
+        using the user Wechat. The QRcode url contain the client socket.io ID,
+        so the server can push the jwt token to the client.
+      parameters:
+        - name: code
+          in: query
+          description: server use it to query qiyehao user infos
+          required: true
+          type: string
+        - name: state
+          in: query
+          description: This is the client socket.io ID
+          required: true
+          type: string
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: A token
+          schema:
+            $ref: '#/definitions/Token'
+        '401':
+          description: Invalid user
+  /public/auth/password:
+    post:
+      summary: Authenticate the users by password
+      description: >
+        Create a token for the user by userid + password.
+      parameters:
+        - name: body
+          in: body
+          description: This is the user password update object
+          required: true
+          schema:
+            $ref: '#/definitions/authPassword'
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: A token
+          schema:
+            $ref: '#/definitions/Token'
+        '401':
+          description: Invalid password
+        '404':
+          description: User not found
+  /users/me:
+    get:
+      summary: Viewer infos
+      description: >
+        Let the logged in user get his own personal infos
+      tags:
+        - Users
+      responses:
+        '200':
+          description: The user profile infos
+          schema:
+            $ref: '#/definitions/Profile'
+        '404':
+          description: User not found
+      security:
+        - jsonWebToken: []
+  /users/me/password:
+    put:
+      summary: Set or update user password
+      description: >
+        Let the logged in user set his password. If the user never set his
+        password before, he just need to send his newPassword. After that,
+        everytime he update his password, he needs to send his current password
+        as well.
+      parameters:
+        - name: body
+          in: body
+          description: the new password the user wants
+          required: true
+          schema:
+            $ref: '#/definitions/putPassword'
+      tags:
+        - Users
+      responses:
+        '204':
+          description: Successful operation
+        '401':
+          description: Invalid password
+        '404':
+          description: User not found
+      security:
+        - jsonWebToken: []
+  /errors:
+    get:
+      summary: Set or update user password
+      description: >
+        Example of all the errors the API can produce
+      tags:
+        - Errors
+      responses:
+        '400':
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/Error400'
+        '401':
+          description: Invalid password
+          schema:
+            $ref: '#/definitions/Error401'
+        '403':
+          description: Access forbidden
+          schema:
+            $ref: '#/definitions/Error403'
+        '404':
+          description: Missing something
+          schema:
+            $ref: '#/definitions/Error404'
+        '405':
+          description: The method is not allowed
+          schema:
+            $ref: '#/definitions/Error405'
+        '500':
+          description: Internal error occured
+          schema:
+            $ref: '#/definitions/Error500'
+        '501':
+          description: Method not implemented"
+          schema:
+            $ref: '#/definitions/Error501'
+securityDefinitions:
+  jsonWebToken:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  Profile:
+    type: object
+    properties:
+      userid:
+        type: string
+        description: User userid from qiyehao
+      name:
+        type: string
+        description: Name from qiyehao
+      department:
+        type: array
+        items:
+          $ref: '#/definitions/Department'
+      email:
+        type: string
+        description: Email from qiyehao
+      avatar:
+        type: string
+        description: Avatar url from qiyehao
+      password:
+        type: boolean
+        description: 'If user has a password, value is true, otherwise false'
+  Department:
+    type: object
+    properties:
+      id:
+        type: number
+      name:
+        type: string
+      parentid:
+        type: number
+      order:
+        type: number
+  Token:
+    type: object
+    properties:
+      token:
+        type: string
+  putPassword:
+    type: object
+    required:
+      - newPassword
+    properties:
+      newPassword:
+        type: string
+      password:
+        type: string
+  authPassword:
+    type: object
+    required:
+      - userid
+      - password
+    properties:
+      userid:
+        type: string
+      password:
+        type: string
+  Error400:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 400
+      error:
+        type: string
+        example: Bad request
+      message:
+        type: string
+        example: Invalid query
+  Error401:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 401
+      error:
+        type: string
+        example: Unauthorized
+      message:
+        type: string
+        example: Invalid password
+  Error403:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 403
+      error:
+        type: string
+        example: Forbidden
+      message:
+        type: string
+        example: Access forbidden
+  Error404:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 404
+      error:
+        type: string
+        example: Not Found
+      message:
+        type: string
+        example: Missing something
+  Error405:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 405
+      error:
+        type: string
+        example: Method not allowed
+      message:
+        type: string
+        example: That method is not allowed
+  Error500:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 500
+      error:
+        type: string
+        example: Internal Server Error
+      message:
+        type: string
+        example: An internal server error occurred
+  Error501:
+    type: object
+    properties:
+      code:
+        type: number
+        example: 501
+      error:
+        type: string
+        example: Not Implemented
+      message:
+        type: string
+        example: Method not implemented
