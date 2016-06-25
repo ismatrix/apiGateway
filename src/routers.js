@@ -13,7 +13,7 @@ apiRouter
   .get('/public/auth/wechat', async ctx => {
     const code = ctx.query.code;
     const state = ctx.query.state;
-    ctx.body = await auth.getTokenByWechatScan(code, state);
+    await auth.getTokenByWechatScan(code, state);
   })
   .post('/public/auth/password', async ctx => {
     const userid = ctx.request.body.userid;

@@ -45,7 +45,7 @@ export async function getTokenByWechatScan(code, state) {
     const data = { token };
 
     io.to(`/#${state}`).emit('token', { data });
-    return { data };
+    return;
   } catch (error) {
     debug(`getTokenByWechatScan() Error: ${error}`);
     throw error;
