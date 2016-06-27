@@ -42,7 +42,9 @@ app.use(apiRouter.routes(), apiRouter.allowedMethods());
 // Static files middleware
 const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
 const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
+const wxCloseMw = compose([cors(), serve(`${__dirname}/../static/wxclose/`)]);
 app.use(mount('/api/public/client', clientMw));
 app.use(mount('/api/public/doc', docMw));
+app.use(mount('/api/public/wxclose', wxCloseMw));
 
 server.listen(3000);

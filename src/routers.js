@@ -14,6 +14,7 @@ apiRouter
     const code = ctx.query.code;
     const state = ctx.query.state;
     await auth.getTokenByWechatScan(code, state);
+    ctx.redirect('/api/public/wxclose');
   })
   .post('/public/auth/password', async ctx => {
     const userid = ctx.request.body.userid;
