@@ -32,9 +32,9 @@ mongodb.connect(mongoUrl);
 
 // Koa app middleware
 app.use(logger());
+app.use(cors());
 app.use(koaError);
 app.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
-app.use(cors());
 app.use(bodyParser());
 app.use(jsonResObj());
 app.use(apiRouter.routes(), apiRouter.allowedMethods());
