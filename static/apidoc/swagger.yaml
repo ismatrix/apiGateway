@@ -16,7 +16,7 @@ consumes:
 paths:
   /public/auth/wechat:
     get:
-      summary: Create a token for the user by Wechat QRcode scan
+      summary: Get a token by Wechat scan auth
       description: >
         The Wechat auth endpoint is called by qiyehao, following a QRcode scan
         using the user Wechat. The QRcode url contain the client socket.io ID,
@@ -46,13 +46,13 @@ paths:
           description: Invalid user
   /public/auth/password:
     post:
-      summary: Authenticate the users by password
+      summary: Get a token by password auth
       description: >
         Create a token for the user by userid + password.
       parameters:
         - name: body
           in: body
-          description: This is the user password update object
+          description: This is the viewer password update object
           required: true
           schema:
             $ref: '#/definitions/authPassword'
@@ -72,9 +72,9 @@ paths:
           description: User not found
   /users/me:
     get:
-      summary: Viewer infos
+      summary: Get viewer profile infos
       description: >
-        Let the logged in user get his own personal infos
+        Let the logged in user (the viewer) get his own personal infos (profile).
       tags:
         - Users
       responses:
@@ -117,9 +117,9 @@ paths:
         - jsonWebToken: []
   /errors:
     get:
-      summary: Set or update user password
+      summary: Error examples
       description: >
-        Example of all the errors the API can produce
+        Example of all the errors the API can produce.
       tags:
         - Errors
       responses:
