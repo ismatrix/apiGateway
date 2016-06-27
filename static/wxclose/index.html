@@ -28,7 +28,7 @@
 
 var readyFunc = function onBridgeReady() {
     // 关闭当前webview窗口 - closeWindow
-    setTimeout("WeixinJSBridge.invoke('closeWindow',{},function(){})",3000)
+    setTimeout("WeixinJSBridge.invoke('closeWindow',{},function(){})",1000)
 }
 
 if (typeof WeixinJSBridge === "undefined") {
