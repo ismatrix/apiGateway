@@ -38,7 +38,10 @@ paths:
         '200':
           description: A token
           schema:
-            $ref: '#/definitions/Token'
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Token'
         '401':
           description: Invalid user
   /public/auth/password:
@@ -59,7 +62,10 @@ paths:
         '200':
           description: A token
           schema:
-            $ref: '#/definitions/Token'
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Token'
         '401':
           description: Invalid password
         '404':
@@ -75,7 +81,10 @@ paths:
         '200':
           description: The user profile infos
           schema:
-            $ref: '#/definitions/Profile'
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Profile'
         '404':
           description: User not found
       security:

@@ -23,11 +23,11 @@ apiRouter
   ;
 
 apiRouter
-  .get('/users/:userid', async ctx => {
+  .get('/users/me', async ctx => {
     const userid = ctx.state.user.userid;
     ctx.body = await users.getViewerData(userid);
   })
-  .put('/users/:userid/password', async ctx => {
+  .put('/users/me/password', async ctx => {
     const password = ctx.request.body.password;
     const newPassword = ctx.request.body.newPassword;
     const userid = ctx.state.user.userid;
