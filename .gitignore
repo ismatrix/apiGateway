@@ -18,7 +18,8 @@ coverage
 node_modules
 
 # Compiled JS directory
-./lib
+/lib
+/build
 
 # Optional npm cache directory
 .npm
