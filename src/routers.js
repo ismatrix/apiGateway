@@ -11,10 +11,16 @@ apiRouter
   .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token';})
   .get('/public/wechat/app/register', async ctx => { ctx.body = await wechat.appRegister(ctx); })
   .get('/public/auth/wechat', async ctx => {
-    const code = ctx.query.code;
-    const state = ctx.query.state;
-    await auth.getTokenByWechatScan(code, state);
-    ctx.redirect('/api/public/wxclose');
+    try {
+      const code = ctx.query.code;
+      const state = ctx.query.state;
+      debug(`code ${code}, state ${state}`);
+      await auth.getTokenByWechatScan(code, state);
+      ctx.redirect('/api/public/wxlogin?success=true');
+    } catch (error) {
+      debug('/public/auth/wechat %o', error);
+      ctx.redirect('/api/public/wxlogin?success=false');
+    }
   })
   .post('/public/auth/password', async ctx => {
     const userid = ctx.request.body.userid.toLowerCase();

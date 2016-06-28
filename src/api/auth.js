@@ -30,16 +30,23 @@ export async function getTokenByWechatScan(code, state) {
 
     const qyUserObj = await qydev.getUser(code);
     debug('getTokenByWechatScan() user: %o', qyUserObj);
+
     if (qyUserObj.errcode !== 0) {
+      io.to(`/#${state}`).emit('token', { ok: true, error: 'Invalid user' });
       throw Boom.unauthorized('Invalid user');
     }
+
     qyUserObj.userid = qyUserObj.userid.toLowerCase();
     const departments = await qydev.getDepartmentById(qyUserObj.department);
     qyUserObj.department = departments.department;
     debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
+
     const dbUserObj = await upsertDbUser(qyUserObj);
 
-    if (!dbUserObj) throw Boom.badImplementation('Cannot add user to database');
+    if (!dbUserObj) {
+      io.to(`/#${state}`).emit('token', { ok: true, error: 'Cannot add user to database' });
+      throw Boom.badImplementation('Cannot add user to database');
+    }
 
     const token = await createUserToken(dbUserObj);
 

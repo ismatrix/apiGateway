@@ -1,0 +1,74 @@
+<html lang="zh-CN">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  <title>关闭当前网页窗口</title>
+ </head>
+ <style type="text/css">
+  body.page-boxed {
+    background-color: #fff
+  }
+  #content{
+    margin-top:88px;
+    text-align: center;
+    color: #70b838
+  }
+  #content img{
+    width: 32px
+  }
+</style>
+
+<body>
+<div id="parent">
+<div id="success" class="success">
+  <img src="/api/public/wxlogin/green.jpg" />
+  <h4>登录成功</h4>
+</div>
+
+<div id="failure" class="failure">
+   <img src="/api/public/wxlogin/red.jpg" />
+   <h4>登录失败</h4>
+</div>
+</div>
+
+<script>
+console.log(window.location.href);
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+var success = getParameterByName('success');
+console.log(success);
+
+var readyFunc = function onBridgeReady() {
+    // 关闭当前webview窗口 - closeWindow
+    setTimeout("WeixinJSBridge.invoke('closeWindow',{},function(){})",1000)
+};
+
+if (success === 'true') {
+  console.log('success');
+  var parent = document.getElementById("parent");
+  var child =  document.getElementById("failure");
+  parent.removeChild(child);
+  if (typeof WeixinJSBridge === "undefined") {
+    document.addEventListener('WeixinJSBridgeReady', readyFunc, false);
+  } else {
+    readyFunc();
+  }
+} else {
+  console.log('failure');
+  var parent = document.getElementById("parent");
+  var child =  document.getElementById("success");
+  parent.removeChild(child);
+};
+</script>
+
+</body>
+</html>
