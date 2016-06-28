@@ -73,12 +73,12 @@ export async function getViewerData(userid) {
     const projection = {
       _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1, password: 1,
     };
-    const data = await getDbUserByFilter({ userid }, projection);
+    const dbUser = await getDbUserByFilter({ userid }, projection);
 
-    if (!data) throw Boom.notFound('User not found');
+    if (!dbUser) throw Boom.notFound('User not found');
 
-    data.password = data.password ? 1 : 0;
-    return { data };
+    dbUser.password = dbUser.password ? 1 : 0;
+    return { data: dbUser };
   } catch (error) {
     debug(`getViewerData() ${error}`);
     throw error;

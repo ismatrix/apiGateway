@@ -41,13 +41,13 @@ apiRouter
   ;
 
 apiRouter
-  .get('/fund', async ctx => { ctx.body = await funds.getFunds();})
-  .get('/fund/:fundid', async ctx => { ctx.body = await funds.getFund(ctx.params.fundid);})
-  .get('/fund/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
-  .get('/fund/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport();})
-  .get('/fund/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity();})
-  .get('/fund/equity/:fundid', async ctx => { ctx.body = await funds.getEquity();})
-  .get('/fund/position/:fundid', async ctx => { ctx.body = await funds.getPosition();})
+  .get('/funds', async ctx => { ctx.body = await funds.getFunds();})
+  .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid);})
+  .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
+  .get('/funds/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport();})
+  .get('/funds/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity();})
+  .get('/funds/equity/:fundid', async ctx => { ctx.body = await funds.getEquity();})
+  .get('/funds/position/:fundid', async ctx => { ctx.body = await funds.getPosition();})
   ;
 
 apiRouter

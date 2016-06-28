@@ -19,7 +19,7 @@ export async function createUserToken(userObj) {
     debug(`createUserToken() jwtToken: ${jwtToken}`);
     return jwtToken;
   } catch (error) {
-    debug(`createUserToken() Error: ${error}`);
+    debug('createUserToken() Error: %o', error);
   }
 }
 
@@ -47,7 +47,7 @@ export async function getTokenByWechatScan(code, state) {
     io.to(`/#${state}`).emit('token', { data });
     return;
   } catch (error) {
-    debug(`getTokenByWechatScan() Error: ${error}`);
+    debug('getTokenByWechatScan() Error: %o', error);
     throw error;
   }
 }
@@ -70,7 +70,7 @@ export async function getTokenByPassword(userid, password) {
     }
     throw Boom.unauthorized('Invalid password');
   } catch (error) {
-    debug(`getTokenByPassword() Error: ${error}`);
+    debug('getTokenByPassword() Error: %o', error);
     throw error;
   }
 }

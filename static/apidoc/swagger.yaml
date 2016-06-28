@@ -115,6 +115,40 @@ paths:
           description: User not found
       security:
         - jsonWebToken: []
+  /funds:
+    get:
+      summary: Get all funds
+      description: >
+        Get all funds details.
+      tags:
+        - Funds
+      responses:
+        '200':
+          description: The funds data
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Funds'
+        '404':
+          description: Funds not found
+  /funds/:id:
+    get:
+      summary: Get a fund by id
+      description: >
+        Get aa fund details by his id.
+      tags:
+        - Funds
+      responses:
+        '200':
+          description: The fund data
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/definitions/Fund'
+        '404':
+          description: Fund not found
   /errors:
     get:
       summary: Error examples
@@ -190,6 +224,28 @@ definitions:
         type: number
       order:
         type: number
+  Funds:
+    type: array
+    items:
+      $ref: '#/definitions/Fund'
+  Fund:
+    type: object
+    properties:
+      fundid:
+        type: string
+        example: "3000380"
+      fundname:
+        type: string
+        example: "慧网进取G号"
+      investmentadviser:
+        type: string
+        example: "慧网基金"
+      funddate:
+        type: string
+        format: date-time
+      equityinitial:
+        type: number
+        example: 2000000
   Token:
     type: object
     properties:
@@ -204,6 +260,7 @@ definitions:
         type: string
       password:
         type: string
+        format: password
   authPassword:
     type: object
     required:
@@ -214,6 +271,7 @@ definitions:
         type: string
       password:
         type: string
+        format: password
   Error400:
     type: object
     properties:
