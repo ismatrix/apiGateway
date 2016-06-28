@@ -17,7 +17,7 @@ apiRouter
     ctx.redirect('/api/public/wxclose');
   })
   .post('/public/auth/password', async ctx => {
-    const userid = ctx.request.body.userid;
+    const userid = ctx.request.body.userid.toLowerCase();
     const password = ctx.request.body.password;
     ctx.body = await auth.getTokenByPassword(userid, password);
   })

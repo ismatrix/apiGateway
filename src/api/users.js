@@ -7,7 +7,7 @@ export async function upsertDbUser(userObj) {
   try {
     const smartwin = await mongodb.getdb();
     const users = smartwin.collection('USER');
-    const filter = { userid: userObj.userid };
+    const filter = { userid: userObj.userid.toLowerCase() };
     const update = { $set: userObj };
     const options = { upsert: true, returnOriginal: false };
     const result = await users.findOneAndUpdate(filter, update, options);

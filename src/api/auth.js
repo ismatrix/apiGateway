@@ -33,7 +33,7 @@ export async function getTokenByWechatScan(code, state) {
     if (qyUserObj.errcode !== 0) {
       throw Boom.unauthorized('Invalid user');
     }
-    qyUserObj.userid = qyUserObj.userid;
+    qyUserObj.userid = qyUserObj.userid.toLowerCase();
     const departments = await qydev.getDepartmentById(qyUserObj.department);
     qyUserObj.department = departments.department;
     debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
