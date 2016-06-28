@@ -7,31 +7,30 @@ export async function koaError(ctx, next) {
     if (error.isBoom) {
       debug('error %o', error.output);
       ctx.status = error.output.statusCode;
-      ctx.body = error.output.payload;
+      ctx.body = { ok: false, error: error.output.payload.message };
       return;
     } else if (error.status === 401 && error.message === `Invalid token\n`) {
+      debug('erros %s', error.message);
       ctx.status = 401;
       ctx.body = {
-        statusCode: ctx.status,
-        error: 'Unauthorized',
-        message: 'Invalid token',
+        ok: false,
+        error: error.message,
       };
       return;
     } else if (ctx.status === 404 && error.message === `No authentication token found\n`) {
+      debug('erros %s', error.message);
       ctx.status = 404;
       ctx.body = {
-        statusCode: ctx.status,
-        error: 'Not Found',
-        message: 'Missing token',
+        ok: false,
+        error: error.message,
       };
       return;
     }
+    debug('erros %s', error.message);
     ctx.status = 500;
     ctx.body = {
-      statusCode: ctx.status,
-      error: 'Internal Server Error',
-      message: error.message,
+      ok: false,
+      error: error.message,
     };
-    debug('erros %s', error.message);
   }
 }

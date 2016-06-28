@@ -42,9 +42,8 @@ export async function getTokenByWechatScan(code, state) {
     if (!dbUserObj) throw Boom.badImplementation('Cannot add user to database');
 
     const token = await createUserToken(dbUserObj);
-    const data = { token };
 
-    io.to(`/#${state}`).emit('token', { data });
+    io.to(`/#${state}`).emit('token', { ok: true, token });
     return;
   } catch (error) {
     debug('getTokenByWechatScan() Error: %o', error);
@@ -65,8 +64,7 @@ export async function getTokenByPassword(userid, password) {
     const dbHashedPassword = dbUserObj.password;
     if (await argon2.verify(dbHashedPassword, password)) {
       const token = await createUserToken(dbUserObj);
-      const data = { token };
-      return { data };
+      return { ok: true, token };
     }
     throw Boom.unauthorized('Invalid password');
   } catch (error) {

@@ -21,11 +21,11 @@ export async function getFunds() {
     const filter = {};
     const projection = { _id: 0, fundid: 1, fundname: 1, investmentadviser: 1,
     funddate: 1, equityinitial: 1 };
-    const dbFunds = await getDbFunds(filter, projection);
+    const funds = await getDbFunds(filter, projection);
 
-    if (! dbFunds.length > 0) throw Boom.notFound('Funds not found');
+    if (! funds.length > 0) throw Boom.notFound('Funds not found');
 
-    return { data: dbFunds };
+    return { ok: true, funds };
   } catch (error) {
     debug('getFunds() Error: %o', error);
     throw Boom.badImplementation('An internal server error occurred');
@@ -38,11 +38,11 @@ export async function getFundById(fundid) {
 
     const projection = { _id: 0, fundid: 1, fundname: 1, investmentadviser: 1,
     funddate: 1, equityinitial: 1 };
-    const dbFund = await getDbFunds({ fundid }, projection);
+    const fund = await getDbFunds({ fundid }, projection);
 
-    if (! dbFund.length > 0) throw Boom.notFound('Fund not found');
+    if (! fund.length > 0) throw Boom.notFound('Fund not found');
 
-    return { data: dbFund[0] };
+    return { ok: true, fund: fund[0] };
   } catch (error) {
     debug('getFund() Error: %o', error);
     throw error;

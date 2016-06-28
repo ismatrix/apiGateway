@@ -28,6 +28,7 @@
     "eslint-plugin-react": "^4.3.0"
   },
   "dependencies": {
+    "acl": "^0.4.9",
     "argon2": "^0.11.1",
     "boom": "^3.2.2",
     "debug": "^2.2.0",

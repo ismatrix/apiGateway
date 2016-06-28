@@ -20,7 +20,8 @@ paths:
       description: >
         The Wechat auth endpoint is called by qiyehao, following a QRcode scan
         using the user Wechat. The QRcode url contain the client socket.io ID,
-        so the server can push the jwt token to the client.
+        so the server can push the jwt token to the client, and then redirect the user browser
+        to https://api.invesmart.net/api/public/wxclose with a 302 redirect status.
       parameters:
         - name: code
           in: query
@@ -35,13 +36,12 @@ paths:
       tags:
         - Auth
       responses:
-        '200':
-          description: A token
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: '#/definitions/Token'
+        '302':
+          description: Success
+          headers:
+            Location:
+              description: https://api.invesmart.net/api/public/wxclose
+              type: string
         '401':
           description: Invalid user
   /public/auth/password:
@@ -64,8 +64,12 @@ paths:
           schema:
             type: object
             properties:
-              data:
-                $ref: '#/definitions/Token'
+              ok:
+                type: boolean
+                default: true
+              token:
+                type: string
+                example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
         '401':
           description: Invalid password
         '404':
@@ -83,7 +87,10 @@ paths:
           schema:
             type: object
             properties:
-              data:
+              ok:
+                type: boolean
+                default: true
+              profile:
                 $ref: '#/definitions/Profile'
         '404':
           description: User not found
@@ -107,8 +114,14 @@ paths:
       tags:
         - Users
       responses:
-        '204':
+        '200':
           description: Successful operation
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
         '401':
           description: Invalid password
         '404':
@@ -128,7 +141,10 @@ paths:
           schema:
             type: object
             properties:
-              data:
+              ok:
+                type: boolean
+                default: true
+              funds:
                 $ref: '#/definitions/Funds'
         '404':
           description: Funds not found
@@ -145,7 +161,10 @@ paths:
           schema:
             type: object
             properties:
-              data:
+              ok:
+                type: boolean
+                default: true
+              fund:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
@@ -210,7 +229,7 @@ definitions:
       avatar:
         type: string
         description: Avatar url from qiyehao
-      password:
+      hasPassword:
         type: boolean
         description: 'If user has a password, value is true, otherwise false'
   Department:
@@ -246,11 +265,6 @@ definitions:
       equityinitial:
         type: number
         example: 2000000
-  Token:
-    type: object
-    properties:
-      token:
-        type: string
   putPassword:
     type: object
     required:
@@ -275,84 +289,63 @@ definitions:
   Error400:
     type: object
     properties:
-      code:
-        type: number
-        example: 400
+      ok:
+        type: boolean
+        default: false
       error:
-        type: string
-        example: Bad request
-      message:
         type: string
         example: Invalid query
   Error401:
     type: object
     properties:
-      code:
-        type: number
-        example: 401
+      ok:
+        type: boolean
+        default: false
       error:
-        type: string
-        example: Unauthorized
-      message:
         type: string
         example: Invalid password
   Error403:
     type: object
     properties:
-      code:
-        type: number
-        example: 403
+      ok:
+        type: boolean
+        default: false
       error:
-        type: string
-        example: Forbidden
-      message:
         type: string
         example: Access forbidden
   Error404:
     type: object
     properties:
-      code:
-        type: number
-        example: 404
+      ok:
+        type: boolean
+        default: false
       error:
-        type: string
-        example: Not Found
-      message:
         type: string
         example: Missing something
   Error405:
     type: object
     properties:
-      code:
-        type: number
-        example: 405
+      ok:
+        type: boolean
+        default: false
       error:
         type: string
         example: Method not allowed
-      message:
-        type: string
-        example: That method is not allowed
   Error500:
     type: object
     properties:
-      code:
-        type: number
-        example: 500
+      ok:
+        type: boolean
+        default: false
       error:
         type: string
         example: Internal Server Error
-      message:
-        type: string
-        example: An internal server error occurred
   Error501:
     type: object
     properties:
-      code:
-        type: number
-        example: 501
+      ok:
+        type: boolean
+        default: false
       error:
-        type: string
-        example: Not Implemented
-      message:
         type: string
         example: Method not implemented

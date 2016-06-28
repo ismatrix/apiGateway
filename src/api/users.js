@@ -46,7 +46,7 @@ export async function setDbUserPassword(userid, newPassword, password) {
       const userObj = { userid, password: hashedPassword };
       debug('setDbUserPassword() userObj: %o', userObj);
       await upsertDbUser(userObj);
-      return;
+      return { ok: true };
     } else if (newPassword && password && dbUser.password) {
       const dbHashedPassword = dbUser.password;
       if (await argon2.verify(dbHashedPassword, password)) {
@@ -55,7 +55,7 @@ export async function setDbUserPassword(userid, newPassword, password) {
         const hashedPassword = await argon2.hash(newPassword, salt);
         const userObj = { userid, password: hashedPassword };
         await upsertDbUser(userObj);
-        return;
+        return { ok: true };
       }
       throw Boom.unauthorized('Invalid password');
     }
@@ -66,19 +66,19 @@ export async function setDbUserPassword(userid, newPassword, password) {
   }
 }
 
-export async function getViewerData(userid) {
+export async function getMeProfile(userid) {
   try {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
 
     const projection = {
       _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1, password: 1,
     };
-    const dbUser = await getDbUserByFilter({ userid }, projection);
+    const profile = await getDbUserByFilter({ userid }, projection);
 
-    if (!dbUser) throw Boom.notFound('User not found');
+    if (!profile) throw Boom.notFound('User not found');
 
-    dbUser.password = dbUser.password ? 1 : 0;
-    return { data: dbUser };
+    profile.hasPassword = !!profile.password;
+    return { ok: true, profile };
   } catch (error) {
     debug(`getViewerData() ${error}`);
     throw error;

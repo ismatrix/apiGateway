@@ -26,7 +26,7 @@ apiRouter
 apiRouter
   .get('/users/me', async ctx => {
     const userid = ctx.state.user.userid;
-    ctx.body = await users.getViewerData(userid);
+    ctx.body = await users.getMeProfile(userid);
   })
   .put('/users/me/password', async ctx => {
     const password = ctx.request.body.password;
