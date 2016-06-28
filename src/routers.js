@@ -14,7 +14,6 @@ apiRouter
     try {
       const code = ctx.query.code;
       const state = ctx.query.state;
-      debug(`code ${code}, state ${state}`);
       await auth.getTokenByWechatScan(code, state);
       ctx.redirect('/api/public/wxlogin?success=true');
     } catch (error) {

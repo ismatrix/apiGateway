@@ -47,6 +47,7 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+var success = getParameterByName('success');
 
 var readyFunc = function onBridgeReady() {
     // 关闭当前webview窗口 - closeWindow
