@@ -8,4 +8,4 @@ export const wechatConfig = {
   authorizeCallbackURL: 'https://invesmart.win/api/wechat/auth',
 };
 
-export const mongoUrl = 'mongodb://localhost:27017/smartwin';
+export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
