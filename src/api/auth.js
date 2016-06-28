@@ -25,14 +25,16 @@ export async function createUserToken(userObj) {
 
 export async function getTokenByWechatScan(code, state) {
   try {
-    if (!code) throw Boom.badRequest('Missing code query string');
-    if (!state) throw Boom.badRequest('Missing state query string');
+    if (!code || !state) {
+      io.to(`/#${state}`).emit('token', { ok: false, error: 'Missing parameter' });
+      throw Boom.badRequest('Missing parameter');
+    }
 
     const qyUserObj = await qydev.getUser(code);
     debug('getTokenByWechatScan() user: %o', qyUserObj);
 
     if (qyUserObj.errcode !== 0) {
-      io.to(`/#${state}`).emit('token', { ok: true, error: 'Invalid user' });
+      io.to(`/#${state}`).emit('token', { ok: false, error: 'Invalid user' });
       throw Boom.unauthorized('Invalid user');
     }
 
@@ -44,7 +46,7 @@ export async function getTokenByWechatScan(code, state) {
     const dbUserObj = await upsertDbUser(qyUserObj);
 
     if (!dbUserObj) {
-      io.to(`/#${state}`).emit('token', { ok: true, error: 'Cannot add user to database' });
+      io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot add user to database' });
       throw Boom.badImplementation('Cannot add user to database');
     }
 
