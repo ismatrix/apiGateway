@@ -11,9 +11,11 @@ const qydev = makeQydev(wechatConfig);
 
 export async function createUserToken(userObj) {
   try {
+    const dpt = userObj.department.map((obj) => obj.name);
     const jwtTokenData = {
       _id: userObj._id,
       userid: userObj.userid,
+      dpt,
     };
     const jwtToken = jwt.sign(jwtTokenData, jwtSecret);
     debug(`createUserToken() jwtToken: ${jwtToken}`);
