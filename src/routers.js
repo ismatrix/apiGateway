@@ -5,6 +5,7 @@ import * as instruments from './api/instruments';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
+import { canKoa } from './acl';
 const apiRouter = require('koa-router')({ prefix: '/api' });
 
 apiRouter
@@ -29,6 +30,8 @@ apiRouter
   ;
 
 apiRouter
+  .get('/users', canKoa('read', 'users'),
+    async ctx => { ctx.body = await users.getUsers();})
   .get('/users/me', async ctx => {
     const userid = ctx.state.user.userid;
     ctx.body = await users.getMeProfile(userid);
@@ -46,7 +49,7 @@ apiRouter
   ;
 
 apiRouter
-  .get('/funds', async ctx => { ctx.body = await funds.getFunds();})
+  .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
   .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid);})
   .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
   .get('/funds/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport();})

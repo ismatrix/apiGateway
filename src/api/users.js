@@ -73,12 +73,30 @@ export async function getMeProfile(userid) {
     const projection = {
       _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1, password: 1,
     };
-    const profile = await getDbUserByFilter({ userid }, projection);
+    const profile = await mongodb.findOne('USER', { userid }, projection);
 
     if (!profile) throw Boom.notFound('User not found');
 
     profile.hasPassword = !!profile.password;
+    delete profile.password;
+
     return { ok: true, profile };
+  } catch (error) {
+    debug(`getViewerData() ${error}`);
+    throw error;
+  }
+}
+
+export async function getUsers() {
+  try {
+    const projection = {
+      _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1,
+    };
+    const users = await mongodb.find('USER', {}, projection);
+
+    if (!users) throw Boom.notFound('Users not found');
+
+    return { ok: true, users };
   } catch (error) {
     debug(`getViewerData() ${error}`);
     throw error;
