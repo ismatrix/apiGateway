@@ -2,26 +2,19 @@ const debug = require('debug')('api:funds');
 import Boom from 'boom';
 import * as mongodb from '../mongodb';
 
-export async function getDbFunds(filter, proj) {
-  try {
-    const smartwin = await mongodb.getdb();
-    const users = smartwin.collection('FUND');
-    const projection = proj || {};
-    const result = await users.find(filter, projection).toArray();
-    debug('getDbFunds() find result: %o', result);
-    return result;
-  } catch (error) {
-    debug('getDbFunds() Error: %o', error);
-    throw Boom.badImplementation('An internal server error occurred');
-  }
-}
+let FUNDS;
+
+(async function getDb() {
+  const smartwin = await mongodb.getdb();
+  FUNDS = smartwin.collection('FUND');
+}());
 
 export async function getFunds() {
   try {
     const filter = {};
     const projection = { _id: 0, fundid: 1, fundname: 1, investmentadviser: 1,
     funddate: 1, equityinitial: 1 };
-    const funds = await getDbFunds(filter, projection);
+    const funds = await FUNDS.find(filter, projection).toArray();
 
     if (! funds.length > 0) throw Boom.notFound('Funds not found');
 
@@ -38,11 +31,11 @@ export async function getFundById(fundid) {
 
     const projection = { _id: 0, fundid: 1, fundname: 1, investmentadviser: 1,
     funddate: 1, equityinitial: 1 };
-    const fund = await getDbFunds({ fundid }, projection);
+    const fund = await FUNDS.findOne({ fundid }, projection);
 
-    if (! fund.length > 0) throw Boom.notFound('Fund not found');
+    if (!fund) throw Boom.notFound('Fund not found');
 
-    return { ok: true, fund: fund[0] };
+    return { ok: true, fund };
   } catch (error) {
     debug('getFund() Error: %o', error);
     throw error;

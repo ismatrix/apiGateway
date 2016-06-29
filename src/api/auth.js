@@ -1,11 +1,18 @@
 const debug = require('debug')('api:auth');
 import Boom from 'boom';
 import jwt from 'jsonwebtoken';
-import { getDbUserByFilter, upsertDbUser } from './users';
+import * as mongodb from '../mongodb';
 import { jwtSecret, wechatConfig } from '../config';
 import makeQydev from '../sw-wechat-qydev';
 import argon2 from 'argon2';
 import { io } from '../app.js';
+
+let USERS;
+
+(async function getDb() {
+  const smartwin = await mongodb.getdb();
+  USERS = smartwin.collection('USER');
+}());
 
 const qydev = makeQydev(wechatConfig);
 
@@ -40,12 +47,15 @@ export async function getTokenByWechatScan(code, state) {
       throw Boom.unauthorized('Invalid user');
     }
 
-    qyUserObj.userid = qyUserObj.userid.toLowerCase();
     const departments = await qydev.getDepartmentById(qyUserObj.department);
     qyUserObj.department = departments.department;
     debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
 
-    const dbUserObj = await upsertDbUser(qyUserObj);
+    const userid = qyUserObj.userid.toLowerCase();
+    qyUserObj.userid = userid;
+    const update = { $set: qyUserObj };
+    const options = { upsert: true, returnOriginal: false };
+    const dbUserObj = await USERS.findOneAndUpdate(userid, update, options);
 
     if (!dbUserObj) {
       io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot add user to database' });
@@ -67,7 +77,7 @@ export async function getTokenByPassword(userid, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!password) throw Boom.badRequest('Missing password parameter');
 
-    const dbUserObj = await getDbUserByFilter({ userid });
+    const dbUserObj = await USERS.findOne({ userid });
 
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');

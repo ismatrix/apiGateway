@@ -40,7 +40,7 @@ apiRouter
     const password = ctx.request.body.password;
     const newPassword = ctx.request.body.newPassword;
     const userid = ctx.state.user.userid;
-    ctx.body = await users.setDbUserPassword(userid, newPassword, password);
+    ctx.body = await users.setUserPassword(userid, newPassword, password);
   })
   ;
 

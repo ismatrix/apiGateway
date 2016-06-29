@@ -17,6 +17,7 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 
 debug('API Gateway starting...');
+mongodb.connect(mongoUrl);
 
 const app = new Koa();
 const server = http.createServer(app.callback());
@@ -28,8 +29,6 @@ io.on('connection', (socket) => {
     debug('Socket disconnected, unique ID: %o', socket.id);
   });
 });
-
-mongodb.connect(mongoUrl);
 
 // Koa app REST API middleware
 app.use(logger());

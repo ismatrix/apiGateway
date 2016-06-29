@@ -35,31 +35,3 @@ export function getdb() {
     });
   });
 }
-
-export async function findOne(collection, filter, proj) {
-  try {
-    const smartwin = await getdb();
-    const col = smartwin.collection(collection);
-    const projection = proj || {};
-    const result = await col.findOne(filter, projection);
-    debug('findOne() result: %o', result);
-    return result;
-  } catch (error) {
-    debug(`findOne() Error: ${error}`);
-  }
-}
-
-export async function find(collection, filter, proj, sort, limit) {
-  try {
-    const smartwin = await getdb();
-    const col = smartwin.collection(collection);
-    const projection = proj || {};
-    const order = sort || {};
-    const lim = limit || 0;
-    const result = await col.find(filter, projection).sort(order).limit(lim).toArray();
-    debug('findOne() result: %o', result);
-    return result;
-  } catch (error) {
-    debug(`findOne() Error: ${error}`);
-  }
-}
