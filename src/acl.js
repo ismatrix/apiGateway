@@ -63,7 +63,11 @@ function canKoa(permissions, resource) {
     const roles = dpt ? dpt.concat(userid) : [].concat(userid);
     debug(roles);
     const hasRight = await can(roles, permissions, resource);
-    if (!hasRight) throw Boom.forbidden('Access forbidden');
+    if (!hasRight) {
+      const message = `Access forbidden. ${userid} is member of '${roles}'.\
+ Not enough to '${permissions}' the '${resource}'.`;
+      throw Boom.forbidden(message);
+    }
     return next();
   };
 }

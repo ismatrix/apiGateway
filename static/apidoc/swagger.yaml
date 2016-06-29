@@ -13,6 +13,8 @@ produces:
   - application/json
 consumes:
   - application/json
+security:
+  - jsonWebToken: []
 paths:
   /public/auth/wechat:
     get:
@@ -44,6 +46,7 @@ paths:
               type: string
         '401':
           description: Invalid user
+      security: []
   /public/auth/password:
     post:
       summary: Get a token by password auth
@@ -74,6 +77,27 @@ paths:
           description: Invalid password
         '404':
           description: User not found
+      security: []
+  /users:
+    get:
+      summary: Get all users profiles
+      description: >
+        Get all users profiles informations.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: The users profile infos
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+              users:
+                $ref: '#/definitions/Users'
+        '404':
+          description: Users not found
   /users/me:
     get:
       summary: Get viewer profile infos
@@ -94,8 +118,6 @@ paths:
                 $ref: '#/definitions/Profile'
         '404':
           description: User not found
-      security:
-        - jsonWebToken: []
   /users/me/password:
     put:
       summary: Set or update user password
@@ -126,8 +148,6 @@ paths:
           description: Invalid password
         '404':
           description: User not found
-      security:
-        - jsonWebToken: []
   /funds:
     get:
       summary: Get all funds
@@ -210,15 +230,21 @@ securityDefinitions:
     name: Authorization
     in: header
 definitions:
+  Users:
+    type: array
+    items:
+      $ref: '#/definitions/Profile'
   Profile:
     type: object
     properties:
       userid:
         type: string
         description: User userid from qiyehao
+        example: victor
       name:
         type: string
         description: Name from qiyehao
+        example: 鹏威
       department:
         type: array
         items:
@@ -226,23 +252,30 @@ definitions:
       email:
         type: string
         description: Email from qiyehao
+        example: victor.bonhomme@invesmart.cn
       avatar:
         type: string
         description: Avatar url from qiyehao
+        example: http://shp.qpic.cn/bizmp/FUia0rytBsibJzaO5yxCyicbYWD2LvlGibDnH9o8UEXpQsqMaKUPmtNGtw
       hasPassword:
         type: boolean
         description: 'If user has a password, value is true, otherwise false'
+        example: true
   Department:
     type: object
     properties:
       id:
         type: number
+        example: 2
       name:
         type: string
+        example: 系统部
       parentid:
         type: number
+        example: 1
       order:
         type: number
+        example: 200
   Funds:
     type: array
     items:
