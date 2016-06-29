@@ -1,4 +1,5 @@
 const debug = require('debug')('app');
+import Boom from 'boom';
 import http from 'http';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
@@ -30,14 +31,19 @@ io.on('connection', (socket) => {
 
 mongodb.connect(mongoUrl);
 
-// Koa app middleware
+// Koa app REST API middleware
 app.use(logger());
 app.use(cors());
 app.use(koaError);
 app.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
 app.use(bodyParser());
 app.use(jsonResObj());
-app.use(apiRouter.routes(), apiRouter.allowedMethods());
+app.use(apiRouter.routes());
+app.use(apiRouter.allowedMethods({
+  throw: true,
+  notImplemented: () => Boom.notImplemented('Method not implemented'),
+  methodNotAllowed: () => Boom.methodNotAllowed('Method not allowed'),
+}));
 
 // Static files middleware
 const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
