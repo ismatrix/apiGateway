@@ -67,6 +67,7 @@ export async function getTokenByWechatScan(code, state) {
       const decoded = jwt.decode(token);
       if (decoded.userid === userid) {
         io.to(`/#${state}`).emit('token', { ok: true, token });
+        return;
       }
     }
 
