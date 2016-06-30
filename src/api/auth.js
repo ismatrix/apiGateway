@@ -55,7 +55,7 @@ export async function getTokenByWechatScan(code, state) {
     qyUserObj.userid = userid;
     const update = { $set: qyUserObj };
     const options = { upsert: true, returnOriginal: false };
-    const dbUserObj = await USERS.findOneAndUpdate(userid, update, options);
+    const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
 
     if (!dbUserObj) {
       io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot add user to database' });
