@@ -54,7 +54,8 @@ export async function getTokenByWechatScan(code, state) {
     const userid = qyUserObj.userid.toLowerCase();
     qyUserObj.userid = userid;
     const update = { $set: qyUserObj };
-    const options = { upsert: true, returnOriginal: false };
+    const projection = { departments: 1, userid: 1 };
+    const options = { upsert: true, returnOriginal: false, projection };
     const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
 
     if (!dbUserObj) {
@@ -63,6 +64,10 @@ export async function getTokenByWechatScan(code, state) {
     }
 
     const token = await createUserToken(dbUserObj);
+    if (!token) {
+      io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot create token' });
+      throw Boom.badImplementation('Cannot create token');
+    }
 
     io.to(`/#${state}`).emit('token', { ok: true, token });
     return;
