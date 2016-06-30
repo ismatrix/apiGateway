@@ -62,6 +62,9 @@ apiRouter
   .get('/marketdata/candlestick/:insid', async ctx => {
     ctx.body = await marketData.getCandleStick();
   })
+  .get('/marketdata/candlestick/:insid', async ctx => {
+    ctx.body = await marketData.getCandleStick();
+  })
   .get('/marketdata/avg/:insid/:days/:col', async ctx => { ctx.body = await marketData.getAvg();})
   .get('/marketdata/ma', async ctx => { ctx.body = await marketData.getAllMA();})
   ;

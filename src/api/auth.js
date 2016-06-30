@@ -54,8 +54,7 @@ export async function getTokenByWechatScan(code, state) {
     const userid = qyUserObj.userid.toLowerCase();
     qyUserObj.userid = userid;
     const update = { $set: qyUserObj };
-    const projection = { departments: 1, userid: 1 };
-    const options = { upsert: true, returnOriginal: false, projection };
+    const options = { upsert: true, returnOriginal: false };
     const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
 
     if (!dbUserObj) {
@@ -63,14 +62,16 @@ export async function getTokenByWechatScan(code, state) {
       throw Boom.badImplementation('Cannot add user to database');
     }
 
-    const token = await createUserToken(dbUserObj);
-    if (!token) {
-      io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot create token' });
-      throw Boom.badImplementation('Cannot create token');
+    const token = await createUserToken(dbUserObj.value);
+    if (token) {
+      const decoded = jwt.decode(token);
+      if (decoded.userid === userid) {
+        io.to(`/#${state}`).emit('token', { ok: true, token });
+      }
     }
 
-    io.to(`/#${state}`).emit('token', { ok: true, token });
-    return;
+    io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot create token' });
+    throw Boom.badImplementation('Cannot create token');
   } catch (error) {
     debug('getTokenByWechatScan() Error: %o', error);
     throw error;
