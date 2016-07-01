@@ -26,7 +26,7 @@ export function getdb() {
   }
   return new Promise((resolve, reject) => {
     event.on('connect', () => {
-      debug('new connection with instance: %o', connectionInstance);
+      debug('connected on promise resolution to existing connectionInstance');
       resolve(connectionInstance);
     });
     event.on('error', () => {
