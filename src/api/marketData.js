@@ -23,7 +23,8 @@ export async function getIndicesTrend(sym, start, end) {
       { name: 'bull bear trend' },
     ] };
     const projection = { _id: 0, name: 0 };
-    return await INDICATORS.find(query, projection).stream();
+    const indicators = await INDICATORS.find(query, projection).toArray();
+    return { ok: true, indicators };
   } catch (error) {
     debug('getCandleStick() Error: %o', error);
     throw error;
