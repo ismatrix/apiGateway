@@ -188,6 +188,38 @@ paths:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
+  /md/indicators/indices/trend:
+    post:
+      summary: Get trend indicators for indices
+      description: >
+        Create an indicator per day for bull (+1), bear (-1), and stagnant (0) markets
+      parameters:
+        - name: body
+          in: body
+          description: This is the viewer password update object
+          required: true
+          schema:
+            $ref: '#/definitions/reqIndicator'
+      tags:
+        - Market data
+      responses:
+        '200':
+          description: Indicators for each symbol
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+              indicators:
+                type: array
+                items:
+                  $ref: '#/definitions/resIndicator'
+        '401':
+          description: Invalid password
+        '404':
+          description: User not found
+      security: []
   /errors:
     get:
       summary: Error examples
@@ -319,6 +351,44 @@ definitions:
       password:
         type: string
         format: password
+  reqIndicator:
+    type: object
+    required:
+      - startDate
+      - endDate
+      - Symbols
+    properties:
+      startDate:
+        type: string
+        example: "20150401"
+      endDate:
+        type: string
+        example: "20160401"
+      symbols:
+        type: array
+        example: ["all"]
+        items:
+          type: string
+  resIndicator:
+    type: object
+    required:
+      - symbol
+      - dates
+      - values
+    properties:
+      symbol:
+        type: string
+        example: "agIDX"
+      dates:
+        type: array
+        example: ["20150401", "20150402", "20150403", "20150404", "20150405"]
+        items:
+          type: string
+      values:
+        type: array
+        example: [1, 1, 0, 0,-1, -1]
+        items:
+          type: number
   Error400:
     type: object
     properties:

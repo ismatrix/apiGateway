@@ -59,14 +59,17 @@ apiRouter
   ;
 
 apiRouter
-  .get('/marketdata/candlestick/:insid', async ctx => {
+  .post('/md/indicators/indices/trend', async ctx => {
+    const startDate = ctx.request.body.startDate;
+    const endDate = ctx.request.body.endDate;
+    const symbols = ctx.request.body.symbols;
+    ctx.body = await marketData.getIndicesTrend(symbols, startDate, endDate);
+  })
+  .get('/md/candlestick/:insid', async ctx => {
     ctx.body = await marketData.getCandleStick();
   })
-  .get('/marketdata/candlestick/:insid', async ctx => {
-    ctx.body = await marketData.getCandleStick();
-  })
-  .get('/marketdata/avg/:insid/:days/:col', async ctx => { ctx.body = await marketData.getAvg();})
-  .get('/marketdata/ma', async ctx => { ctx.body = await marketData.getAllMA();})
+  .get('/md/avg/:insid/:days/:col', async ctx => { ctx.body = await marketData.getAvg();})
+  .get('/md/ma', async ctx => { ctx.body = await marketData.getAllMA();})
   ;
 
 export { apiRouter };
