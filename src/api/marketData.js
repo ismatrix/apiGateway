@@ -44,12 +44,12 @@ export async function getIndicesTrend(sym, startDate, endDate) {
     const upperIndex = sortedLastIndex(timeline, endDate);
 
     timeline = timeline.slice(lowerIndex, upperIndex);
+    timeline.reverse();
     for (const indicator of indicators) {
       indicator.values = indicator.values.slice(lowerIndex, upperIndex);
+      indicator.values.reverse();
     }
-    debug('lowerIndex %o, upperIndex %o', lowerIndex, upperIndex);
-    debug(sortedIndex([0, 1, 2, 3, 4, 5, 6], 0));
-    debug(sortedIndex([0, 1, 2, 3, 4, 5, 6], 1));
+
     return { ok: true, timeline, indicators };
   } catch (error) {
     debug('getCandleStick() Error: %o', error);
