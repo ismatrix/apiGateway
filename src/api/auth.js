@@ -53,7 +53,7 @@ export async function getTokenByWechatScan(code, state) {
 
     const userid = qyUserObj.userid.toLowerCase();
     qyUserObj.userid = userid;
-    qyUserObj.avatar = qyUserObj.avatar.replace('http://', 'https://').concat('64');
+    qyUserObj.avatar = qyUserObj.avatar.replace('http://', 'https://');
     const update = { $set: qyUserObj };
     const options = { upsert: true, returnOriginal: false };
     const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
