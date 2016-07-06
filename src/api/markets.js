@@ -2,17 +2,21 @@ const debug = require('debug')('api:marketData');
 import Boom from 'boom';
 import * as mongodb from '../mongodb';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
+import * as icePast from '../sw-datafeed-icepast';
+import through from 'through2';
 
 let INDICATORS;
+let INSTRUMENT;
 
 (async function getDb() {
   const smartwin = await mongodb.getdb();
   INDICATORS = smartwin.collection('INDICATORS');
+  INSTRUMENT = smartwin.collection('INSTRUMENT');
 }());
 
 export async function getIndicesTrend(sym, startDate, endDate) {
   try {
-    if (!sym || !startDate || !endDate) Boom.badRequest('Missing a parameter');
+    if (!sym || !startDate || !endDate) throw Boom.badRequest('Missing parameter');
     let symbols = sym;
     if (sym.includes('all')) {
       symbols = await INDICATORS.distinct('symbol', { name: 'bull bear trend' });
@@ -57,20 +61,39 @@ export async function getIndicesTrend(sym, startDate, endDate) {
   }
 }
 
-export async function getAvg() {
+export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
   try {
-    Boom.notImplemented('method not implemented');
+    if (!symbol || !resolution || !startDate || !endDate) {
+      throw Boom.badRequest('Missing parameter');
+    }
+    if (!['minute', 'day'].includes(resolution)) throw Boom.badRequest('Wrong resolution value');
+
+    const quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
+    return quotes.pipe(through.obj((chunk, enc, callback) => {
+      const candlestick = {
+        open: chunk.open,
+        high: chunk.high,
+        low: chunk.low,
+        close: chunk.close,
+      };
+      callback(null, candlestick);
+    }));
   } catch (error) {
-    debug('getAvg() Error: %o', error);
+    debug('getFuturesQuotes() Error: %o', error);
     throw error;
   }
 }
 
-export async function getAllMA() {
+export async function getFuturesContracts() {
   try {
-    Boom.notImplemented('method not implemented');
+    const query = {};
+    const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
+      exchangeinstid: 1,
+    };
+    const contracts = await INSTRUMENT.find(query, projection).toArray();
+    return { ok: true, contracts };
   } catch (error) {
-    debug('getAllMA() Error: %o', error);
+    debug('getAvg() Error: %o', error);
     throw error;
   }
 }

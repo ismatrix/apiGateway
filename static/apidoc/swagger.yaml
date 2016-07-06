@@ -188,6 +188,53 @@ paths:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
+  /md/futures/contracts:
+    get:
+      summary: Get all futures contracts
+      description: >
+        Get all futures contracts details.
+      tags:
+        - Market
+      responses:
+        '200':
+          description: The futures contracts data
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+              contracts:
+                type: array
+                items:
+                  $ref: '#/definitions/FuturesContract'
+  /md/futures/quotes:
+    post:
+      summary: Get quotes for a futures contract
+      description: >
+        Provide OHLC candlestick datas for futures contracts, and for a fiven period
+      parameters:
+        - name: body
+          in: body
+          description: This is the contract quotes options
+          required: true
+          schema:
+            $ref: '#/definitions/reqQuotes'
+      tags:
+        - Market
+      responses:
+        '200':
+          description: Quotes for a contract
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+              quotes:
+                type: array
+                items:
+                  $ref: '#/definitions/resQuotes'
   /md/indicators/indices/trend:
     post:
       summary: Get trend indicators for indices
@@ -196,12 +243,12 @@ paths:
       parameters:
         - name: body
           in: body
-          description: This is the viewer password update object
+          description: This is the indicator options
           required: true
           schema:
             $ref: '#/definitions/reqIndicator'
       tags:
-        - Market data
+        - Market
       responses:
         '200':
           description: Indicators for each symbol
@@ -351,12 +398,64 @@ definitions:
       password:
         type: string
         format: password
+  reqQuotes:
+    type: object
+    required:
+      - symbols
+      - resolution
+      - startDate
+      - endDate
+    properties:
+      symbol:
+        type: string
+        example: "IF1606"
+      resolution:
+        type: string
+        example: "minute"
+      startDate:
+        type: string
+        example: "20150401"
+      endDate:
+        type: string
+        example: "20160401"
+  FuturesContract:
+    type: object
+    properties:
+      instrumentid:
+        type: string
+        example: "fu1604"
+      exchangeid:
+        type: string
+        example: "SHFE"
+      instrumentname:
+        type: string
+        example: "燃料油1604"
+  resQuotes:
+    type: object
+    required:
+      - open
+      - high
+      - low
+      - close
+    properties:
+      open:
+        type: number
+        example: 1560
+      high:
+        type: number
+        example: 1575
+      low:
+        type: number
+        example: 1554
+      close:
+        type: number
+        example: 1556
   reqIndicator:
     type: object
     required:
       - startDate
       - endDate
-      - Symbols
+      - symbols
     properties:
       startDate:
         type: string

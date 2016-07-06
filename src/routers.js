@@ -1,7 +1,6 @@
 const debug = require('debug')('routers');
 import * as funds from './api/funds';
-import * as marketData from './api/marketData';
-import * as instruments from './api/instruments';
+import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
@@ -45,10 +44,6 @@ apiRouter
   ;
 
 apiRouter
-  .get('/instruments/:mainid', instruments.getMain)
-  ;
-
-apiRouter
   .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
   .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid);})
   .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
@@ -59,17 +54,22 @@ apiRouter
   ;
 
 apiRouter
+  .get('/markets/futures/contracts', async ctx => {
+    ctx.body = await markets.getFuturesContracts();
+  })
+  .post('/markets/futures/quotes', async ctx => {
+    const symbol = ctx.request.body.symbol;
+    const resolution = ctx.request.body.resolution;
+    const startDate = ctx.request.body.startDate;
+    const endDate = ctx.request.body.endDate;
+    ctx.body = await markets.getFuturesQuotes(symbol, resolution, startDate, endDate);
+  })
   .post('/md/indicators/indices/trend', async ctx => {
     const startDate = ctx.request.body.startDate;
     const endDate = ctx.request.body.endDate;
     const symbols = ctx.request.body.symbols;
-    ctx.body = await marketData.getIndicesTrend(symbols, startDate, endDate);
+    ctx.body = await markets.getIndicesTrend(symbols, startDate, endDate);
   })
-  .get('/md/candlestick/:insid', async ctx => {
-    ctx.body = await marketData.getCandleStick();
-  })
-  .get('/md/avg/:insid/:days/:col', async ctx => { ctx.body = await marketData.getAvg();})
-  .get('/md/ma', async ctx => { ctx.body = await marketData.getAllMA();})
   ;
 
 export { apiRouter };
