@@ -92,7 +92,6 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         high: chunk.high,
         low: chunk.low,
         close: chunk.close,
-        tradingDay: chunk.tradingDay,
       };
       callback(null, candlestick);
     }))
