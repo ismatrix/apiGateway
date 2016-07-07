@@ -64,7 +64,7 @@ apiRouter
     const endDate = ctx.request.body.endDate;
     ctx.body = await markets.getFuturesQuotes(symbol, resolution, startDate, endDate);
   })
-  .post('/md/indicators/indices/trend', async ctx => {
+  .post('/markets/futures/indicators/bullbeartrend', async ctx => {
     const startDate = ctx.request.body.startDate;
     const endDate = ctx.request.body.endDate;
     const symbols = ctx.request.body.symbols;

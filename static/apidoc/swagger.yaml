@@ -235,9 +235,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/resQuotes'
-  /markets/indicators/indices/trend:
+  /markets/futures/indicators/bullbeartrend:
     post:
-      summary: Get trend indicators for indices
+      summary: Get trend indicators for futures indices
       description: >
         Create an indicator per day for bull (+1), bear (-1), and stagnant (0) markets
       parameters:
@@ -258,6 +258,11 @@ paths:
               ok:
                 type: boolean
                 default: true
+              timeline:
+                type: array
+                example: ["20160704", "20160630", "20160629"]
+                items:
+                  type: string
               indicators:
                 type: array
                 items:
@@ -478,11 +483,6 @@ definitions:
       symbol:
         type: string
         example: "agIDX"
-      dates:
-        type: array
-        example: ["20150401", "20150402", "20150403", "20150404", "20150405"]
-        items:
-          type: string
       values:
         type: array
         example: [1, 1, 0, 0,-1, -1]
