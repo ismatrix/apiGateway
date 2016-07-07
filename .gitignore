@@ -28,4 +28,4 @@ node_modules
 .node_repl_history
 
 # ignore this test file
-src/test.js
+myTest.js

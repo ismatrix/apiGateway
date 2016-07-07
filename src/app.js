@@ -3,7 +3,6 @@ import Boom from 'boom';
 import http from 'http';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
-import jsonResObj from 'koa-json';
 import jwt from 'koa-jwt';
 import logger from 'koa-logger';
 import compose from 'koa-compose';
@@ -36,7 +35,6 @@ app.use(cors());
 app.use(koaError);
 app.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
 app.use(bodyParser());
-app.use(jsonResObj());
 app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods({
   throw: true,

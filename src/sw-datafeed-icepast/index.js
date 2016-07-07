@@ -21,14 +21,20 @@ function toLowerFirst(obj) {
   );
 }
 
-const id = new Ice.InitializationData();
-id.properties = Ice.createProperties();
-const communicator = Ice.initialize(process.argv, id);
-
 const icePastReadable = {
   async init(symbol, resolution, startDate, endDate, options) {
+    const id = new Ice.InitializationData();
+    id.properties = Ice.createProperties();
+    const communicator = Ice.initialize(process.argv, id);
+    // Destroy communicator on SIGINT so application exit cleanly.
+    process.once('SIGINT', () => {
+      if (communicator) {
+        debug('destroy communicator');
+        communicator.destroy().finally(() => process.exit(0));
+      }
+    });
     Readable.call(this, options);
-    const CallbackReceiverI = Ice.Class(icePast.MdSessionCallBack, this);
+    const CallbackReceiverI = new Ice.Class(icePast.MdSessionCallBack, this);
     const proxy = communicator.stringToProxy(icerUrl);
     const server = await icePast.MdSessionPrx.checkedCast(proxy);
     const adapter = await communicator.createObjectAdapter('');
@@ -58,7 +64,7 @@ const icePastReadable = {
       { symbol, tradingDay, resolution: 'minute' }
     );
     data.timestamp = data.timestamp.toNumber();
-    debug('bar: %o', data);
+    // debug('bar: %o', data);
     this.push(data);
   },
   onDay(tradingDay, symbol, day) {
@@ -86,11 +92,3 @@ export async function subscribe(symbol, resolution, startDate, endDate) {
     debug('subscribe() Error: %o', error);
   }
 }
-
-// Destroy communicator on SIGINT so application exit cleanly.
-process.once('SIGINT', () => {
-  if (communicator) {
-    debug('destroy communicator');
-    communicator.destroy().finally(() => process.exit(0));
-  }
-});

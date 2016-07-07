@@ -68,6 +68,23 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
     }
     if (!['minute', 'day'].includes(resolution)) throw Boom.badRequest('Wrong resolution value');
 
+    const op = '{"ok":true,"quotes":[';
+    const sep = '\n,\n';
+    const cl = ']}';
+    let first = true;
+    const stringifyIce = through.obj(
+      (chunk, enc, callback) => {
+        const json = JSON.stringify(chunk, null, 0);
+        if (first) {
+          first = false;
+          callback(null, op.concat(json));
+        } else callback(null, sep.concat(json));
+      },
+      function flush(callback) {
+        this.push(cl);
+        callback();
+      }
+    );
     const quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
     return quotes.pipe(through.obj((chunk, enc, callback) => {
       const candlestick = {
@@ -75,9 +92,11 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         high: chunk.high,
         low: chunk.low,
         close: chunk.close,
+        tradingDay: chunk.tradingDay,
       };
       callback(null, candlestick);
-    }));
+    }))
+    .pipe(stringifyIce);
   } catch (error) {
     debug('getFuturesQuotes() Error: %o', error);
     throw error;

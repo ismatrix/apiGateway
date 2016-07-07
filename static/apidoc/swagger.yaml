@@ -260,7 +260,7 @@ paths:
                 default: true
               timeline:
                 type: array
-                example: ["20160704", "20160630", "20160629"]
+                example: ["20160704", "20160630", "20160629", "20160628", "20160627", "20160624"]
                 items:
                   type: string
               indicators:
