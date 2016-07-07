@@ -10,11 +10,12 @@ socket.on('connect', function() {
   socket.on('token', function(data) {
     console.log('login token, save in localstorage: %o', data);
   });
-  socket.emit('clientMessage', { token: 'Im the token' });
 });
 
 api.on('connect', function () {
+  socket.emit('authenticate', { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' });
   api.emit('hi', 'coucou api namespace');
   api.on('message1', (data) => console.log(data));
   api.on('message2', (data) => console.log(data));
+  api.on('authenticated', () => console.log('Im authenticated'));
 });
