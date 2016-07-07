@@ -188,13 +188,13 @@ paths:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
-  /md/futures/contracts:
+  /markets/futures/contracts:
     get:
       summary: Get all futures contracts
       description: >
         Get all futures contracts details.
       tags:
-        - Market
+        - Markets
       responses:
         '200':
           description: The futures contracts data
@@ -208,7 +208,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/FuturesContract'
-  /md/futures/quotes:
+  /markets/futures/quotes:
     post:
       summary: Get quotes for a futures contract
       description: >
@@ -221,7 +221,7 @@ paths:
           schema:
             $ref: '#/definitions/reqQuotes'
       tags:
-        - Market
+        - Markets
       responses:
         '200':
           description: Quotes for a contract
@@ -235,7 +235,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/resQuotes'
-  /md/indicators/indices/trend:
+  /markets/indicators/indices/trend:
     post:
       summary: Get trend indicators for indices
       description: >
@@ -248,7 +248,7 @@ paths:
           schema:
             $ref: '#/definitions/reqIndicator'
       tags:
-        - Market
+        - Markets
       responses:
         '200':
           description: Indicators for each symbol
