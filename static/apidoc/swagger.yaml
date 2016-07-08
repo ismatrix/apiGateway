@@ -272,7 +272,7 @@ paths:
         '404':
           description: User not found
       security: []
-  tick:
+  /tick:
     get:
       summary: Receive minute ticker
       description: >
@@ -283,10 +283,8 @@ paths:
         '200':
           description: The futures contracts data
           schema:
-            type: object
-            schema:
-              $ref: '#/definitions/tick'
-  minute:
+            $ref: '#/definitions/tick'
+  /minute:
     get:
       summary: Receive minute ticker
       description: >
@@ -297,10 +295,8 @@ paths:
         '200':
           description: The futures contracts data
           schema:
-            type: object
-            schema:
-              $ref: '#/definitions/bar'
-  subscribe:
+            $ref: '#/definitions/bar'
+  /subscribe:
     post:
       summary: Subscribe live ticker
       description: >
@@ -323,7 +319,7 @@ paths:
               ok:
                 type: boolean
                 default: true
-  errors:
+  /errors:
     get:
       summary: Error examples
       description: >
