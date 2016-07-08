@@ -437,12 +437,10 @@ definitions:
         example: "燃料油1604"
   resQuotes:
     type: object
-    required:
-      - open
-      - high
-      - low
-      - close
     properties:
+      timestamp:
+        type: timestamp
+        example: 1464182400000
       open:
         type: number
         example: 1560
@@ -455,6 +453,9 @@ definitions:
       close:
         type: number
         example: 1556
+      volume:
+        type: number
+        example: 234
   reqIndicator:
     type: object
     required:
