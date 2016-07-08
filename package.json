@@ -51,6 +51,7 @@
     "koa-static": "^3.0.0",
     "mongodb": "^2.1.21",
     "node-fetch": "^1.5.3",
+    "slice2js": "^3.6.2",
     "socket.io": "^1.4.8",
     "socketio-jwt": "^4.5.0",
     "streaming-json-stringify": "^3.1.0",

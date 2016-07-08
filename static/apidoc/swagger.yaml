@@ -234,7 +234,7 @@ paths:
               quotes:
                 type: array
                 items:
-                  $ref: '#/definitions/resQuotes'
+                  $ref: '#/definitions/bar'
   /markets/futures/indicators/bullbeartrend:
     post:
       summary: Get trend indicators for futures indices
@@ -272,7 +272,58 @@ paths:
         '404':
           description: User not found
       security: []
-  /errors:
+  tick:
+    get:
+      summary: Receive minute ticker
+      description: >
+        Get all futures contracts details.
+      tags:
+        - MarketsIO
+      responses:
+        '200':
+          description: The futures contracts data
+          schema:
+            type: object
+            schema:
+              $ref: '#/definitions/tick'
+  minute:
+    get:
+      summary: Receive minute ticker
+      description: >
+        Get all futures contracts details.
+      tags:
+        - MarketsIO
+      responses:
+        '200':
+          description: The futures contracts data
+          schema:
+            type: object
+            schema:
+              $ref: '#/definitions/bar'
+  subscribe:
+    post:
+      summary: Subscribe live ticker
+      description: >
+        Provide OHLC candlestick datas for futures contracts, and for a fiven period
+      parameters:
+        - name: body
+          in: body
+          description: This is the contract quotes options
+          required: true
+          schema:
+            $ref: '#/definitions/reqQuotes'
+      tags:
+        - MarketsIO
+      responses:
+        '200':
+          description: Quotes for a contract
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+  errors:
     get:
       summary: Error examples
       description: >
@@ -435,7 +486,7 @@ definitions:
       instrumentname:
         type: string
         example: "燃料油1604"
-  resQuotes:
+  bar:
     type: object
     properties:
       timestamp:
@@ -456,6 +507,51 @@ definitions:
       volume:
         type: number
         example: 234
+  tick:
+    type: object
+    properties:
+      askPrice:
+        type: number
+        example: 3172
+      askVolume1:
+        type: number
+        example: 3
+      bidPrice1:
+        type: number
+        example: 3171.2
+      bidVolume1:
+        type: number
+        example: 2
+      openInterest:
+        type: number
+        example: 1556
+      price:
+        type: number
+        example: 1560
+      resolutin:
+        type: string
+        example: 'tick'
+      symbol:
+        type: string
+        example: 'IF1607'
+      timestamp:
+        type: number
+        example: 1464182400000
+      totalTurnover:
+        type: number
+        example: 11005455780
+      totalVolume:
+        type: number
+        example: 11557
+      tradingDay:
+        type: string
+        example: "20160708"
+      turnover:
+        type: number
+        example: 951600
+      volume:
+        type: number
+        example: 1
   reqIndicator:
     type: object
     required:
