@@ -439,7 +439,7 @@ definitions:
     type: object
     properties:
       timestamp:
-        type: timestamp
+        type: number
         example: 1464182400000
       open:
         type: number
