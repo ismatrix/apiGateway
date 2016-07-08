@@ -88,10 +88,12 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
     const quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
     return quotes.pipe(through.obj((chunk, enc, callback) => {
       const candlestick = {
+        timestamp: chunk.timestamp,
         open: chunk.open,
         high: chunk.high,
         low: chunk.low,
         close: chunk.close,
+        volume: chunk.volume,
       };
       callback(null, candlestick);
     }))

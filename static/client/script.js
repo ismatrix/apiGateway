@@ -1,21 +1,35 @@
 // TIP: io() with no args does auto-discovery
 var socket = io();
-var api = io.connect('http://localhost:3000/api');
-
+var markets = io.connect('/markets');
+var myToken = { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' };
+var sub = {
+  type: 'futures',
+  symbol: 'IF1607',
+  resolution: 'tick',
+};
 socket.on('connect', function() {
   console.log('Socket Connected, socket unique ID: %o', socket.id);
-  socket.emit('ferret', 'tobi', function (data) {
-    console.log(data); // data will be 'woot'
+  socket.emit('callback', 'tobi', function (data) {
+    console.log(data);
   });
-  socket.on('token', function(data) {
-    console.log('login token, save in localstorage: %o', data);
+  socket.emit('new message', 'tobi');
+  socket.on('new message', function (data) {
+    console.log(data);
   });
 });
 
-api.on('connect', function () {
-  socket.emit('authenticate', { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' });
-  api.emit('hi', 'coucou api namespace');
-  api.on('message1', (data) => console.log(data));
-  api.on('message2', (data) => console.log(data));
-  api.on('authenticated', () => console.log('Im authenticated'));
+
+markets.emit('authenticate', myToken);
+markets.on('unauthorized', function(error) {
+  if (error.data.type == 'UnauthorizedError' || error.data.code == 'invalid_token') {
+    console.log('token EXPIRED');
+  }
+});
+markets.on('authenticated', function() {
+  console.log('User authenticated');
+  markets.emit('hi', 'coucou markets namespace');
+  markets.emit('subscribe', sub);
+  markets.on('message1', (data) => console.log(data));
+  markets.on('new message', (data) => console.log(data));
+  // socket.broadcast.emit('hi', 'this is a broadcast');
 });

@@ -54,7 +54,7 @@ const icePastReadable = {
       { symbol, tradingDay, resolution: 'tick' }
     );
     data.timestamp = data.timestamp.toNumber();
-    debug('bar: %o', data);
+    // debug('bar: %o', data);
     this.push(data);
   },
   onBar(tradingDay, symbol, bar) {
@@ -74,7 +74,7 @@ const icePastReadable = {
       { symbol, tradingDay, resolution: 'day' }
     );
     data.timestamp = data.timestamp.toNumber();
-    debug('bar: %o', data);
+    // debug('bar: %o', data);
     this.push(data);
   },
 };
