@@ -22,6 +22,10 @@ export async function getIndicesTrend(sym, startDate, endDate) {
       symbols = await INDICATORS.distinct('symbol', { name: 'bull bear trend' });
     }
     debug('symbols %o', symbols);
+    const queryIns = { instrumentid: { $in: symbols } };
+    const projectionIns = { _id: 0, instrumentid: 1, instrumentname: 1 };
+    const contracts = await INSTRUMENT.find(queryIns, projectionIns).toArray();
+
     const query = { $and: [
       { symbol: { $in: symbols } },
       { name: 'bull bear trend' },
@@ -43,6 +47,8 @@ export async function getIndicesTrend(sym, startDate, endDate) {
     }
     for (const indicator of indicators) {
       delete indicator.dates;
+      const match = contracts.find((contract) => contract.instrumentid === indicator.symbol);
+      if (match) indicator.name = match.instrumentname;
     }
     const lowerIndex = sortedIndex(timeline, startDate);
     const upperIndex = sortedLastIndex(timeline, endDate);
