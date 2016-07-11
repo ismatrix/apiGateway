@@ -23,9 +23,8 @@ export async function setUserPassword(userid, newPassword, password) {
       const salt = await argon2.generateSalt();
       const hashedPassword = await argon2.hash(newPassword, salt);
 
-      const update = { password: hashedPassword };
-      const options = { upsert: true, returnOriginal: false };
-      await USERS.findOneAndUpdate({ userid }, update, options);
+      const update = { $set: { password: hashedPassword } };
+      await USERS.findOneAndUpdate({ userid }, update);
 
       return { ok: true };
     } else if (newPassword && password && dbUser.password) {
@@ -36,9 +35,8 @@ export async function setUserPassword(userid, newPassword, password) {
         const salt = await argon2.generateSalt();
         const hashedPassword = await argon2.hash(newPassword, salt);
 
-        const update = { password: hashedPassword };
-        const options = { upsert: true, returnOriginal: false };
-        await USERS.findOneAndUpdate({ userid }, update, options);
+        const update = { $set: { password: hashedPassword } };
+        await USERS.findOneAndUpdate({ userid }, update);
 
         return { ok: true };
       }
