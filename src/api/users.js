@@ -44,7 +44,7 @@ export async function setUserPassword(userid, newPassword, password) {
     }
     throw Boom.badImplementation('Method not implemented');
   } catch (error) {
-    debug(`setDbUserPassword(): ${error}`);
+    debug('setUserPassword() Error: %o', error);
     throw error;
   }
 }
@@ -65,7 +65,7 @@ export async function getMeProfile(userid) {
 
     return { ok: true, profile };
   } catch (error) {
-    debug(`getViewerData() ${error}`);
+    debug('getMeProfile() Error: %o', error);
     throw error;
   }
 }
@@ -81,7 +81,7 @@ export async function getUsers() {
 
     return { ok: true, users };
   } catch (error) {
-    debug(`getViewerData() ${error}`);
+    debug('getUsers() Error: %o', error);
     throw error;
   }
 }
