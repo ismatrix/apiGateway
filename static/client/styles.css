@@ -1,0 +1,32 @@
+.last-positive {
+  background: green;
+  color: #FFFFFF;
+}
+
+.last-negative {
+  background: red;
+  color: #FFFFFF;
+}
+
+.change-positive {
+  color: green;
+}
+
+.change-negative {
+  color: red;
+}
+
+.row {
+  margin-bottom: 20px;
+}
+
+.container-fluid {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.child {
+    vertical-align:middle;
+    text-align:center;
+    margin-top: 20px;
+}

@@ -1,4 +1,4 @@
-const debug = require('debug')('socketio');
+const debug = require('debug')('ioRouter');
 import socketioJwt from 'socketio-jwt';
 import { jwtSecret } from './config';
 import iceLive from './sw-datafeed-icelive';
@@ -24,29 +24,60 @@ export default function ioRouter(io) {
     secret: jwtSecret,
     timeout: 15000,
   })).on('authenticated', (socket) => {
-    debug(markets.connected);
-    debug('User authenticated, hello %o', socket.decoded_token.userid);
-    socket.emit('message1', `got message 1 ${socket.id}`);
-    socket.emit('message2', 'got message 2');
-    socket.on('hi', () => {
-      socket.emit('new message', `requested by ${socket.id}`);
+    debug(`Socket ${socket.id} authenticated, hello ${socket.decoded_token.userid}`);
+
+    socket.on('subscribe', async (data, callback) => {
+      try {
+        debug('marketsIO subscribed to %o', data);
+        iceLive.connect();
+        await iceLive.subscribe(data.symbol, data.resolution);
+        socket.join(data.symbol, (error) => { if (error) throw error; });
+        if (callback) callback({ ok: true });
+      } catch (error) {
+        debug('markets.on(subscribe) Error: %o', error);
+        if (callback) callback({ ok: false, error });
+      }
     });
-    socket.on('subscribe', (data) => {
-      debug(data);
-      iceLive.connect();
-      iceLive.subscribe(data.symbol, data.resolution);
-      socket.join(data.symbol);
-    });
-    socket.on('unsubscribe', (data) => {
-      debug(data);
-      // iceLive.connect();
-      // iceLive.unsubscribe(symbol, resolution);
-      socket.leave(data.symbol);
+
+    socket.on('unsubscribe', async (data, callback) => {
+      try {
+        debug('marketsIO subscribed to %o', data);
+        iceLive.connect();
+        await iceLive.unsubscribe(data.symbol, data.resolution);
+        socket.leave(data.symbol, (error) => { if (error) throw error; });
+        if (callback) callback({ ok: true });
+      } catch (error) {
+        debug('markets.on(subscribe) Error: %o', error);
+        if (callback) callback({ ok: false, error });
+      }
     });
   });
 
+  // let i = 0;
+  // setInterval(() => {
+  //   i++;
+  //   const tick = {
+  //     symbol: 'IF1608',
+  //     resolution: 'tick',
+  //     tradingDay: '20160712',
+  //     timestamp: Date.now(),
+  //     price: i,
+  //     volume: i,
+  //     turnover: i,
+  //     openInterest: i,
+  //     totalVolume: i,
+  //     totalTurnover: i,
+  //     bidPrice1: i,
+  //     askPrice1: i,
+  //     bidVolume1: i,
+  //     askVolume1: i,
+  //   };
+  //   markets.to('IF1608').emit('tick', tick);
+  // }, 1000);
+
   const marketsSocket = through.obj(
     (chunk, enc, callback) => {
+      if (chunk.symbol === 'IF1608') debug('chunk, %o', chunk);
       markets.to(chunk.symbol).emit(chunk.resolution, chunk);
       callback();
     }
