@@ -272,44 +272,19 @@ paths:
         '404':
           description: User not found
       security: []
-  /tick:
-    get:
-      summary: Receive minute ticker
-      description: >
-        Get all futures contracts details.
-      tags:
-        - MarketsIO
-      responses:
-        '200':
-          description: The futures contracts data
-          schema:
-            $ref: '#/definitions/tick'
-  /minute:
-    get:
-      summary: Receive minute ticker
-      description: >
-        Get all futures contracts details.
-      tags:
-        - MarketsIO
-      responses:
-        '200':
-          description: The futures contracts data
-          schema:
-            $ref: '#/definitions/bar'
-  /subscribe:
+  /authenticate:
     post:
-      summary: Subscribe live ticker
+      summary: Authenticate websocket connection
       description: >
-        Provide OHLC candlestick datas for futures contracts, and for a fiven period
+        provide the token through socket.io, the token will then be saved by the server into the session
+      tags:
+        - Markets.IO
       parameters:
         - name: body
           in: body
-          description: This is the contract quotes options
-          required: true
+          description: This is the token
           schema:
-            $ref: '#/definitions/reqQuotes'
-      tags:
-        - MarketsIO
+            $ref: '#/definitions/Token'
       responses:
         '200':
           description: Quotes for a contract
@@ -319,6 +294,67 @@ paths:
               ok:
                 type: boolean
                 default: true
+        '400':
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/Error400'
+  /unauthorized:
+    get:
+      summary: Receive errors on JWT token auth problem
+      tags:
+        - Markets.IO
+      responses:
+        '200':
+          description: The futures contracts data
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'UnauthorizedError'
+  /authenticated:
+    get:
+      summary: Receive authenticated event if JWT token auth succeeded
+      tags:
+        - Markets.IO
+      responses:
+        '200':
+          description: JWT token auth succeeded
+  /tick:
+    get:
+      summary: Receive ticker object
+      tags:
+        - Markets.IO
+      responses:
+        '200':
+          description: The ticker
+          schema:
+            $ref: '#/definitions/tick'
+  /subscribe:
+    post:
+      summary: Subscribe live ticker
+      tags:
+        - Markets.IO
+      parameters:
+        - name: body
+          in: body
+          description: This is the ticker subscribe request
+          required: true
+          schema:
+            $ref: '#/definitions/reqLiveTick'
+      responses:
+        '200':
+          description: Response sent through callback function
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+        '400':
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/Error400'
   /errors:
     get:
       summary: Error examples
@@ -453,7 +489,7 @@ definitions:
   reqQuotes:
     type: object
     required:
-      - symbols
+      - symbol
       - resolution
       - startDate
       - endDate
@@ -470,6 +506,28 @@ definitions:
       endDate:
         type: string
         example: "20160401"
+  Token:
+    type: object
+    properties:
+      token:
+        type: string
+        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0"
+  reqLiveTick:
+    type: object
+    required:
+      - type
+      - symbol
+      - resolution
+    properties:
+      type:
+        type: string
+        example: "futures"
+      symbol:
+        type: string
+        example: "IF1606"
+      resolution:
+        type: string
+        example: "tick"
   FuturesContract:
     type: object
     properties:
@@ -506,7 +564,7 @@ definitions:
   tick:
     type: object
     properties:
-      askPrice:
+      askPrice1:
         type: number
         example: 3172
       askVolume1:
@@ -524,7 +582,7 @@ definitions:
       price:
         type: number
         example: 1560
-      resolutin:
+      resolution:
         type: string
         example: 'tick'
       symbol:
@@ -550,10 +608,6 @@ definitions:
         example: 1
   reqIndicator:
     type: object
-    required:
-      - startDate
-      - endDate
-      - symbols
     properties:
       startDate:
         type: string
@@ -568,14 +622,13 @@ definitions:
           type: string
   resIndicator:
     type: object
-    required:
-      - symbol
-      - dates
-      - values
     properties:
       symbol:
         type: string
         example: "agIDX"
+      name:
+        type: string
+        example: "白银指数"
       values:
         type: array
         example: [1, 1, 0, 0,-1, -1]

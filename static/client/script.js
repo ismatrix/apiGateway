@@ -4,40 +4,50 @@ const markets = io.connect('/markets');
 const myToken = { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' };
 const sub = { type: 'futures', symbol: 'IF1607', resolution: 'tick'};
 const allSymbols = [
-  'ag1608',
-  'al1608',
-  'au1608',
-  'bb1608',
-  'bu1608',
-  'cu1608',
-  'fb1608',
-  'fu1608',
-  'hc1608',
-  'i1608',
-  'IC1608',
-  'IF1608',
-  'IH1608',
-  'j1608',
-  'jd1608',
-  'jm1608',
-  'l1608',
-  'ni1608',
-  'p1608',
-  'pb1608',
-  'pp1608',
-  'rb1608',
-  'ru1608',
-  'sn1608',
-  'T1608',
-  'TF1608',
-  'v1608',
-  'wr1608',
-  'zn1608',
+  'a1609',
+  'i1609',
+  'j1609',
+  'jd1609',
+  'jm1609',
+  'l1609',
+  'm1609',
+  'pp1609',
+  'v1609',
+  'JR609',
+  'MA609',
+  'MA609',
+  'rb1610',
+  'al1609',
+  'cu1609',
+  'ni1609',
+  'pb1609',
+  'ru1609',
+  'sn1609',
+  'zn1609',
+  'au1612',
+  'b1701',
+  'c1701',
+  'cs1701',
+  'p1701',
+  'y1701',
+  'CF701',
+  'p1701',
+  'y1701',
+  'CF701',
+  'OI701',
+  'RI701',
+  'ag1612',
+  'T1609',
+  'TF1609',
+  'SF706',
+  'IC1607',
+  'IF1607',
+  'IH1607',
 ];
 
 markets.emit('authenticate', myToken);
 markets.on('unauthorized', function(error) {
-  if (error.data.type == 'UnauthorizedError' || error.data.code == 'invalid_token') {
+  if (error.data.type === 'UnauthorizedError' || error.data.code === 'invalid_token') {
     console.log('token EXPIRED');
   }
 });
@@ -104,11 +114,14 @@ var StockRow = React.createClass({
     this.props.unsubscribeIns(this.props.ticker.symbol);
   },
   render() {
-    let lastClass = '';
+    let curentClass = '';
     const price = this.props.ticker.price;
     const lastPrice = this.props.lastTicker.price || 0;
     const priceDiff = price - lastPrice;
-    lastClass = (priceDiff >= 0) ? 'last-positive' : 'last-negative';
+
+    if (priceDiff > 0) curentClass = 'last-positive'
+    else if (priceDiff < 0) curentClass = 'last-negative'
+    else if (priceDiff < 0) curentClass = lastClass;
 
     const tsDate = new Date(this.props.ticker.timestamp);
     const mss = tsDate.getMilliseconds();
@@ -128,8 +141,8 @@ var StockRow = React.createClass({
           <td>{this.props.ticker.openInterest}</td>
           <td>{this.props.ticker.totalVolume}</td>
           <td>{this.props.ticker.totalTurnover}</td>
-          <td>{this.props.ticker.bidPrice1}</td>
-          <td>{this.props.ticker.askPrice1}</td>
+          <td>{this.props.ticker.bidPrice1.toFixed(2)}</td>
+          <td>{this.props.ticker.askPrice1.toFixed(2)}</td>
           <td>{this.props.ticker.bidVolume1}</td>
           <td>{this.props.ticker.askVolume1}</td>
           <td>
@@ -207,7 +220,6 @@ const HomePage = React.createClass({
       markets.emit('subscribe',
         { type: 'futures', symbol, resolution: 'tick' },
         (response) => {
-          console.log('response %o', response);
           if (!this.state.watchingList.includes(symbol)) {
             const watchingList = React.addons.update(this.state.watchingList, { $push: [symbol] } );
             this.setState({ watchingList });
@@ -220,7 +232,6 @@ const HomePage = React.createClass({
     markets.emit('unsubscribe',
       { type: 'futures', symbol, resolution: 'tick' },
       (response) => {
-        console.log('response %o', response);
         if (this.state.watchingList.includes(symbol)) {
           const index = this.state.watchingList.indexOf(symbol);
           const watchingList = React.addons.update(

@@ -8,14 +8,14 @@ const event = new events.EventEmitter();
 import stream from 'stream';
 const Readable = stream.Readable;
 
-const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h code.invesmart.net';
+const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h invesmart.win';
 let session;
 let router;
 const resolutionMap = {
   tick: 'T',
   minute: 'M',
   day: 'day',
-}
+};
 
 function toLowerFirst(obj) {
   return Object.assign(

@@ -9,11 +9,11 @@
 }
 
 .change-positive {
-  color: green;
+  color: red;
 }
 
 .change-negative {
-  color: red;
+  color: green;
 }
 
 .row {
