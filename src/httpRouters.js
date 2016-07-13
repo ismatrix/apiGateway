@@ -45,17 +45,21 @@ apiRouter
 
 apiRouter
   .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
-  .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid);})
-  .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel();})
-  .get('/funds/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport();})
-  .get('/funds/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity();})
-  .get('/funds/equity/:fundid', async ctx => { ctx.body = await funds.getEquity();})
-  .get('/funds/position/:fundid', async ctx => { ctx.body = await funds.getPosition();})
+  .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
+  .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel(); })
+  .get('/funds/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport(); })
+  .get('/funds/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity(); })
+  .get('/funds/equity/:fundid', async ctx => { ctx.body = await funds.getEquity(); })
+  .get('/funds/position/:fundid', async ctx => { ctx.body = await funds.getPosition(); })
   ;
 
 apiRouter
-  .get('/markets/futures/contracts', async ctx => {
-    ctx.body = await markets.getFuturesContracts();
+  .post('/markets/futures/contracts', async ctx => {
+    const ranks = ctx.request.body.ranks;
+    const exchanges = ctx.request.body.exchanges;
+    const symbols = ctx.request.body.symbols;
+    const productclasses = ctx.request.body.productclasses;
+    ctx.body = await markets.getFuturesContracts(ranks, exchanges, symbols, productclasses);
   })
   .post('/markets/futures/quotes', async ctx => {
     const symbol = ctx.request.body.symbol;

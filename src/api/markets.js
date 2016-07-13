@@ -110,11 +110,25 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
   }
 }
 
-export async function getFuturesContracts() {
+export async function getFuturesContracts(ranks, exchanges, symbols, productclasses) {
   try {
-    const query = {};
+    if (!ranks || !exchanges || !symbols || !productclasses) {
+      throw Boom.badRequest('Missing parameter');
+    }
+    const ranksQuery = (ranks.includes('all')) ? { $exists: true } : { $in: ranks };
+    const exchangesQuery = (exchanges.includes('all')) ? { $exists: true } : { $in: exchanges };
+    const symbolsQuery = (symbols.includes('all')) ? { $exists: true } : { $in: symbols };
+    const productclassesQuery = (symbols.includes('all')) ?
+      { $exists: true } : { $in: productclasses };
+
+    const query = { $and: [
+      { rank: ranksQuery },
+      { exchangeid: exchangesQuery },
+      { productid: symbolsQuery },
+      { productclass: productclassesQuery },
+    ] };
     const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
-      exchangeinstid: 1,
+      exchangeinstid: 1, rank: 1, productclass: 1,
     };
     const contracts = await INSTRUMENT.find(query, projection).toArray();
     return { ok: true, contracts };

@@ -189,12 +189,19 @@ paths:
         '404':
           description: Fund not found
   /markets/futures/contracts:
-    get:
+    post:
       summary: Get all futures contracts
       description: >
         Get all futures contracts details.
       tags:
         - Markets
+      parameters:
+        - name: body
+          in: body
+          description: Futures contracts request
+          required: true
+          schema:
+            $ref: '#/definitions/reqContracts'
       responses:
         '200':
           description: The futures contracts data
@@ -212,7 +219,7 @@ paths:
     post:
       summary: Get quotes for a futures contract
       description: >
-        Provide OHLC candlestick datas for futures contracts, and for a fiven period
+        Provide OHLC candlestick datas for futures contracts, and for a given period
       parameters:
         - name: body
           in: body
@@ -486,6 +493,34 @@ definitions:
       password:
         type: string
         format: password
+  reqContracts:
+    type: object
+    required:
+      - symbols
+      - exchanges
+      - ranks
+      - productclasses
+    properties:
+      symbols:
+        type: array
+        example: ["all"]
+        items:
+          type: string
+      exchanges:
+        type: array
+        example: ["all"]
+        items:
+          type: string
+      ranks:
+        type: array
+        example: [1, 2]
+        items:
+          type: number
+      productclasses:
+        type: array
+        example: ["1", "8", "9"]
+        items:
+          type: string
   reqQuotes:
     type: object
     required:
@@ -500,6 +535,7 @@ definitions:
       resolution:
         type: string
         example: "minute"
+        enum: ["tick", "minute"]
       startDate:
         type: string
         example: "20150401"
