@@ -114,28 +114,32 @@ var StockRow = React.createClass({
     this.props.unsubscribeIns(this.props.ticker.symbol);
   },
   render() {
-    let curentClass = '';
-    const price = this.props.ticker.price;
-    const lastPrice = this.props.lastTicker.price || 0;
-    const priceDiff = price - lastPrice;
-
-    if (priceDiff > 0) curentClass = 'last-positive'
-    else if (priceDiff < 0) curentClass = 'last-negative'
-    else if (priceDiff < 0) curentClass = lastClass;
-
+    let priceClass;
+    if (this.props.ticker.lastPriceChange) {
+      priceClass = (this.props.ticker.lastPriceChange > 0) ? 'positive' : 'negative';
+    }
     const tsDate = new Date(this.props.ticker.timestamp);
-    const mss = tsDate.getMilliseconds();
-    const secs = tsDate.getSeconds();
-    const mns = tsDate.getMinutes();
-    const hours = tsDate.getHours();
-    const ts = `${hours}:${mns} ${secs}s ${mss}ms`;
+    let mss = tsDate.getMilliseconds();
+    if (mss < 10) {
+      mss = `00${mss}`;
+    } else if (mss < 100) {
+      mss = `0${mss}`;
+    }
+    let secs = tsDate.getSeconds();
+    if (secs < 10) secs = `0${secs}`;
+    let mns = tsDate.getMinutes();
+    if (mns < 10) mns = `0${mns}`;
+    let hours = tsDate.getHours();
+    if (hours < 10) hours = `0${hours}`;
+    const ts = `${hours}:${mns}:${secs}.${mss}`;
     return (
         <tr>
           <td>{this.props.ticker.symbol}</td>
           <td>{this.props.ticker.resolution}</td>
           <td>{this.props.ticker.tradingDay}</td>
           <td>{ts}</td>
-          <td className={lastClass}>{this.props.ticker.price.toFixed(2)}</td>
+          <td className={priceClass}>{this.props.ticker.price.toFixed(2)}</td>
+          <td className={priceClass}>{this.props.ticker.lastPriceChange.toFixed(2)}</td>
           <td>{this.props.ticker.volume}</td>
           <td>{this.props.ticker.turnover}</td>
           <td>{this.props.ticker.openInterest}</td>
@@ -160,13 +164,13 @@ const StockTable = React.createClass({
     const items = [];
     for (var symbol in this.props.tickers) {
       const ticker = this.props.tickers[symbol];
-      const lastTicker = this.props.lastTickers[symbol] || ticker;
+      const lastTicker = this.props.lastTickers[symbol];
       items.push(<StockRow key={ticker.symbol} ticker={ticker} lastTicker={lastTicker} unsubscribeIns={this.props.unsubscribeIns}/>);
     }
     return (
       <div className="row">
         <div className="table-responsive">
-          <table className="table table-striped table-hover table-condensed text-center">
+          <table className="table table-striped table-hover table-condensed">
             <thead>
               <tr>
                 <th>symbol</th>
@@ -174,8 +178,9 @@ const StockTable = React.createClass({
                 <th>tradingDay</th>
                 <th>timestamp</th>
                 <th>price</th>
+                <th>last change</th>
                 <th>volume</th>
-                <th>turnover</th>
+                <th className="turnover">turnover</th>
                 <th>openInterest</th>
                 <th>totalVolume</th>
                 <th>totalTurnover</th>
@@ -208,6 +213,13 @@ const HomePage = React.createClass({
     (data) => {
       const lastTickers = Object.assign({}, this.state.tickers);
       const tickers = React.addons.update(this.state.tickers, { [data.symbol]:{ $set: data } });
+      if (lastTickers[data.symbol]) {
+        const priceDiff = tickers[data.symbol].price - lastTickers[data.symbol].price;
+        if (priceDiff !== 0) tickers[data.symbol].lastPriceChange = priceDiff;
+        if (priceDiff === 0) tickers[data.symbol].lastPriceChange = lastTickers[data.symbol].lastPriceChange || 0;
+      } else {
+        tickers[data.symbol].lastPriceChange = 0;
+      }
       this.setState({ tickers, lastTickers });
     });
   },
@@ -220,7 +232,7 @@ const HomePage = React.createClass({
       markets.emit('subscribe',
         { type: 'futures', symbol, resolution: 'tick' },
         (response) => {
-          if (!this.state.watchingList.includes(symbol)) {
+          if (!this.state.watchingList.includes(symbol) && response.ok) {
             const watchingList = React.addons.update(this.state.watchingList, { $push: [symbol] } );
             this.setState({ watchingList });
           }
@@ -232,17 +244,16 @@ const HomePage = React.createClass({
     markets.emit('unsubscribe',
       { type: 'futures', symbol, resolution: 'tick' },
       (response) => {
-        if (this.state.watchingList.includes(symbol)) {
+        if (this.state.watchingList.includes(symbol) && response.ok) {
           const index = this.state.watchingList.indexOf(symbol);
           const watchingList = React.addons.update(
             this.state.watchingList, { $splice: [[index, 1]] });
-          this.setState({ watchingList });
+          const tickers = Object.assign({}, this.state.tickers);
+          delete tickers[symbol];
+          this.setState({ tickers, watchingList });
         }
       }
     );
-    const newState = Object.assign({}, this.state);
-    delete newState.tickers[symbol];
-    this.setState(newState);
   },
   render() {
     return (

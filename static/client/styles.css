@@ -1,10 +1,10 @@
-.last-positive {
-  background: green;
+.positive {
+  background: red;
   color: #FFFFFF;
 }
 
-.last-negative {
-  background: red;
+.negative {
+  background: green;
   color: #FFFFFF;
 }
 
@@ -29,4 +29,16 @@
     vertical-align:middle;
     text-align:center;
     margin-top: 20px;
+}
+
+th {
+   text-align: center;
+}
+
+td {
+   text-align: center;
+}
+
+.turnover {
+  width: 90px;
 }

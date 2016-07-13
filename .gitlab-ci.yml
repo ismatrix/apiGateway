@@ -22,7 +22,7 @@ build:
 deploy:
   stage: deploy
   script:
-    - cd /home/ops/victor/apiGateway
+    - cd /home/ops/production/apiGateway
     - git reset --hard HEAD
     - git pull
     - npm install
