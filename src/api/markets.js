@@ -7,11 +7,13 @@ import through from 'through2';
 
 let INDICATORS;
 let INSTRUMENT;
+let PRODUCT;
 
 (async function getDb() {
   const smartwin = await mongodb.getdb();
   INDICATORS = smartwin.collection('INDICATORS');
   INSTRUMENT = smartwin.collection('INSTRUMENT');
+  PRODUCT = smartwin.collection('PRODUCT');
 }());
 
 export async function getIndicesTrend(sym, startDate, endDate) {
@@ -132,37 +134,39 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productclas
   }
 }
 
-export async function getFuturesExchanges(ranks, exchanges, symbols, productclasses) {
+export async function getFuturesProducts() {
   try {
-    if (!ranks || !exchanges || !symbols || !productclasses) {
-      throw Boom.badRequest('Missing parameter');
-    }
-
     const query = {};
-    if (!ranks.includes('all')) query.rank = { $in: ranks };
-    if (!exchanges.includes('all')) query.exchangeid = { $in: exchanges };
-    if (!symbols.includes('all')) query.productid = { $in: symbols };
-    if (!productclasses.includes('all')) query.productclass = { $in: productclasses };
+    const projection = { _id: 0, productname: 1, exchangeid: 1 };
+    const products = await PRODUCT.find(query, projection).toArray();
 
-    const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
-      rank: 1, productclass: 1, productid: 1, istrading: 1,
-    };
-    const contracts = await INSTRUMENT.find(query, projection).sort({ instrumentid: 1 }).toArray();
-    debug('contracts %o', contracts);
-    const exchangesid = [...new Set(contracts.map(contract => contract.exchangeid))];
+    return { ok: true, products };
+  } catch (error) {
+    debug('getAvg() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getFuturesProductsByExchange() {
+  try {
+    const query = {};
+    const projection = { _id: 0, productname: 1, exchangeid: 1 };
+    const products = await PRODUCT.find(query, projection).toArray();
+
+    const exchangesid = [...new Set(products.map(product => product.exchangeid))];
     debug('exchangesid %o', exchangesid);
-    const resExchanges = exchangesid.map(exchangeid => {
-      const contractsPerExchange = contracts.filter(
-        contract => !!(contract.exchangeid === exchangeid)
+    const productsByExchange = exchangesid.map(exchangeid => {
+      const productsPerExchange = products.filter(
+        product => !!(product.exchangeid === exchangeid)
       );
-      debug('contractsPerExchange %o', contractsPerExchange);
+      debug('contractsPerExchange %o', productsPerExchange);
       const exchange = {
         exchangeid,
-        contracts: contractsPerExchange,
+        products: productsPerExchange,
       };
       return exchange;
     });
-    return { ok: true, exchanges: resExchanges };
+    return { ok: true, productsByExchange };
   } catch (error) {
     debug('getAvg() Error: %o', error);
     throw error;

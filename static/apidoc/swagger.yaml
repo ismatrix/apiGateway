@@ -205,15 +205,6 @@ paths:
       tags:
         - Markets
       summary: Get all futures contracts
-      description: >
-        Get all futures contracts details.
-      parameters:
-        - name: body
-          in: body
-          description: Futures contracts request
-          required: true
-          schema:
-            $ref: '#/definitions/reqFuturesContracts'
       responses:
         '200':
           description: The futures contracts data
@@ -221,43 +212,57 @@ paths:
             type: object
             required:
               - ok
-              - contracts
+              - products
             properties:
               ok:
                 type: boolean
                 default: true
-              contracts:
+              products:
                 type: array
                 items:
-                  $ref: '#/definitions/resFuturesContract'
-  /markets/futures/exchanges:
-    post:
+                  $ref: '#/definitions/resFuturesProduct'
+  /markets/futures/products:
+    get:
       tags:
         - Markets
-      summary: Get all futures exchanges
-      parameters:
-        - name: body
-          in: body
-          description: Exchanges request
-          required: true
-          schema:
-            $ref: '#/definitions/reqFuturesExchanges'
+      summary: Get all futures products
       responses:
         '200':
-          description: The futures exchanges data
+          description: The futures products data
           schema:
             type: object
             required:
               - ok
-              - contracts
+              - products
             properties:
               ok:
                 type: boolean
                 default: true
-              exchanges:
+              products:
                 type: array
                 items:
-                  $ref: '#/definitions/resFuturesExchanges'
+                  $ref: '#/definitions/resFuturesProduct'
+  /markets/futures/products.byExchange:
+    get:
+      tags:
+        - Markets
+      summary: Get all futures products organized by exchange
+      responses:
+        '200':
+          description: The futures products data by exchange
+          schema:
+            type: object
+            required:
+              - ok
+              - productsByExchange
+            properties:
+              ok:
+                type: boolean
+                default: true
+              productsByExchange:
+                type: array
+                items:
+                  $ref: '#/definitions/resFuturesProduct.ByExchange'
   /markets/futures/quotes:
     post:
       tags:
@@ -550,6 +555,31 @@ definitions:
       password:
         type: string
         format: password
+  resFuturesProduct:
+    type: object
+    required:
+      - exchangeid
+      - productname
+    properties:
+      exchangeid:
+        type: string
+        example: "SHFE"
+      productname:
+        type: string
+        example: "热轧卷板"
+  resFuturesProduct.ByExchange:
+    type: object
+    required:
+      - exchangeid
+      - products
+    properties:
+      exchangeid:
+        type: string
+        example: "SHFE"
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/resFuturesProduct'
   reqFuturesContracts:
     type: object
     required:
@@ -609,47 +639,6 @@ definitions:
         type: number
         example: 1
         enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-  reqFuturesExchanges:
-    type: object
-    required:
-      - symbols
-      - exchanges
-      - ranks
-      - productclasses
-    properties:
-      symbols:
-        type: array
-        example: ["all"]
-        items:
-          type: string
-      exchanges:
-        type: array
-        example: ["all"]
-        items:
-          type: string
-      ranks:
-        type: array
-        example: [1, 2]
-        items:
-          type: number
-      productclasses:
-        type: array
-        example: ["1", "8", "9"]
-        items:
-          type: string
-  resFuturesExchanges:
-    type: object
-    required:
-      - exchangeid
-      - contracts
-    properties:
-      exchangeid:
-        type: string
-        example: "SHFE"
-      contracts:
-        type: array
-        items:
-          $ref: '#/definitions/resFuturesContract'
   reqQuotes:
     type: object
     required:

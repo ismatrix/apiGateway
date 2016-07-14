@@ -61,12 +61,11 @@ apiRouter
     const productclasses = ctx.request.body.productclasses;
     ctx.body = await markets.getFuturesContracts(ranks, exchanges, symbols, productclasses);
   })
-  .post('/markets/futures/exchanges', async ctx => {
-    const ranks = ctx.request.body.ranks;
-    const exchanges = ctx.request.body.exchanges;
-    const symbols = ctx.request.body.symbols;
-    const productclasses = ctx.request.body.productclasses;
-    ctx.body = await markets.getFuturesExchanges(ranks, exchanges, symbols, productclasses);
+  .get('/markets/futures/products', async ctx => {
+    ctx.body = await markets.getFuturesProducts();
+  })
+  .get('/markets/futures/products.byExchange', async ctx => {
+    ctx.body = await markets.getFuturesProductsByExchange();
   })
   .post('/markets/futures/quotes', async ctx => {
     const symbol = ctx.request.body.symbol;
