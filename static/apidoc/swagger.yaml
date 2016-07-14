@@ -417,6 +417,31 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
+  /unsubscribe:
+    post:
+      tags:
+        - Markets.IO
+      summary: Unsubscribe live ticker
+      parameters:
+        - name: body
+          in: body
+          description: This is the ticker unsubscribe request
+          required: true
+          schema:
+            $ref: '#/definitions/reqLiveTick'
+      responses:
+        '200':
+          description: Response sent through callback function
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+        '400':
+          description: Invalid query
+          schema:
+            $ref: '#/definitions/Error400'
   /errors:
     get:
       summary: Error examples
