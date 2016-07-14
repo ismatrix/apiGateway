@@ -205,6 +205,13 @@ paths:
       tags:
         - Markets
       summary: Get all futures contracts
+      parameters:
+        - name: body
+          in: body
+          description: This is the viewer password update object
+          required: true
+          schema:
+            $ref: '#/definitions/reqFuturesContracts'
       responses:
         '200':
           description: The futures contracts data
@@ -217,10 +224,10 @@ paths:
               ok:
                 type: boolean
                 default: true
-              products:
+              contracts:
                 type: array
                 items:
-                  $ref: '#/definitions/resFuturesProduct'
+                  $ref: '#/definitions/resFuturesContract'
   /markets/futures/products:
     get:
       tags:
