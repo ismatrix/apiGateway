@@ -18,6 +18,8 @@ security:
 paths:
   /public/auth/wechat:
     get:
+      tags:
+        - Auth
       summary: Get a token by Wechat scan auth
       description: >
         The Wechat auth endpoint is called by qiyehao, following a QRcode scan
@@ -35,8 +37,6 @@ paths:
           description: This is the client socket.io ID
           required: true
           type: string
-      tags:
-        - Auth
       responses:
         '302':
           description: Success
@@ -49,6 +49,8 @@ paths:
       security: []
   /public/auth/password:
     post:
+      tags:
+        - Auth
       summary: Get a token by password auth
       description: >
         Create a token for the user by userid + password.
@@ -59,13 +61,14 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/authPassword'
-      tags:
-        - Auth
       responses:
         '200':
           description: A token
           schema:
             type: object
+            required:
+              - ok
+              - token
             properties:
               ok:
                 type: boolean
@@ -90,6 +93,8 @@ paths:
           description: The users profile infos
           schema:
             type: object
+            required:
+              - ok
             properties:
               ok:
                 type: boolean
@@ -110,12 +115,14 @@ paths:
           description: The user profile infos
           schema:
             type: object
+            required:
+              - ok
             properties:
               ok:
                 type: boolean
                 default: true
               profile:
-                $ref: '#/definitions/Profile'
+                $ref: '#/definitions/resProfile'
         '404':
           description: User not found
   /users/me/password:
@@ -140,6 +147,8 @@ paths:
           description: Successful operation
           schema:
             type: object
+            required:
+              - ok
             properties:
               ok:
                 type: boolean
@@ -160,6 +169,9 @@ paths:
           description: The funds data
           schema:
             type: object
+            required:
+              - ok
+              - funds
             properties:
               ok:
                 type: boolean
@@ -190,23 +202,26 @@ paths:
           description: Fund not found
   /markets/futures/contracts:
     post:
+      tags:
+        - Markets
       summary: Get all futures contracts
       description: >
         Get all futures contracts details.
-      tags:
-        - Markets
       parameters:
         - name: body
           in: body
           description: Futures contracts request
           required: true
           schema:
-            $ref: '#/definitions/reqContracts'
+            $ref: '#/definitions/reqFuturesContracts'
       responses:
         '200':
           description: The futures contracts data
           schema:
             type: object
+            required:
+              - ok
+              - contracts
             properties:
               ok:
                 type: boolean
@@ -214,9 +229,39 @@ paths:
               contracts:
                 type: array
                 items:
-                  $ref: '#/definitions/FuturesContract'
+                  $ref: '#/definitions/resFuturesContract'
+  /markets/futures/exchanges:
+    post:
+      tags:
+        - Markets
+      summary: Get all futures exchanges
+      parameters:
+        - name: body
+          in: body
+          description: Exchanges request
+          required: true
+          schema:
+            $ref: '#/definitions/reqFuturesExchanges'
+      responses:
+        '200':
+          description: The futures exchanges data
+          schema:
+            type: object
+            required:
+              - ok
+              - contracts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              exchanges:
+                type: array
+                items:
+                  $ref: '#/definitions/resFuturesExchanges'
   /markets/futures/quotes:
     post:
+      tags:
+        - Markets
       summary: Get quotes for a futures contract
       description: >
         Provide OHLC candlestick datas for futures contracts, and for a given period
@@ -227,13 +272,14 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/reqQuotes'
-      tags:
-        - Markets
       responses:
         '200':
           description: Quotes for a contract
           schema:
             type: object
+            required:
+              - ok
+              - quotes
             properties:
               ok:
                 type: boolean
@@ -244,6 +290,8 @@ paths:
                   $ref: '#/definitions/bar'
   /markets/futures/indicators/bullbeartrend:
     post:
+      tags:
+        - Markets
       summary: Get trend indicators for futures indices
       description: >
         Create an indicator per day for bull (+1), bear (-1), and stagnant (0) markets
@@ -254,13 +302,15 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/reqIndicator'
-      tags:
-        - Markets
       responses:
         '200':
           description: Indicators for each symbol
           schema:
             type: object
+            required:
+              - ok
+              - timeline
+              - indicators
             properties:
               ok:
                 type: boolean
@@ -281,11 +331,11 @@ paths:
       security: []
   /authenticate:
     post:
+      tags:
+        - Markets.IO
       summary: Authenticate websocket connection
       description: >
         provide the token through socket.io, the token will then be saved by the server into the session
-      tags:
-        - Markets.IO
       parameters:
         - name: body
           in: body
@@ -307,9 +357,9 @@ paths:
             $ref: '#/definitions/Error400'
   /unauthorized:
     get:
-      summary: Receive errors on JWT token auth problem
       tags:
         - Markets.IO
+      summary: Receive errors on JWT token auth problem
       responses:
         '200':
           description: The futures contracts data
@@ -321,17 +371,17 @@ paths:
                 example: 'UnauthorizedError'
   /authenticated:
     get:
-      summary: Receive authenticated event if JWT token auth succeeded
       tags:
         - Markets.IO
+      summary: Receive authenticated event if JWT token auth succeeded
       responses:
         '200':
           description: JWT token auth succeeded
   /tick:
     get:
-      summary: Receive ticker object
       tags:
         - Markets.IO
+      summary: Receive ticker object
       responses:
         '200':
           description: The ticker
@@ -339,9 +389,9 @@ paths:
             $ref: '#/definitions/tick'
   /subscribe:
     post:
-      summary: Subscribe live ticker
       tags:
         - Markets.IO
+      summary: Subscribe live ticker
       parameters:
         - name: body
           in: body
@@ -407,9 +457,16 @@ definitions:
   Users:
     type: array
     items:
-      $ref: '#/definitions/Profile'
-  Profile:
+      $ref: '#/definitions/resProfile'
+  resProfile:
     type: object
+    required:
+      - userid
+      - name
+      - department
+      - email
+      - avatar
+      - hasPassword
     properties:
       userid:
         type: string
@@ -493,7 +550,7 @@ definitions:
       password:
         type: string
         format: password
-  reqContracts:
+  reqFuturesContracts:
     type: object
     required:
       - symbols
@@ -521,6 +578,78 @@ definitions:
         example: ["1", "8", "9"]
         items:
           type: string
+  resFuturesContract:
+    type: object
+    required:
+      - instrumentid
+      - exchangeid
+      - istrading
+      - productid
+      - productclass
+    properties:
+      instrumentid:
+        type: string
+        example: "fu1604"
+      exchangeid:
+        type: string
+        example: "SHFE"
+      instrumentname:
+        type: string
+        example: "燃料油1604"
+      istrading:
+        type: number
+        example: 1
+      productid:
+        type: string
+        example: "fu"
+      productclass:
+        type: string
+        example: "1"
+      rank:
+        type: number
+        example: 1
+        enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  reqFuturesExchanges:
+    type: object
+    required:
+      - symbols
+      - exchanges
+      - ranks
+      - productclasses
+    properties:
+      symbols:
+        type: array
+        example: ["all"]
+        items:
+          type: string
+      exchanges:
+        type: array
+        example: ["all"]
+        items:
+          type: string
+      ranks:
+        type: array
+        example: [1, 2]
+        items:
+          type: number
+      productclasses:
+        type: array
+        example: ["1", "8", "9"]
+        items:
+          type: string
+  resFuturesExchanges:
+    type: object
+    required:
+      - exchangeid
+      - contracts
+    properties:
+      exchangeid:
+        type: string
+        example: "SHFE"
+      contracts:
+        type: array
+        items:
+          $ref: '#/definitions/resFuturesContract'
   reqQuotes:
     type: object
     required:
@@ -564,18 +693,6 @@ definitions:
       resolution:
         type: string
         example: "tick"
-  FuturesContract:
-    type: object
-    properties:
-      instrumentid:
-        type: string
-        example: "fu1604"
-      exchangeid:
-        type: string
-        example: "SHFE"
-      instrumentname:
-        type: string
-        example: "燃料油1604"
   bar:
     type: object
     properties:

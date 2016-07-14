@@ -122,10 +122,47 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productclas
     if (!productclasses.includes('all')) query.productclass = { $in: productclasses };
 
     const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
-      exchangeinstid: 1, rank: 1, productclass: 1,
+      rank: 1, productclass: 1, productid: 1, istrading: 1,
     };
-    const contracts = await INSTRUMENT.find(query, projection).toArray();
+    const contracts = await INSTRUMENT.find(query, projection).sort({ instrumentid: 1 }).toArray();
     return { ok: true, contracts };
+  } catch (error) {
+    debug('getAvg() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getFuturesExchanges(ranks, exchanges, symbols, productclasses) {
+  try {
+    if (!ranks || !exchanges || !symbols || !productclasses) {
+      throw Boom.badRequest('Missing parameter');
+    }
+
+    const query = {};
+    if (!ranks.includes('all')) query.rank = { $in: ranks };
+    if (!exchanges.includes('all')) query.exchangeid = { $in: exchanges };
+    if (!symbols.includes('all')) query.productid = { $in: symbols };
+    if (!productclasses.includes('all')) query.productclass = { $in: productclasses };
+
+    const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
+      rank: 1, productclass: 1, productid: 1, istrading: 1,
+    };
+    const contracts = await INSTRUMENT.find(query, projection).sort({ instrumentid: 1 }).toArray();
+    debug('contracts %o', contracts);
+    const exchangesid = [...new Set(contracts.map(contract => contract.exchangeid))];
+    debug('exchangesid %o', exchangesid);
+    const resExchanges = exchangesid.map(exchangeid => {
+      const contractsPerExchange = contracts.filter(
+        contract => !!(contract.exchangeid === exchangeid)
+      );
+      debug('contractsPerExchange %o', contractsPerExchange);
+      const exchange = {
+        exchangeid,
+        contracts: contractsPerExchange,
+      };
+      return exchange;
+    });
+    return { ok: true, exchanges: resExchanges };
   } catch (error) {
     debug('getAvg() Error: %o', error);
     throw error;
