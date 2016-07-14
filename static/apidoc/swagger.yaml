@@ -585,6 +585,7 @@ definitions:
     required:
       - exchangeid
       - productname
+      - productid
     properties:
       exchangeid:
         type: string
@@ -592,6 +593,9 @@ definitions:
       productname:
         type: string
         example: "热轧卷板"
+      productid:
+        type: string
+        example: "hc"
   resFuturesProduct.ByExchange:
     type: object
     required:

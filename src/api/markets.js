@@ -137,7 +137,7 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productclas
 export async function getFuturesProducts() {
   try {
     const query = {};
-    const projection = { _id: 0, productname: 1, exchangeid: 1 };
+    const projection = { _id: 0, productname: 1, exchangeid: 1, productid: 1 };
     const products = await PRODUCT.find(query, projection).toArray();
 
     return { ok: true, products };
@@ -150,7 +150,7 @@ export async function getFuturesProducts() {
 export async function getFuturesProductsByExchange() {
   try {
     const query = {};
-    const projection = { _id: 0, productname: 1, exchangeid: 1 };
+    const projection = { _id: 0, productname: 1, exchangeid: 1, productid: 1 };
     const products = await PRODUCT.find(query, projection).toArray();
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
