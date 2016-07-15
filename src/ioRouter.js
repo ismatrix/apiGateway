@@ -30,7 +30,9 @@ export default function ioRouter(io) {
       try {
         debug('marketsIO subscribed to %o', data);
         iceLive.connect();
+        debug('1');
         await iceLive.subscribe(data.symbol, data.resolution);
+        debug('2');
         socket.join(data.symbol, (error) => { if (error) throw error; });
         if (callback) callback({ ok: true });
       } catch (error) {

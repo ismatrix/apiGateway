@@ -58,7 +58,7 @@ const iceLiveReadable = {
     this.push(data);
   },
 };
-debug('1');
+
 const iceLiveReadableCallback = Object.assign(Object.create(Readable.prototype), iceLiveReadable);
 const options = { objectMode: true };
 iceLiveReadableCallback.init(options);
@@ -81,8 +81,14 @@ process.once('SIGINT', () => {
 
 const createSession = async () => {
   try {
-    if (router) return debug('Existing session, skip createSession');
+    if (router && communicator) {
+      debug('skip createSession because router and communicator exist:');
+      debug('routeur %o', router);
+      debug('communicator %o', communicator);
+      return;
+    }
     debug('No existing session, creating new session...');
+    debug(`setCallBackReturn: ${setCallbackReturn}`);
     router = communicator.getDefaultRouter();
     router = await Glacier2.RouterPrx.checkedCast(router);
     session = await router.createSession('user', 'password');
@@ -101,7 +107,9 @@ const createSession = async () => {
       router.refreshSession().exception(
         ex => {
           debug('refreshSession FAILED');
-          setCallbackReturn = -1;
+          communicator.destroy();
+          debug('routeur %o', router);
+          debug('communicator %o', communicator);
           createSession();
           p.fail(ex);
         })
@@ -114,9 +122,10 @@ const createSession = async () => {
       adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
     );
       // Set the Md session callback.
-    setCallbackReturn = session.setCallBack(callback);
-    debug(`Successfully setCallBack ${setCallbackReturn}`);
+    setCallbackReturn = await session.setCallBack(callback);
+    debug('Successfully setCallBack. setCallbackReturn: %o', setCallbackReturn);
     event.emit('iceLive:connect', 'iceClient');
+    return;
   } catch (error) {
     debug(`Error createSession ${error}`);
     event.emit('error', 'iceClient');
@@ -125,11 +134,13 @@ const createSession = async () => {
 const connect = createSession;
 
 const subscribe = (symbol, resolution) => {
+  debug(`setCallbackReturn: ${setCallbackReturn}`);
   if (setCallbackReturn === 0) {
     debug(`subscribe('${symbol}', '${resolution}')`);
     return session.subscribeMd(symbol, resolutionMap[resolution]);
   }
   return new Promise((resolve, reject) => {
+    debug('subscribe() return Promise');
     event.on('iceLive:connect', () => {
       debug(`subscribe('${symbol}', '${resolution}')`);
       resolve(session.subscribeMd(symbol, resolutionMap[resolution]));
@@ -141,11 +152,13 @@ const subscribe = (symbol, resolution) => {
 };
 
 const unsubscribe = (symbol, resolution) => {
+  debug(`setCallbackReturn: ${setCallbackReturn}`);
   if (setCallbackReturn === 0) {
     debug(`unsubscribe('${symbol}', '${resolution}')`);
     return session.unSubscribeMd(symbol, resolutionMap[resolution]);
   }
   return new Promise((resolve, reject) => {
+    debug('unsubscribe() return Promise');
     event.on('iceLive:connect', () => {
       debug(`unsubscribe('${symbol}', '${resolution}')`);
       resolve(session.unSubscribeMd(symbol, resolutionMap[resolution]));
