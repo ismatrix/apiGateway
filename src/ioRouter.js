@@ -41,13 +41,13 @@ export default function ioRouter(io) {
 
     socket.on('unsubscribe', async (data, callback) => {
       try {
-        debug('marketsIO subscribed to %o', data);
+        debug('marketsIO unsubscribed to %o', data);
         iceLive.connect();
         await iceLive.unsubscribe(data.symbol, data.resolution);
         socket.leave(data.symbol, (error) => { if (error) throw error; });
         if (callback) callback({ ok: true });
       } catch (error) {
-        debug('markets.on(subscribe) Error: %o', error);
+        debug('markets.on(unsubscribe) Error: %o', error);
         if (callback) callback({ ok: false, error });
       }
     });

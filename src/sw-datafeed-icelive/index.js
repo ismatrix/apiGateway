@@ -79,53 +79,6 @@ process.once('SIGINT', () => {
   }
 });
 
-async function runWithSession() {
-  try {
-    debug('invoke runWithSession function');
-    // Get the session timeout, the router client category and
-    // create the client object adapter.
-    const [timeout, category, adapter] = await Promise.all([
-      router.getSessionTimeout(),
-      router.getCategoryForClient(),
-      communicator.createObjectAdapterWithRouter('', router),
-    ]);
-    //  router refreshSession, timeout seconds, delay milliseconds
-    const p = new Ice.Promise();
-    const refreshSession = () => {
-      // debug('refreshSession');
-      router.refreshSession().exception(
-        ex => {
-          debug('refreshSession FAILED');
-          p.fail(ex);
-        })
-      .delay(timeout.toNumber() * 200)
-      .then(() => { if (!p.completed()) refreshSession(); });
-    };
-    refreshSession();
-    // //  heartbeat from ice file, timeout seconds, delay milliseconds
-    // const heartbeat = async () => {
-    //   try {
-    //     debug('heartbeat');
-    //     session.heartBeat();
-    //     await new Promise(resolve => setTimeout(resolve, timeout.toNumber() * 200));
-    //     heartbeat();
-    //   } catch (error) {
-    //     debug(`heartbeat Error ${error}`);
-    //   }
-    // };
-    // heartbeat();
-      // Create the MdCallback servant and add it to the ObjectAdapter.
-    const callback = iceLive.MdSessionCallBackPrx.uncheckedCast(
-      adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
-    );
-      // Set the Md session callback.
-    return session.setCallBack(callback);
-    // session.SubscribeMd('RiskControl', 'T', ['IF1511', 'MA605']);
-  } catch (error) {
-    debug(`Error refreshSession ${error}`);
-  }
-}
-
 const createSession = async () => {
   try {
     if (router) return debug('Existing session, skip createSession');
@@ -134,7 +87,34 @@ const createSession = async () => {
     router = await Glacier2.RouterPrx.checkedCast(router);
     session = await router.createSession('user', 'password');
     session = await iceLive.MdSessionPrx.uncheckedCast(session);
-    setCallbackReturn = await runWithSession();
+    // create the client object adapter.
+    const [timeout, category, adapter] = await Promise.all([
+      router.getSessionTimeout(),
+      router.getCategoryForClient(),
+      communicator.createObjectAdapterWithRouter('', router),
+    ]);
+
+    //  router refreshSession, timeout seconds, delay milliseconds
+    const p = new Ice.Promise();
+    const refreshSession = () => {
+      debug('refreshSession');
+      router.refreshSession().exception(
+        ex => {
+          debug('refreshSession FAILED');
+          setCallbackReturn = -1;
+          createSession();
+          p.fail(ex);
+        })
+      .delay(timeout.toNumber() * 200)
+      .then(() => { if (!p.completed()) refreshSession(); });
+    };
+    refreshSession();
+
+    const callback = iceLive.MdSessionCallBackPrx.uncheckedCast(
+      adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
+    );
+      // Set the Md session callback.
+    setCallbackReturn = session.setCallBack(callback);
     debug(`Successfully setCallBack ${setCallbackReturn}`);
     event.emit('iceLive:connect', 'iceClient');
   } catch (error) {
