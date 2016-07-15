@@ -83,8 +83,6 @@ const createSession = async () => {
   try {
     if (router && communicator) {
       debug('skip createSession because router and communicator exist:');
-      debug('routeur %o', router);
-      debug('communicator %o', communicator);
       return;
     }
     debug('No existing session, creating new session...');
@@ -108,8 +106,10 @@ const createSession = async () => {
         ex => {
           debug('refreshSession FAILED');
           communicator.destroy();
-          debug('routeur %o', router);
-          debug('communicator %o', communicator);
+          debug('routeur after destroy %o', router);
+          debug('communicator after destroy %o', communicator);
+          setCallbackReturn = -1;
+          debug('setCallbackReturn', setCallbackReturn);
           createSession();
           p.fail(ex);
         })
