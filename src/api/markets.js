@@ -8,12 +8,14 @@ import through from 'through2';
 let INDICATORS;
 let INSTRUMENT;
 let PRODUCT;
+let DAYBAR;
 
 (async function getDb() {
   const smartwin = await mongodb.getdb();
   INDICATORS = smartwin.collection('INDICATORS');
   INSTRUMENT = smartwin.collection('INSTRUMENT');
   PRODUCT = smartwin.collection('PRODUCT');
+  DAYBAR = smartwin.collection('DAYBAR');
 }());
 
 export async function getIndicesTrend(sym, startDate, endDate) {
@@ -93,18 +95,48 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         callback();
       }
     );
-    const quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
-    return quotes.pipe(through.obj((chunk, enc, callback) => {
-      const candlestick = {
-        timestamp: chunk.timestamp,
-        open: chunk.open,
-        high: chunk.high,
-        low: chunk.low,
-        close: chunk.close,
-        volume: chunk.volume,
+    let quotes;
+    let transformFunction;
+    if (resolution === 'minute') {
+      quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
+
+      transformFunction = (chunk, enc, callback) => {
+        const candlestick = {
+          timestamp: chunk.timestamp,
+          open: chunk.open,
+          high: chunk.high,
+          low: chunk.low,
+          close: chunk.close,
+          volume: chunk.volume,
+          tradingday: chunk.tradingDay,
+        };
+        callback(null, candlestick);
       };
-      callback(null, candlestick);
-    }))
+    } else if (resolution === 'day') {
+      const query = {
+        $and: [
+          { instrument: symbol },
+          { tradingday: { $gte: startDate } },
+          { tradingday: { $lte: endDate } },
+        ],
+      };
+
+      quotes = await DAYBAR.find(query).sort({ tradingday: 1 }).stream();
+
+      transformFunction = (chunk, enc, callback) => {
+        const candlestick = {
+          timestamp: parseInt(chunk.timestamp, 10),
+          open: chunk.open,
+          high: chunk.high,
+          low: chunk.low,
+          close: chunk.close,
+          volume: chunk.volume,
+          tradingDay: chunk.tradingday,
+        };
+        callback(null, candlestick);
+      };
+    }
+    return quotes.pipe(through.obj(transformFunction))
     .pipe(stringifyIce);
   } catch (error) {
     debug('getFuturesQuotes() Error: %o', error);
