@@ -695,7 +695,7 @@ definitions:
       resolution:
         type: string
         example: "minute"
-        enum: ["tick", "minute"]
+        enum: ["minute", "day"]
       startDate:
         type: string
         example: "20150401"
@@ -726,6 +726,14 @@ definitions:
         example: "tick"
   bar:
     type: object
+    required:
+      - timestamp
+      - open
+      - high
+      - low
+      - close
+      - volume
+      - tradingDay
     properties:
       timestamp:
         type: number
@@ -745,6 +753,9 @@ definitions:
       volume:
         type: number
         example: 234
+      tradingDay:
+        type: string
+        example: "IF1606"
   tick:
     type: object
     properties:
