@@ -28,11 +28,9 @@ export default function ioRouter(io) {
 
     socket.on('subscribe', async (data, callback) => {
       try {
-        debug('marketsIO subscribed to %o', data);
+        debug('marketsIO subscribed to %o with callback: %o', data, !!callback);
         iceLive.connect();
-        debug('1');
         await iceLive.subscribe(data.symbol, data.resolution);
-        debug('2');
         socket.join(data.symbol, (error) => { if (error) throw error; });
         if (callback) callback({ ok: true });
       } catch (error) {
@@ -43,7 +41,7 @@ export default function ioRouter(io) {
 
     socket.on('unsubscribe', async (data, callback) => {
       try {
-        debug('marketsIO unsubscribed to %o', data);
+        debug('marketsIO unsubscribed to %o with callback: %o', data, !!callback);
         iceLive.connect();
         await iceLive.unsubscribe(data.symbol, data.resolution);
         socket.leave(data.symbol, (error) => { if (error) throw error; });
@@ -79,7 +77,7 @@ export default function ioRouter(io) {
 
   const marketsSocket = through.obj(
     (chunk, enc, callback) => {
-      if (chunk.symbol === 'IF1608') debug('chunk, %o', chunk);
+      // if (chunk.symbol === 'IF1608') debug('chunk, %o', chunk);
       markets.to(chunk.symbol).emit(chunk.resolution, chunk);
       callback();
     }

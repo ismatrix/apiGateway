@@ -70,7 +70,7 @@ id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
 const communicator = Ice.initialize(process.argv, id);
 
 const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
-let setCallbackReturn = -1;
+
 // Destroy communicator on SIGINT so application exit cleanly.
 process.once('SIGINT', () => {
   if (communicator) {
@@ -79,16 +79,33 @@ process.once('SIGINT', () => {
   }
 });
 
+let setCallbackReturn = -1;
+let isCreateSessionPending = false;
+
+function createSessionTimer(time) {
+  isCreateSessionPending = true;
+  setTimeout(() => {
+    isCreateSessionPending = false;
+  }, time);
+}
+
 const createSession = async () => {
   try {
-    if (router && communicator) {
-      debug('skip createSession because router and communicator exist:');
+    if (setCallbackReturn === 0 || isCreateSessionPending) {
+      debug(`skip createSession() because setCallbackReturn === ${setCallbackReturn}\
+        and isCreateSessionPending === ${isCreateSessionPending}`);
       return;
     }
-    debug('No existing session, creating new session...');
-    debug(`setCallBackReturn: ${setCallbackReturn}`);
-    router = communicator.getDefaultRouter();
+    debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
+      and isCreateSessionPending === ${isCreateSessionPending}`);
+    createSessionTimer(2000);
+    router = communicator.getDefaultRouter().ice_invocationTimeout(5000);
+    // router.ice_invocationTimeout(5000);
     router = await Glacier2.RouterPrx.checkedCast(router);
+    // session.ice_invocationTimeout(5000);
+    // router = router.ice_invocationTimeout(5000);
+    // router.invocationTimeout = 5000;
+    debug('router object %o', router);
     session = await router.createSession('user', 'password');
     session = await iceLive.MdSessionPrx.uncheckedCast(session);
     // create the client object adapter.
@@ -97,7 +114,7 @@ const createSession = async () => {
       router.getCategoryForClient(),
       communicator.createObjectAdapterWithRouter('', router),
     ]);
-
+    debug('Server timeout: %os', timeout.toNumber());
     //  router refreshSession, timeout seconds, delay milliseconds
     const p = new Ice.Promise();
     const refreshSession = () => {
@@ -105,18 +122,26 @@ const createSession = async () => {
       router.refreshSession().exception(
         ex => {
           debug('refreshSession FAILED');
-          communicator.destroy();
-          debug('routeur after destroy %o', router);
-          debug('communicator after destroy %o', communicator);
+          debug('exception: %o', ex);
           setCallbackReturn = -1;
-          debug('setCallbackReturn', setCallbackReturn);
-          createSession();
           p.fail(ex);
         })
-      .delay(timeout.toNumber() * 200)
+      .delay(timeout.toNumber() * 20)
       .then(() => { if (!p.completed()) refreshSession(); });
     };
     refreshSession();
+    //  heartbeat from ice file, timeout seconds, delay milliseconds
+    // const heartbeat = async () => {
+    //   try {
+    //     debug('heartbeat');
+    //     session.heartBeat();
+    //     await new Promise(resolve => setTimeout(resolve, timeout.toNumber() * 200));
+    //     heartbeat();
+    //   } catch (error) {
+    //     debug(`heartbeat Error ${error}`);
+    //   }
+    // };
+    // heartbeat();
 
     const callback = iceLive.MdSessionCallBackPrx.uncheckedCast(
       adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
@@ -124,47 +149,66 @@ const createSession = async () => {
       // Set the Md session callback.
     setCallbackReturn = await session.setCallBack(callback);
     debug('Successfully setCallBack. setCallbackReturn: %o', setCallbackReturn);
-    event.emit('iceLive:connect', 'iceClient');
+    event.emit('createSession:success', 'iceClient');
     return;
   } catch (error) {
-    debug(`Error createSession ${error}`);
-    event.emit('error', 'iceClient');
+    debug('Error createSession(): %o', error);
+    event.emit('createSession:error', 'iceClient');
   }
 };
 const connect = createSession;
 
 const subscribe = (symbol, resolution) => {
-  debug(`setCallbackReturn: ${setCallbackReturn}`);
   if (setCallbackReturn === 0) {
-    debug(`subscribe('${symbol}', '${resolution}')`);
+    debug(`subscribe('${symbol}', '${resolution}') [immediate call]`);
     return session.subscribeMd(symbol, resolutionMap[resolution]);
   }
   return new Promise((resolve, reject) => {
-    debug('subscribe() return Promise');
-    event.on('iceLive:connect', () => {
-      debug(`subscribe('${symbol}', '${resolution}')`);
-      resolve(session.subscribeMd(symbol, resolutionMap[resolution]));
+    debug(`subscribe('${symbol}', '${resolution}') [promisified]`);
+    event.on('createSession:success', async () => {
+      try {
+        debug(`subscribe('${symbol}', '${resolution}') [on createSession:success event]`);
+        const subscribeMdReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
+        debug(`subscribe('${symbol}', '${resolution}') [subscribeMdReturn: ${subscribeMdReturn}]`);
+        if (subscribeMdReturn === 0) {
+          resolve(subscribeMdReturn);
+        } else {
+          reject(new Error(`Error subscribe('${symbol}', '${resolution}`));
+        }
+      } catch (error) {
+        reject(new Error(`createSession:error, cannot subscribe('${symbol}', '${resolution}`));
+      }
     });
-    event.on('error', () => {
-      reject(new Error(`Ice connection error, cannot subscribe to ${symbol}`));
+    event.on('createSession:error', () => {
+      reject(new Error(`createSession:error, cannot subscribe('${symbol}', '${resolution}`));
     });
   });
 };
 
 const unsubscribe = (symbol, resolution) => {
-  debug(`setCallbackReturn: ${setCallbackReturn}`);
   if (setCallbackReturn === 0) {
-    debug(`unsubscribe('${symbol}', '${resolution}')`);
+    debug(`unsubscribe('${symbol}', '${resolution}') [immediate call]`);
     return session.unSubscribeMd(symbol, resolutionMap[resolution]);
   }
   return new Promise((resolve, reject) => {
-    debug('unsubscribe() return Promise');
-    event.on('iceLive:connect', () => {
-      debug(`unsubscribe('${symbol}', '${resolution}')`);
-      resolve(session.unSubscribeMd(symbol, resolutionMap[resolution]));
+    debug(`unsubscribe('${symbol}', '${resolution}') [promisified]`);
+    event.on('createSession:success', async () => {
+      try {
+        debug(`unsubscribe('${symbol}', '${resolution}') [on createSession:success event]`);
+        const unsubscribeMdReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
+        debug(`unsubscribe('${symbol}', '${resolution}')\
+          [unsubscribeMdReturn: ${unsubscribeMdReturn}]`);
+        if (unsubscribeMdReturn === 0) {
+          resolve(unsubscribeMdReturn);
+        } else {
+          reject(new Error(`Error unsubscribe('${symbol}', '${resolution}`));
+        }
+      } catch (error) {
+        reject(new Error(`createSession:error, cannot unsubscribe('${symbol}', '${resolution}`));
+      }
     });
-    event.on('error', () => {
-      reject(new Error(`Ice connection error, cannot unsubscribe to ${symbol}`));
+    event.on('createSession:error', () => {
+      reject(new Error(`createSession:error, cannot unsubscribe('${symbol}', '${resolution}`));
     });
   });
 };
