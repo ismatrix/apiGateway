@@ -99,12 +99,10 @@ const createSession = async () => {
     debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
       and isCreateSessionPending === ${isCreateSessionPending}`);
     createSessionTimer(2000);
-    router = communicator.getDefaultRouter();
+    router = communicator.getDefaultRouter().ice_invocationTimeout(5000);
     // router.ice_invocationTimeout(5000);
     router = await Glacier2.RouterPrx.checkedCast(router);
-    // session.ice_invocationTimeout(5000);
-    // router = router.ice_invocationTimeout(5000);
-    // router.invocationTimeout = 5000;
+
     debug('router object %o', router);
     session = await router.createSession('user', 'password');
     session = await iceLive.MdSessionPrx.uncheckedCast(session);
@@ -115,33 +113,21 @@ const createSession = async () => {
       communicator.createObjectAdapterWithRouter('', router),
     ]);
     debug('Server timeout: %os', timeout.toNumber());
-    //  router refreshSession, timeout seconds, delay milliseconds
-    const p = new Ice.Promise();
+
+    // call refreshSession() every x seconds to keep session active
     const refreshSession = () => {
       debug('refreshSession');
-      router.refreshSession().exception(
-        ex => {
-          debug('refreshSession FAILED');
-          debug('exception: %o', ex);
-          setCallbackReturn = -1;
-          p.fail(ex);
-        })
-      .delay(timeout.toNumber() * 20)
-      .then(() => { if (!p.completed()) refreshSession(); });
+      router.refreshSession()
+      .delay(timeout.toNumber() * 100)
+      .then(() => {
+        refreshSession();
+      }, error => {
+        debug('Error refreshSession(): %o', error);
+        setCallbackReturn = -1;
+      })
+      ;
     };
     refreshSession();
-    //  heartbeat from ice file, timeout seconds, delay milliseconds
-    // const heartbeat = async () => {
-    //   try {
-    //     debug('heartbeat');
-    //     session.heartBeat();
-    //     await new Promise(resolve => setTimeout(resolve, timeout.toNumber() * 200));
-    //     heartbeat();
-    //   } catch (error) {
-    //     debug(`heartbeat Error ${error}`);
-    //   }
-    // };
-    // heartbeat();
 
     const callback = iceLive.MdSessionCallBackPrx.uncheckedCast(
       adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
@@ -153,64 +139,81 @@ const createSession = async () => {
     return;
   } catch (error) {
     debug('Error createSession(): %o', error);
-    event.emit('createSession:error', 'iceClient');
+    event.emit('createSession:error', error);
   }
 };
 const connect = createSession;
 
-const subscribe = (symbol, resolution) => {
-  if (setCallbackReturn === 0) {
-    debug(`subscribe('${symbol}', '${resolution}') [immediate call]`);
-    return session.subscribeMd(symbol, resolutionMap[resolution]);
-  }
-  return new Promise((resolve, reject) => {
-    debug(`subscribe('${symbol}', '${resolution}') [promisified]`);
-    event.on('createSession:success', async () => {
-      try {
-        debug(`subscribe('${symbol}', '${resolution}') [on createSession:success event]`);
-        const subscribeMdReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
-        debug(`subscribe('${symbol}', '${resolution}') [subscribeMdReturn: ${subscribeMdReturn}]`);
-        if (subscribeMdReturn === 0) {
-          resolve(subscribeMdReturn);
-        } else {
-          reject(new Error(`Error subscribe('${symbol}', '${resolution}`));
+const subscribe = async (symbol, resolution) => {
+  try {
+    if (setCallbackReturn === 0) {
+      debug(`subscribe('${symbol}', '${resolution}') [immediate call]`);
+      const subscribeReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
+
+      if (subscribeReturn === 0) return subscribeReturn;
+      throw new Error(`Error subscribe('${symbol}', '${resolution}')\
+      [subscribeReturn: ${subscribeReturn}]`);
+    }
+    // if the iceLive connection doesn't exist, return a promise that will resolve on connection
+    return new Promise((resolve, reject) => {
+      debug(`subscribe('${symbol}', '${resolution}') [promisified]`);
+      event.on('createSession:success', async () => {
+        try {
+          debug(`subscribe('${symbol}', '${resolution}') [on createSession:success event]`);
+          const subscribeReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
+
+          if (subscribeReturn === 0) resolve(subscribeReturn);
+          reject(new Error(`Error subscribe('${symbol}', '${resolution}')\
+          [subscribeReturn: ${subscribeReturn}]`));
+        } catch (error) {
+          debug('Error subscribe(): %o', error);
+          reject(new Error(`Error subscribe('${symbol}', '${resolution}')`));
         }
-      } catch (error) {
-        reject(new Error(`createSession:error, cannot subscribe('${symbol}', '${resolution}`));
-      }
+      });
+      event.on('createSession:error', () => {
+        reject(new Error(`createSession() error, can't subscribe('${symbol}', '${resolution}')`));
+      });
     });
-    event.on('createSession:error', () => {
-      reject(new Error(`createSession:error, cannot subscribe('${symbol}', '${resolution}`));
-    });
-  });
+  } catch (error) {
+    debug('Error subscribe(): %o', error);
+    throw new Error(`ice subscribe() error, can't subscribe('${symbol}', '${resolution}')`);
+  }
 };
 
-const unsubscribe = (symbol, resolution) => {
-  if (setCallbackReturn === 0) {
-    debug(`unsubscribe('${symbol}', '${resolution}') [immediate call]`);
-    return session.unSubscribeMd(symbol, resolutionMap[resolution]);
-  }
-  return new Promise((resolve, reject) => {
-    debug(`unsubscribe('${symbol}', '${resolution}') [promisified]`);
-    event.on('createSession:success', async () => {
-      try {
-        debug(`unsubscribe('${symbol}', '${resolution}') [on createSession:success event]`);
-        const unsubscribeMdReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
-        debug(`unsubscribe('${symbol}', '${resolution}')\
-          [unsubscribeMdReturn: ${unsubscribeMdReturn}]`);
-        if (unsubscribeMdReturn === 0) {
-          resolve(unsubscribeMdReturn);
-        } else {
-          reject(new Error(`Error unsubscribe('${symbol}', '${resolution}`));
+const unsubscribe = async (symbol, resolution) => {
+  try {
+    if (setCallbackReturn === 0) {
+      debug(`unsubscribe('${symbol}', '${resolution}') [immediate call]`);
+      const unsubscribeReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
+
+      if (unsubscribeReturn === 0) return unsubscribeReturn;
+      throw new Error(`Error unsubscribe('${symbol}', '${resolution}')\
+      [unsubscribeReturn: ${unsubscribeReturn}]`);
+    }
+    // if the iceLive connection doesn't exist, return a promise that will resolve on connection
+    return new Promise((resolve, reject) => {
+      debug(`unsubscribe('${symbol}', '${resolution}') [promisified]`);
+      event.on('createSession:success', async () => {
+        try {
+          debug(`unsubscribe('${symbol}', '${resolution}') [on createSession:success event]`);
+          const unsubscribeReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
+
+          if (unsubscribeReturn === 0) resolve(unsubscribeReturn);
+          reject(new Error(`Error unsubscribe('${symbol}', '${resolution}')\
+          [unsubscribeReturn: ${unsubscribeReturn}]`));
+        } catch (error) {
+          debug('Error unsubscribe(): %o', error);
+          reject(new Error(`Error unsubscribe('${symbol}', '${resolution}')`));
         }
-      } catch (error) {
-        reject(new Error(`createSession:error, cannot unsubscribe('${symbol}', '${resolution}`));
-      }
+      });
+      event.on('createSession:error', () => {
+        reject(new Error(`createSession() error, can't unsubscribe('${symbol}', '${resolution}')`));
+      });
     });
-    event.on('createSession:error', () => {
-      reject(new Error(`createSession:error, cannot unsubscribe('${symbol}', '${resolution}`));
-    });
-  });
+  } catch (error) {
+    debug('Error unsubscribe(): %o', error);
+    throw new Error(`ice unsubscribe() error, can't unsubscribe('${symbol}', '${resolution}')`);
+  }
 };
 
 const feed = () => iceLiveReadableCallback;
