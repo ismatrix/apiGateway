@@ -622,7 +622,8 @@ definitions:
       - symbols
       - exchanges
       - ranks
-      - productclasses
+      - productClasses
+      - isTrading
     properties:
       symbols:
         type: array
@@ -639,11 +640,16 @@ definitions:
         example: [1, 2]
         items:
           type: number
-      productclasses:
+      productClasses:
         type: array
         example: ["1", "8", "9"]
         items:
           type: string
+      isTrading:
+        type: array
+        example: [1, 0]
+        items:
+          type: number
   resFuturesContract:
     type: object
     required:

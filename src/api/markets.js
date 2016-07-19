@@ -112,16 +112,28 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
   }
 }
 
-export async function getFuturesContracts(ranks, exchanges, symbols, productclasses) {
+export async function getFuturesContracts(ranks, exchanges, symbols, productClasses, isTrading) {
   try {
-    if (!ranks || !exchanges || !symbols || !productclasses) {
+    if (!ranks || !exchanges || !symbols || !productClasses || !isTrading) {
       throw Boom.badRequest('Missing parameter');
     }
-    const query = {};
-    if (!ranks.includes('all')) query.rank = { $in: ranks };
-    if (!exchanges.includes('all')) query.exchangeid = { $in: exchanges };
-    if (!symbols.includes('all')) query.productid = { $in: symbols };
-    if (!productclasses.includes('all')) query.productclass = { $in: productclasses };
+    const query = {
+      $and: [],
+    };
+    debug('ranks: %o, exchanges: %o, symbols: %o, productClasses: %o, isTrading: %o',
+    ranks, exchanges, symbols, productClasses, isTrading);
+
+    if (!ranks.includes('all')) query.$and.push({ ranks: { $in: ranks } });
+    if (!exchanges.includes('all')) query.$and.push({ exchangeid: { $in: exchanges } });
+    if (!symbols.includes('all')) {
+      query.$and.push(
+        { $or: [{ instrumentid: { $in: symbols } }, { productid: { $in: symbols } }] }
+      );
+    }
+    if (!productClasses.includes('all')) query.$and.push({ productclass: { $in: productClasses } });
+    if (!isTrading.includes('all')) query.$and.push({ istrading: { $in: isTrading } });
+    if (!query.$and.length) delete query.$and;
+    debug('getFuturesContracts() db query: %o', query);
 
     const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
       rank: 1, productclass: 1, productid: 1, istrading: 1,

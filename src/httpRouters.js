@@ -58,8 +58,10 @@ apiRouter
     const ranks = ctx.request.body.ranks;
     const exchanges = ctx.request.body.exchanges;
     const symbols = ctx.request.body.symbols;
-    const productclasses = ctx.request.body.productclasses;
-    ctx.body = await markets.getFuturesContracts(ranks, exchanges, symbols, productclasses);
+    const productClasses = ctx.request.body.productClasses;
+    const isTrading = ctx.request.body.isTrading;
+    ctx.body = await markets.getFuturesContracts(ranks, exchanges, symbols,
+      productClasses, isTrading);
   })
   .get('/markets/futures/products', async ctx => {
     ctx.body = await markets.getFuturesProducts();
