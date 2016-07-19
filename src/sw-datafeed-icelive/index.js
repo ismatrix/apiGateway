@@ -99,7 +99,7 @@ const createSession = async () => {
     debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
       and isCreateSessionPending === ${isCreateSessionPending}`);
     createSessionTimer(2000);
-    router = communicator.getDefaultRouter().ice_invocationTimeout(5000);
+    router = communicator.getDefaultRouter();
     // router.ice_invocationTimeout(5000);
     router = await Glacier2.RouterPrx.checkedCast(router);
     // session.ice_invocationTimeout(5000);
