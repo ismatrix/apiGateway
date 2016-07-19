@@ -35,7 +35,7 @@ export default function ioRouter(io) {
         if (callback) callback({ ok: true });
       } catch (error) {
         debug('markets.on(subscribe) Error: %o', error);
-        if (callback) callback({ ok: false, error });
+        if (callback) callback({ ok: false, error: error.message });
       }
     });
 
@@ -48,7 +48,7 @@ export default function ioRouter(io) {
         if (callback) callback({ ok: true });
       } catch (error) {
         debug('markets.on(unsubscribe) Error: %o', error);
-        if (callback) callback({ ok: false, error });
+        if (callback) callback({ ok: false, error: error.message });
       }
     });
   });
