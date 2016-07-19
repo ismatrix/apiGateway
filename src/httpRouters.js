@@ -81,7 +81,7 @@ apiRouter
     const startDate = ctx.request.body.startDate;
     const endDate = ctx.request.body.endDate;
     const symbols = ctx.request.body.symbols;
-    ctx.body = await markets.getIndicesTrend(symbols, startDate, endDate);
+    ctx.body = await markets.bullBearTrend(symbols, startDate, endDate);
   })
   ;
 

@@ -18,7 +18,7 @@ let DAYBAR;
   DAYBAR = smartwin.collection('DAYBAR');
 }());
 
-export async function getIndicesTrend(sym, startDate, endDate) {
+export async function bullBearTrend(sym, startDate, endDate) {
   try {
     if (!sym || !startDate || !endDate) throw Boom.badRequest('Missing parameter');
     let symbols = sym;
@@ -66,7 +66,7 @@ export async function getIndicesTrend(sym, startDate, endDate) {
 
     return { ok: true, timeline, indicators };
   } catch (error) {
-    debug('getCandleStick() Error: %o', error);
+    debug('bullBearTrend() Error: %o', error);
     throw error;
   }
 }
