@@ -155,7 +155,7 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
     debug('ranks: %o, exchanges: %o, symbols: %o, productClasses: %o, isTrading: %o',
     ranks, exchanges, symbols, productClasses, isTrading);
 
-    if (!ranks.includes('all')) query.$and.push({ ranks: { $in: ranks } });
+    if (!ranks.includes('all')) query.$and.push({ rank: { $in: ranks } });
     if (!exchanges.includes('all')) query.$and.push({ exchangeid: { $in: exchanges } });
     if (!symbols.includes('all')) {
       query.$and.push(
