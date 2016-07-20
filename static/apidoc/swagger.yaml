@@ -870,7 +870,7 @@ definitions:
     properties:
       symbols:
         type: array
-        example: ["IF", "a", "T"]
+        example: ["ni", "IF", "T"]
         items:
           type: string
   resContractdailypricespeed:
@@ -878,10 +878,10 @@ definitions:
     properties:
       symbol:
         type: string
-        example: "agIDX"
+        example: "ni1609"
       productSymbol:
         type: string
-        example: "ag"
+        example: "ni"
       values:
         type: array
         example: [0, 240, 560, -130, -70, -30]

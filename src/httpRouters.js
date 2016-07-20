@@ -77,11 +77,15 @@ apiRouter
     ctx.type = 'application/json';
     ctx.body = await markets.getFuturesQuotes(symbol, resolution, startDate, endDate);
   })
-  .post('/markets/futures/indicators/bullbeartrend', async ctx => {
+  .post('/markets/futures/indicators/bullBearTrend', async ctx => {
     const startDate = ctx.request.body.startDate;
     const endDate = ctx.request.body.endDate;
     const symbols = ctx.request.body.symbols;
     ctx.body = await markets.bullBearTrend(symbols, startDate, endDate);
+  })
+  .post('/markets/futures/indicators/contractDailyPriceSpeed', async ctx => {
+    const symbols = ctx.request.body.symbols;
+    ctx.body = await markets.contractDailyPriceSpeed(symbols);
   })
   ;
 

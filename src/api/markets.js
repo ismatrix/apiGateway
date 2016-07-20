@@ -25,7 +25,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
     if (sym.includes('all')) {
       symbols = await INDICATORS.distinct('symbol', { name: 'bull bear trend' });
     }
-    debug('symbols %o', symbols);
+    debug('bullBearTrend() req symbols %o', symbols);
     const queryIns = { instrumentid: { $in: symbols } };
     const projectionIns = { _id: 0, instrumentid: 1, instrumentname: 1 };
     const contracts = await INSTRUMENT.find(queryIns, projectionIns).toArray();
@@ -67,6 +67,54 @@ export async function bullBearTrend(sym, startDate, endDate) {
     return { ok: true, timeline, indicators };
   } catch (error) {
     debug('bullBearTrend() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function contractDailyPriceSpeed(symbols) {
+  try {
+    if (!symbols) throw Boom.badRequest('Missing symbols parameter');
+
+    const contractsQuery = { $and: [
+        { istrading: 1 },
+        { rank: { $in: [1, 2, 3] } },
+        { $or: [{ productid: { $in: symbols } }, { instrumentid: { $in: symbols } }] },
+    ] };
+    const contractsProjection = { _id: 0, instrumentid: 1, productid: 1 };
+    const contracts = await INSTRUMENT.find(contractsQuery, contractsProjection).toArray();
+    const contractSymbols = contracts.map(contract => contract.instrumentid);
+    debug('contractDailyPriceSpeed() contractSymbols: %o', contractSymbols);
+
+    const query = { $and: [
+      { symbol: { $in: contractSymbols } },
+      { name: 'contract daily price speed' },
+    ] };
+    const projectionInd = { _id: 0, name: 0 };
+    const indicators = await INDICATORS.find(query, projectionInd).toArray();
+
+    let timeline = indicators[0].dates;
+    for (const indicator of indicators) {
+      timeline = uniq(timeline.concat(indicator.dates));
+    }
+    timeline.sort();
+
+    for (const [index, date] of timeline.entries()) {
+      for (const indicator of indicators) {
+        if (!indicator.dates.includes(date)) {
+          indicator.values.splice(index, 0, null);
+        }
+      }
+    }
+
+    for (const indicator of indicators) {
+      delete indicator.dates;
+      const match = contracts.find((contract) => contract.instrumentid === indicator.symbol);
+      if (match) indicator.productSymbol = match.productid;
+    }
+
+    return { ok: true, timeline, indicators };
+  } catch (error) {
+    debug('contractDailyPriceSpeed() Error: %o', error);
     throw error;
   }
 }
