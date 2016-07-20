@@ -303,7 +303,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/bar'
-  /markets/futures/indicators/bullbeartrend:
+  /markets/futures/indicators/bullBearTrend:
     post:
       tags:
         - Markets
@@ -340,7 +340,7 @@ paths:
                 items:
                   $ref: '#/definitions/resIndicator'
       security: []
-  /markets/futures/indicators/contractdailypricespeed:
+  /markets/futures/indicators/contractDailyPriceSpeed:
     post:
       tags:
         - Markets
