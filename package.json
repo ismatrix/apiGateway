@@ -16,17 +16,17 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.7.5",
+    "babel-cli": "^6.11.4",
     "babel-eslint": "^6.0.2",
     "babel-preset-es2015-node5": "^1.2.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.7.2",
-    "eslint": "^3.0.0",
-    "eslint-plugin-jsx-a11y": "^1.5.5",
-    "eslint-plugin-react": "^5.0.1",
+    "eslint": "^3.1.1",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-babel": "^3.3.0",
-    "eslint-plugin-import": "^1.10.2"
+    "eslint-plugin-import": "^1.11.1",
+    "eslint-plugin-jsx-a11y": "^2.0.1",
+    "eslint-plugin-react": "^5.0.1"
   },
   "dependencies": {
     "acl": "^0.4.9",
@@ -37,6 +37,7 @@
     "boom": "^3.2.2",
     "debug": "^2.2.0",
     "ice": "^3.6.2",
+    "jsonwebtoken": "^7.1.6",
     "kcors": "^2.1.1",
     "koa": "^2.0.0",
     "koa-bodyparser": "^3.0.0",
@@ -48,12 +49,11 @@
     "koa-send": "^3.2.0",
     "koa-static": "^3.0.0",
     "lodash": "^4.13.1",
-    "mongodb": "^2.2",
+    "mongodb": "^2.2.4",
     "node-fetch": "^1.5.3",
     "slice2js": "^3.6.2",
     "socket.io": "^1.4.8",
     "socketio-jwt": "^4.5.0",
-    "streaming-json-stringify": "^3.1.0",
     "through2": "^2.0.1",
     "wechat-crypto": "0.0.2"
   }
