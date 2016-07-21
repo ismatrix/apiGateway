@@ -121,9 +121,13 @@ const createSession = async () => {
       .delay(timeout.toNumber() * 100)
       .then(() => {
         refreshSession();
-      }, error => {
-        debug('Error refreshSession(): %o', error);
-        setCallbackReturn = -1;
+      }, async error => {
+        try {
+          debug('Error refreshSession(): %o', error);
+          setCallbackReturn = -1;
+        } catch (err) {
+          debug('Error: refreshSession: %o', err);
+        }
       })
       ;
     };
