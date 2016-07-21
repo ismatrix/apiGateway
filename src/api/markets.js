@@ -92,6 +92,8 @@ export async function contractDailyPriceSpeed(symbols) {
     const projectionInd = { _id: 0, name: 0 };
     const indicators = await INDICATORS.find(query, projectionInd).toArray();
 
+    if (!indicators[0]) throw Boom.notFound('Indicators not found');
+
     let timeline = indicators[0].dates;
     for (const indicator of indicators) {
       timeline = uniq(timeline.concat(indicator.dates));
