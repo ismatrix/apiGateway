@@ -202,6 +202,13 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
     const query = {
       $and: [],
     };
+    const lookup = {
+      from: 'PRODUCT',
+      localField: 'productid',
+      foreignField: 'productid',
+      as: 'product',
+    };
+    const unwind = '$product';
     debug('ranks: %o, exchanges: %o, symbols: %o, productClasses: %o, isTrading: %o',
     ranks, exchanges, symbols, productClasses, isTrading);
 
@@ -217,13 +224,41 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
     if (!query.$and.length) delete query.$and;
     debug('getFuturesContracts() db query: %o', query);
 
-    const projection = { _id: 0, instrumentid: 1, exchangeid: 1, instrumentname: 1,
-      rank: 1, productclass: 1, productid: 1, istrading: 1,
+    const projection = {
+      _id: 0,
+      instrumentid: 1,
+      exchangeid: 1,
+      // instrumentname: '$product.productname',
+      // instrumentname: { $concat: ['$product.productname',
+      // '[', '$instrumentid', ']'] }, { $eq: ['$productclass', '8'] },
+      instrumentname: {
+        $cond:
+        [
+          { $or: [{ $eq: ['$productclass', '8'] }, { $eq: ['$productclass', '9'] }] },
+          '$instrumentname',
+          // '$product.productname',
+           { $concat: ['$product.productname',
+               { $substr: ['$expiredate', 2, 4] }] },
+        ],
+      },
+      rank: 1,
+      productclass: 1,
+      productid: 1,
+      istrading: 1,
     };
-    const contracts = await INSTRUMENT.find(query, projection).sort({ instrumentid: 1 }).toArray();
+
+    const sort = { exchangeid: 1, productclass: -1, instrumentid: 1 };
+    const contracts = await INSTRUMENT.aggregate([
+      { $lookup: lookup },
+      { $unwind: unwind },
+      { $match: query },
+      { $project: projection },
+      { $sort: sort },
+    ]).toArray();
+
     return { ok: true, contracts };
   } catch (error) {
-    debug('getAvg() Error: %o', error);
+    debug('getFuturesContracts() Error: %o', error);
     throw error;
   }
 }
@@ -263,6 +298,40 @@ export async function getFuturesProductsByExchange() {
     return { ok: true, productsByExchange };
   } catch (error) {
     debug('getAvg() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getProductsWithVol() {
+  try {
+    const lookup = {
+      from: 'INSTRUMENT',
+      localField: 'productid',
+      foreignField: 'productid',
+      as: 'instrument',
+    };
+    const unwind = '$instrument';
+    const match = { 'instrument.rank': 1 };
+    const project = {
+      _id: 0,
+      productid: 1,
+      productname: 1,
+      exchangeid: 1,
+      mainins: '$instrument.instrumentname',
+      mainisnopeninterest: '$instrument.openinterest',
+    };
+    const sort = { mainisnopeninterest: -1 };
+    const products = await PRODUCT.aggregate([
+      { $lookup: lookup },
+      { $unwind: unwind },
+      { $match: match },
+      { $project: project },
+      { $sort: sort },
+    ]).toArray();
+
+    return { ok: true, products };
+  } catch (error) {
+    debug('getProductsWithVol() Error: %o', error);
     throw error;
   }
 }
