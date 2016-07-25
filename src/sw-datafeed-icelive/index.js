@@ -8,9 +8,12 @@ const event = new events.EventEmitter();
 import stream from 'stream';
 const Readable = stream.Readable;
 
-const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h invesmart.win';
-let session;
+const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h 120.76.98.94';
+let communicator;
 let router;
+let session;
+let setCallbackReturn = -1;
+let isCreateSessionPending = false;
 const resolutionMap = {
   tick: 'T',
   minute: 'M',
@@ -64,12 +67,12 @@ const options = { objectMode: true };
 iceLiveReadableCallback.init(options);
 // Initialize the communicator with Ice.Default.Router property
 // set to the simple Md Glacier2 router.
-const id = new Ice.InitializationData();
-id.properties = Ice.createProperties();
-id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
-const communicator = Ice.initialize(process.argv, id);
-
-const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
+// const id = new Ice.InitializationData();
+// id.properties = Ice.createProperties();
+// id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
+// const communicator = Ice.initialize(process.argv, id);
+//
+// const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
 
 // Destroy communicator on SIGINT so application exit cleanly.
 process.once('SIGINT', () => {
@@ -79,15 +82,37 @@ process.once('SIGINT', () => {
   }
 });
 
-let setCallbackReturn = -1;
-let isCreateSessionPending = false;
-
 function createSessionTimer(time) {
   isCreateSessionPending = true;
   setTimeout(() => {
     isCreateSessionPending = false;
   }, time);
 }
+
+const destroySession = async () => {
+  try {
+    debug('destroying router session');
+    debug('router %o', router);
+    const sessionDestroyPromise = () => new Promise(
+      resolve => {
+        router.destroySession().finally(() => resolve());
+      }
+    );
+    if (router && router.destroySession) await sessionDestroyPromise();
+    debug('destroying communicator');
+    debug('communicator %o', communicator);
+    const communicatorDestroyPromise = () => new Promise(
+      resolve => {
+        communicator.destroy().finally(() => resolve());
+      }
+    );
+    if (communicator && communicator.destroy) await communicatorDestroyPromise();
+    debug('finished destroySession()');
+    return;
+  } catch (error) {
+    debug('Error destroySession(): %o', error);
+  }
+};
 
 const createSession = async () => {
   try {
@@ -99,10 +124,15 @@ const createSession = async () => {
     debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
       and isCreateSessionPending === ${isCreateSessionPending}`);
     createSessionTimer(2000);
+    await destroySession();
+    const id = new Ice.InitializationData();
+    id.properties = Ice.createProperties();
+    id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
+    communicator = Ice.initialize(process.argv, id);
+    const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
     router = communicator.getDefaultRouter();
     // router.ice_invocationTimeout(5000);
     router = await Glacier2.RouterPrx.checkedCast(router);
-
     debug('router object %o', router);
     session = await router.createSession('user', 'password');
     session = await iceLive.MdSessionPrx.uncheckedCast(session);
@@ -122,12 +152,11 @@ const createSession = async () => {
       .then(() => {
         refreshSession();
       }, async error => {
-        try {
-          debug('Error refreshSession(): %o', error);
-          setCallbackReturn = -1;
-        } catch (err) {
-          debug('Error: refreshSession: %o', err);
-        }
+        debug('Error refreshSession(): %o', error);
+        setCallbackReturn = -1;
+        debug('router: %o', router);
+        debug('call createSession() from refreshSession()');
+        createSession();
       })
       ;
     };
@@ -144,6 +173,7 @@ const createSession = async () => {
   } catch (error) {
     debug('Error createSession(): %o', error);
     event.emit('createSession:error', error);
+    setTimeout(() => createSession(), 3000);
   }
 };
 const connect = createSession;
@@ -161,7 +191,7 @@ const subscribe = async (symbol, resolution) => {
     // if the iceLive connection doesn't exist, return a promise that will resolve on connection
     return new Promise((resolve, reject) => {
       debug(`subscribe('${symbol}', '${resolution}') [promisified]`);
-      event.on('createSession:success', async () => {
+      event.once('createSession:success', async () => {
         try {
           debug(`subscribe('${symbol}', '${resolution}') [on createSession:success event]`);
           const subscribeReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
@@ -174,7 +204,7 @@ const subscribe = async (symbol, resolution) => {
           reject(new Error(`Error subscribe('${symbol}', '${resolution}')`));
         }
       });
-      event.on('createSession:error', () => {
+      event.once('createSession:error', () => {
         reject(new Error(`createSession() error, can't subscribe('${symbol}', '${resolution}')`));
       });
     });
@@ -197,7 +227,7 @@ const unsubscribe = async (symbol, resolution) => {
     // if the iceLive connection doesn't exist, return a promise that will resolve on connection
     return new Promise((resolve, reject) => {
       debug(`unsubscribe('${symbol}', '${resolution}') [promisified]`);
-      event.on('createSession:success', async () => {
+      event.once('createSession:success', async () => {
         try {
           debug(`unsubscribe('${symbol}', '${resolution}') [on createSession:success event]`);
           const unsubscribeReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
@@ -210,7 +240,7 @@ const unsubscribe = async (symbol, resolution) => {
           reject(new Error(`Error unsubscribe('${symbol}', '${resolution}')`));
         }
       });
-      event.on('createSession:error', () => {
+      event.once('createSession:error', () => {
         reject(new Error(`createSession() error, can't unsubscribe('${symbol}', '${resolution}')`));
       });
     });
