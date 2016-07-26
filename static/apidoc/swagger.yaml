@@ -629,6 +629,8 @@ definitions:
       - exchangeid
       - productname
       - productid
+      - mainins
+      - mainisnopeninterest
     properties:
       exchangeid:
         type: string
