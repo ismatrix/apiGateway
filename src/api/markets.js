@@ -318,3 +318,37 @@ export async function getFuturesProductsByExchange() {
     throw error;
   }
 }
+
+export async function getProductsWithVol() {
+  try {
+    const lookup = {
+      from: 'INSTRUMENT',
+      localField: 'productid',
+      foreignField: 'productid',
+      as: 'instrument',
+    };
+    const unwind = '$instrument';
+    const match = { 'instrument.rank': 1 };
+    const project = {
+      _id: 0,
+      productid: 1,
+      productname: 1,
+      exchangeid: 1,
+      mainins: '$instrument.instrumentname',
+      mainisnopeninterest: '$instrument.openinterest',
+    };
+    const sort = { mainisnopeninterest: -1 };
+    const products = await PRODUCT.aggregate([
+      { $lookup: lookup },
+      { $unwind: unwind },
+      { $match: match },
+      { $project: project },
+      { $sort: sort },
+    ]).toArray();
+
+    return { ok: true, products };
+  } catch (error) {
+    debug('getProductsWithVol() Error: %o', error);
+    throw error;
+  }
+}
