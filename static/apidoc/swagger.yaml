@@ -235,7 +235,7 @@ paths:
     get:
       tags:
         - Markets
-      summary: Get all futures products
+      summary: Get all futures products with main instrumentid and openinterest
       responses:
         '200':
           description: The futures products data
@@ -629,6 +629,8 @@ definitions:
       - exchangeid
       - productname
       - productid
+      - mainins
+      - maininsopeninterest
     properties:
       exchangeid:
         type: string
@@ -639,6 +641,12 @@ definitions:
       productid:
         type: string
         example: "hc"
+      mainins:
+        type: string
+        example: "hc1610"
+      maininsopeninterest:
+        type: number
+        example: 2172398
   resFuturesProduct.ByExchange:
     type: object
     required:

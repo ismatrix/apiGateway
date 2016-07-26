@@ -8,7 +8,7 @@ import { canKoa } from './acl';
 const apiRouter = require('koa-router')({ prefix: '/api' });
 
 apiRouter
-  .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token';})
+  .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token'; })
   .get('/public/wechat/app/register', async ctx => { ctx.body = await wechat.appRegister(ctx); })
   .get('/public/auth/wechat', async ctx => {
     try {
@@ -30,7 +30,7 @@ apiRouter
 
 apiRouter
   .get('/users', canKoa('read', 'users'),
-    async ctx => { ctx.body = await users.getUsers();})
+    async ctx => { ctx.body = await users.getUsers(); })
   .get('/users/me', async ctx => {
     const userid = ctx.state.user.userid;
     ctx.body = await users.getMeProfile(userid);
