@@ -65,14 +65,6 @@ const iceLiveReadable = {
 const iceLiveReadableCallback = Object.assign(Object.create(Readable.prototype), iceLiveReadable);
 const options = { objectMode: true };
 iceLiveReadableCallback.init(options);
-// Initialize the communicator with Ice.Default.Router property
-// set to the simple Md Glacier2 router.
-// const id = new Ice.InitializationData();
-// id.properties = Ice.createProperties();
-// id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
-// const communicator = Ice.initialize(process.argv, id);
-//
-// const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
 
 // Destroy communicator on SIGINT so application exit cleanly.
 process.once('SIGINT', () => {
