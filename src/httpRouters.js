@@ -66,9 +66,6 @@ apiRouter
   .get('/markets/futures/products', async ctx => {
     ctx.body = await markets.getFuturesProducts();
   })
-  .get('/markets/futures/products.withVol', async ctx => {
-    ctx.body = await markets.getProductsWithVol();
-  })
   .get('/markets/futures/products.byExchange', async ctx => {
     ctx.body = await markets.getFuturesProductsByExchange();
   })
