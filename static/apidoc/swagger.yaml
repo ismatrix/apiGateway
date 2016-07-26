@@ -630,7 +630,7 @@ definitions:
       - productname
       - productid
       - mainins
-      - mainisnopeninterest
+      - maininsopeninterest
     properties:
       exchangeid:
         type: string
@@ -644,8 +644,8 @@ definitions:
       mainins:
         type: string
         example: "hc1610"
-      mainisnopeninterest:
-        type: int
+      maininsopeninterest:
+        type: number
         example: 2172398
   resFuturesProduct.ByExchange:
     type: object

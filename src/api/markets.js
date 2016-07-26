@@ -275,9 +275,9 @@ export async function getFuturesProducts() {
       productname: 1,
       exchangeid: 1,
       mainins: '$instrument.instrumentname',
-      mainisnopeninterest: '$instrument.openinterest',
+      maininsopeninterest: '$instrument.openinterest',
     };
-    const sort = { mainisnopeninterest: -1 };
+    const sort = { maininsopeninterest: -1 };
     const products = await PRODUCT.aggregate([
       { $lookup: lookup },
       { $unwind: unwind },
