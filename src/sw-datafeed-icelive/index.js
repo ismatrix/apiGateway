@@ -127,6 +127,7 @@ const createSession = async () => {
     await destroySession();
     const id = new Ice.InitializationData();
     id.properties = Ice.createProperties();
+    id.properties.setProperty('Ice.Default.InvocationTimeout', '30000');
     id.properties.setProperty('Ice.Default.Router', glacierRouterUrl);
     communicator = Ice.initialize(process.argv, id);
     const OnMdServerCallback = new Ice.Class(iceLive.MdSessionCallBack, iceLiveReadableCallback);
