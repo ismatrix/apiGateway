@@ -6,7 +6,7 @@ import lowerFirst from 'lodash/lowerFirst';
 import stream from 'stream';
 const Readable = stream.Readable;
 
-const icerUrl = 'sender:tcp -p 10101 -h invesmart.win';
+const iceUrl = 'sender:tcp -p 10101 -h invesmart.win';
 
 const resolutionMap = {
   tick: 'T',
@@ -35,7 +35,7 @@ const icePastReadable = {
     });
     Readable.call(this, options);
     const CallbackReceiverI = new Ice.Class(icePast.MdSessionCallBack, this);
-    const proxy = communicator.stringToProxy(icerUrl);
+    const proxy = communicator.stringToProxy(iceUrl);
     const server = await icePast.MdSessionPrx.checkedCast(proxy);
     const adapter = await communicator.createObjectAdapter('');
     const r = adapter.addWithUUID(new CallbackReceiverI());
