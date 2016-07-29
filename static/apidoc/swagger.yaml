@@ -286,7 +286,7 @@ paths:
           description: This is the contract options
           required: true
           schema:
-            $ref: '#/definitions/reqSnapshot'
+            $ref: '#/definitions/reqLastSnapshot'
       responses:
         '200':
           description: Quotes for a contract
@@ -294,12 +294,12 @@ paths:
             type: object
             required:
               - ok
-              - snapshot
+              - lastSnapshot
             properties:
               ok:
                 type: boolean
                 default: true
-              snapshot:
+              lastSnapshot:
                 type: array
                 items:
                   $ref: '#/definitions/resSnapshot'
@@ -690,56 +690,80 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/resFuturesProduct'
-  reqSnapshot:
+  reqLastSnapshot:
     type: object
     required:
       - symbols
     properties:
       symbols:
         type: array
-        example: ["IC1605","a1701"]
+        example: ["IC1608","a1701"]
         items:
           type: string
   resSnapshot:
     type: object
     required:
-      - _id
+      - maxtradingday
       - instrument
       - tradingday
-      - last
-      - open
+      - average
+      - close
       - high
       - low
-      - close
+      - open
+      - openinterest
+      - preclose
+      - preoopeninterest
+      - presettlement
       - settlement
+      - turnover
+      - volume
     properties:
-      _id:
+      maxtradingday:
         type: string
-        example: "IC1605"
+        example: "20160704"
       instrument:
         type: string
-        example: "IC1605"
+        example: "IF1608"
       tradingday:
         type: string
-        example: "20160727"
-      last:
+        example: "20160704"
+      average:
         type: number
-        example: 100
-      open:
-        type: number
-        example: 100
-      high:
-        type: number
-        example: 100
-      low:
-        type: number
-        example: 100
+        example: 936367.191283293
       close:
         type: number
-        example: 100
+        example: 3136
+      high:
+        type: number
+        example: 3200
+      low:
+        type: number
+        example: 3058.4
+      open:
+        type: number
+        example: 3058.4
+      openinterest:
+        type: number
+        example: 2217
+      preclose:
+        type: number
+        example: 3062.4
+      preoopeninterest:
+        type: number
+        example: 1880
+      presettlement:
+        type: number
+        example: 3074.2
       settlement:
         type: number
-        example: 100
+        example: 0
+      turnover:
+        type: number
+        example: 773439300
+      volume:
+        type: number
+        example: 826
   reqFuturesContracts:
     type: object
     required:

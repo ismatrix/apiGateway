@@ -319,7 +319,7 @@ export async function getFuturesProductsByExchange() {
   }
 }
 
-export async function getLastTickSnapshot(symbols) {
+export async function getFuturesLastSnapshot(symbols) {
   try {
     if (!symbols || symbols.length < 1) {
       throw Boom.badRequest('Missing instrument parameter');
@@ -345,14 +345,33 @@ export async function getLastTickSnapshot(symbols) {
       turnover: { $first: '$turnover' },
       volume: { $first: '$volume' },
     };
+    const project = {
+      _id: 0,
+      maxtradingday: 1,
+      instrument: 1,
+      tradingday: 1,
+      average: 1,
+      close: 1,
+      high: 1,
+      low: 1,
+      open: 1,
+      openinterest: 1,
+      preclose: 1,
+      preoopeninterest: 1,
+      presettlement: 1,
+      settlement: 1,
+      turnover: 1,
+      volume: 1,
+    };
 
-    const snapshot = await DAYBAR.aggregate([
+    const lastSnapshot = await DAYBAR.aggregate([
       { $match: match },
       { $sort: sort },
       { $group: group },
+      { $project: project },
     ]).toArray();
 
-    return { ok: true, snapshot };
+    return { ok: true, lastSnapshot };
   } catch (error) {
     debug('getDayBar() Error: %o', error);
     throw error;

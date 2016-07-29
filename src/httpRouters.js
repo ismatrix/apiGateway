@@ -89,7 +89,7 @@ apiRouter
   })
   .post('/markets/futures/lastTickSnapshot', async ctx => {
     const symbols = ctx.request.body.symbols;
-    ctx.body = await markets.getLastTickSnapshot(symbols);
+    ctx.body = await markets.getFuturesLastSnapshot(symbols);
   })
   ;
 
