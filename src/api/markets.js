@@ -318,3 +318,43 @@ export async function getFuturesProductsByExchange() {
     throw error;
   }
 }
+
+export async function getLastTickSnapshot(symbols) {
+  try {
+    if (!symbols || symbols.length < 1) {
+      throw Boom.badRequest('Missing instrument parameter');
+    }
+    const match = { instrument: { $in: symbols } };
+
+    const sort = { tradingday: -1 };
+    const group = {
+      _id: '$instrument',
+      maxtradingday: { $max: '$tradingday' },
+      instrument: { $first: '$instrument' },
+      tradingday: { $first: '$tradingday' },
+      average: { $first: '$average' },
+      close: { $first: '$close' },
+      high: { $first: '$high' },
+      low: { $first: '$low' },
+      open: { $first: '$open' },
+      openinterest: { $first: '$openinterest' },
+      preclose: { $first: '$preclose' },
+      preoopeninterest: { $first: '$preoopeninterest' },
+      presettlement: { $first: '$presettlement' },
+      settlement: { $first: '$settlement' },
+      turnover: { $first: '$turnover' },
+      volume: { $first: '$volume' },
+    };
+
+    const snapshot = await DAYBAR.aggregate([
+      { $match: match },
+      { $sort: sort },
+      { $group: group },
+    ]).toArray();
+
+    return { ok: true, snapshot };
+  } catch (error) {
+    debug('getDayBar() Error: %o', error);
+    throw error;
+  }
+}
