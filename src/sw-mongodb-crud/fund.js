@@ -1,4 +1,4 @@
-const debug = require('debug')('sw-mongodb-crud:instrument');
+const debug = require('debug')('sw-mongodb-crud:fund');
 import * as mongodb from '../mongodb';
 
 let FUND;
