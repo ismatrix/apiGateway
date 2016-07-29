@@ -273,6 +273,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/resFuturesProduct.ByExchange'
+  /markets/futures/lastSnapshot:
+    post:
+      tags:
+        - Markets
+      summary: Get last Snapshot for a futures contract
+      description: >
+        Provide OHLC snapshot datas for futures contracts, and for a given contracts
+      parameters:
+        - name: body
+          in: body
+          description: This is the contract options
+          required: true
+          schema:
+            $ref: '#/definitions/reqLastSnapshot'
+      responses:
+        '200':
+          description: Quotes for a contract
+          schema:
+            type: object
+            required:
+              - ok
+              - lastSnapshot
+            properties:
+              ok:
+                type: boolean
+                default: true
+              lastSnapshot:
+                type: array
+                items:
+                  $ref: '#/definitions/resSnapshot'
   /markets/futures/quotes:
     post:
       tags:
@@ -660,6 +690,80 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/resFuturesProduct'
+  reqLastSnapshot:
+    type: object
+    required:
+      - symbols
+    properties:
+      symbols:
+        type: array
+        example: ["IC1608","a1701"]
+        items:
+          type: string
+  resSnapshot:
+    type: object
+    required:
+      - maxtradingday
+      - instrument
+      - tradingday
+      - average
+      - close
+      - high
+      - low
+      - open
+      - openinterest
+      - preclose
+      - preoopeninterest
+      - presettlement
+      - settlement
+      - turnover
+      - volume
+    properties:
+      maxtradingday:
+        type: string
+        example: "20160704"
+      instrument:
+        type: string
+        example: "IF1608"
+      tradingday:
+        type: string
+        example: "20160704"
+      average:
+        type: number
+        example: 936367.191283293
+      close:
+        type: number
+        example: 3136
+      high:
+        type: number
+        example: 3200
+      low:
+        type: number
+        example: 3058.4
+      open:
+        type: number
+        example: 3058.4
+      openinterest:
+        type: number
+        example: 2217
+      preclose:
+        type: number
+        example: 3062.4
+      preoopeninterest:
+        type: number
+        example: 1880
+      presettlement:
+        type: number
+        example: 3074.2
+      settlement:
+        type: number
+        example: 0
+      turnover:
+        type: number
+        example: 773439300
+      volume:
+        type: number
+        example: 826
   reqFuturesContracts:
     type: object
     required:

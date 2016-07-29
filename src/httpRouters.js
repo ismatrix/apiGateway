@@ -87,6 +87,10 @@ apiRouter
     const symbols = ctx.request.body.symbols;
     ctx.body = await markets.contractDailyPriceSpeed(symbols);
   })
+  .post('/markets/futures/lastSnapshot', async ctx => {
+    const symbols = ctx.request.body.symbols;
+    ctx.body = await markets.getFuturesLastSnapshot(symbols);
+  })
   ;
 
 export { apiRouter };
