@@ -1,6 +1,7 @@
 const debug = require('debug')('api:funds');
 import Boom from 'boom';
 import * as mongodb from '../mongodb';
+import { fund as dbFund } from '../sw-mongodb-crud';
 
 let FUNDS;
 
@@ -11,10 +12,7 @@ let FUNDS;
 
 export async function getFunds() {
   try {
-    const filter = {};
-    const projection = { _id: 0, fundid: 1, fundname: 1, investmentadviser: 1,
-    funddate: 1, equityinitial: 1 };
-    const funds = await FUNDS.find(filter, projection).toArray();
+    const funds = await dbFund.getList();
 
     if (! funds.length > 0) throw Boom.notFound('Funds not found');
 
