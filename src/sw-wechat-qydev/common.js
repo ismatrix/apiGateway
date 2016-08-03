@@ -8,7 +8,7 @@ export async function getAccessToken() {
     const accessTokenRes = await fetch(url).then(res => res.json());
     debug('getAccessToken() accessTokenRes: %o', accessTokenRes);
 
-    if (accessTokenRes.errcode !== 0) throw Boom.notFound('qydev user api errcode not null');
+    if (accessTokenRes.errcode) throw Boom.notFound('qydev common api errcode not null');
 
     this.accessToken = accessTokenRes.access_token;
   } catch (error) {
