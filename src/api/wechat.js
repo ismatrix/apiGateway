@@ -1,15 +1,16 @@
 const debug = require('debug')('api:wechat');
 import { wechatConfig as wxConf } from '../config';
-import WXBizMsgCrypt from 'wechat-crypto';
+// import WXBizMsgCrypt from 'wechat-crypto';
 import makeQydev from '../sw-weixin-qydev';
 
 const qydev = makeQydev(wxConf);
 
-const cryptor = new WXBizMsgCrypt(wxConf.token, wxConf.encodingAESKey, wxConf.corpId);
+// const cryptor = new WXBizMsgCrypt(wxConf.token, wxConf.encodingAESKey, wxConf.corpId);
 
 export async function appRegister(ctx) {
   try {
-    if (ctx.query.echostr) return cryptor.decrypt(ctx.query.echostr).message;
+    // if (ctx.query.echostr) return cryptor.decrypt(ctx.query.echostr).message;
+    if (ctx.query.echostr) return qydev.decrypt(ctx.query.echostr).message;
   } catch (error) {
     debug('appRegister() Error: %o', error);
   }
