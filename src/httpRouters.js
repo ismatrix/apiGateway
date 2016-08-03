@@ -10,7 +10,7 @@ const apiRouter = require('koa-router')({ prefix: '/api' });
 apiRouter
   .get('/public', async ctx => { ctx.body = 'Public API. No need of JWT token'; })
   .get('/public/weixin/qy/id=12/callback', async ctx => {
-    ctx.body = await wechat.appRegister(ctx);
+    ctx.body = await wechat.app12Callback(ctx);
   })
   .get('/public/auth/wechat', async ctx => {
     try {
