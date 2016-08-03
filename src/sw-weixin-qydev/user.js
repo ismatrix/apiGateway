@@ -1,10 +1,11 @@
-const debug = require('debug')('qydev:user');
+const debug = require('debug')('sw-weixin-qydev:user');
 import fetch from 'node-fetch';
 import Boom from 'boom';
 
 async function getUserId(code) {
   try {
-    const url = `${this.prefix}user/getuserinfo?access_token=${this.accessToken}&code=${code}`;
+    const accessToken = await this.getAccessToken();
+    const url = `${this.prefix}user/getuserinfo?access_token=${accessToken}&code=${code}`;
     const userIdRes = await fetch(url).then(res => res.json());
     debug('getUserId() userIdRes: %o', userIdRes);
 
@@ -19,10 +20,10 @@ async function getUserId(code) {
 
 async function getUser(code) {
   try {
-    await this.getAccessToken();
+    const accessToken = await this.getAccessToken();
     const userIdObj = await this.getUserId(code);
     const userId = userIdObj.UserId;
-    const url = `${this.prefix}user/get?access_token=${this.accessToken}&userid=${userId}`;
+    const url = `${this.prefix}user/get?access_token=${accessToken}&userid=${userId}`;
     const userRes = await fetch(url).then(res => res.json());
     debug('getUser() userRes: %o', userRes);
 

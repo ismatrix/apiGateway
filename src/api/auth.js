@@ -3,7 +3,7 @@ import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import * as mongodb from '../mongodb';
 import { jwtSecret, wechatConfig } from '../config';
-import makeQydev from '../sw-wechat-qydev';
+import makeQydev from '../sw-weixin-qydev';
 import argon2 from 'argon2';
 import { io } from '../app.js';
 
