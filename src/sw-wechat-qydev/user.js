@@ -8,7 +8,7 @@ async function getUserId(code) {
     const userIdRes = await fetch(url).then(res => res.json());
     debug('getUserId() userIdRes: %o', userIdRes);
 
-    if (userIdRes.errcode !== 0) throw Boom.notFound('qydev user api errcode not null');
+    if (userIdRes.errcode) throw Boom.notFound('qydev user api errcode not null');
 
     return userIdRes;
   } catch (error) {
