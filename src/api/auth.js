@@ -35,31 +35,21 @@ export async function createUserToken(userObj) {
 export async function getTokenByWechatScan(code, state) {
   try {
     if (!code || !state) {
-      io.to(`/#${state}`).emit('token', { ok: false, error: 'Missing parameter' });
       throw Boom.badRequest('Missing parameter');
     }
 
-    const qyUserObj = await qydev.getUser(code);
+    const qyUserObj = await qydev.getUserWithDepartments(code);
     debug('getTokenByWechatScan() user: %o', qyUserObj);
-
-    if (qyUserObj.errcode !== 0) {
-      io.to(`/#${state}`).emit('token', { ok: false, error: 'Invalid user' });
-      throw Boom.unauthorized('Invalid user');
-    }
-
-    const departments = await qydev.getDepartmentById(qyUserObj.department);
-    qyUserObj.department = departments.department;
-    debug('getTokenByWechatScan() qyUserObj + departments: %o', qyUserObj);
 
     const userid = qyUserObj.userid.toLowerCase();
     qyUserObj.userid = userid;
     qyUserObj.avatar = qyUserObj.avatar.replace('http://', 'https://');
+
     const update = { $set: qyUserObj };
     const options = { upsert: true, returnOriginal: false };
     const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
 
     if (!dbUserObj) {
-      io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot add user to database' });
       throw Boom.badImplementation('Cannot add user to database');
     }
 
@@ -72,10 +62,14 @@ export async function getTokenByWechatScan(code, state) {
       }
     }
 
-    io.to(`/#${state}`).emit('token', { ok: false, error: 'Cannot create token' });
     throw Boom.badImplementation('Cannot create token');
   } catch (error) {
     debug('getTokenByWechatScan() Error: %o', error);
+    if (error.isBoom) {
+      io.to(`/#${state}`).emit('token', { ok: false, error: error.output.payload.message });
+    } else {
+      io.to(`/#${state}`).emit('token', { ok: false, error: error.message });
+    }
     throw error;
   }
 }
