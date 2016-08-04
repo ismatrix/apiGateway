@@ -29,7 +29,9 @@ apiRouter
     ctx.body = await auth.getTokenByPassword(userid, password);
   })
   .post('/wechat/sendMessage', async ctx => {
-    ctx.body = await wechat.sendMessage(ctx.request.body);
+    const text = ctx.request.body.text;
+    const to = ctx.request.body.to;
+    ctx.body = await wechat.sendMessage(text, to);
   })
   ;
 

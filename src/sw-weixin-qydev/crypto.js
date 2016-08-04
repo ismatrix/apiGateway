@@ -66,7 +66,7 @@ function getSignature(timestamp, nonce, encryptText) {
  */
 function decrypt(text) {
   try {
-    const AESKey = new Buffer(this.encodingAESKey.concat('=', 'base64'));
+    const AESKey = new Buffer(this.encodingAESKey.concat('='), 'base64');
     if (AESKey.length !== 32) throw new Error('encodingAESKey invalid');
 
     // 创建解密对象，AES采用CBC模式，数据采用PKCS#7填充；IV初始向量大小为16字节，取AESKey前16字节
@@ -97,32 +97,38 @@ function decrypt(text) {
  */
 function encrypt(text) {
   try {
+    debug('text', text);
     // 算法：AES_Encrypt[random(16B) + msg_len(4B) + msg + $CorpID]
     // 获取16B的随机字符串
-    const AESKey = new Buffer(this.encodingAESKey.concat('=', 'base64'));
+    debug('this.encodingAESKey %o', this.encodingAESKey);
+    const AESKey = new Buffer(this.encodingAESKey.concat('='), 'base64');
+    debug('AESKey %o', AESKey);
+    debug('AESKey %o', AESKey.length);
     if (AESKey.length !== 32) throw new Error('encodingAESKey invalid');
 
     const randomString = crypto.pseudoRandomBytes(16);
-
+    debug('1');
     const msg = new Buffer(text);
-
+    debug('2');
     // 获取4B的内容长度的网络字节序
     const msgLength = new Buffer(4);
+    debug('3');
     msgLength.writeUInt32BE(msg.length, 0);
-
+    debug('4');
     const id = new Buffer(this.corpId);
-
+    debug('5');
     const bufMsg = Buffer.concat([randomString, msgLength, msg, id]);
-
+    debug('6');
     // 对明文进行补位操作
     const encoded = PKCS7Encoder.encode(bufMsg);
-
+    debug('7');
     // 创建加密对象，AES采用CBC模式，数据采用PKCS#7填充；IV初始向量大小为16字节，取AESKey前16字节
     const cipher = crypto.createCipheriv('aes-256-cbc', AESKey, AESKey.slice(0, 16));
+    debug('8');
     cipher.setAutoPadding(false);
-
+    debug('9');
     const cipheredMsg = Buffer.concat([cipher.update(encoded), cipher.final()]);
-
+    debug('10');
     // 返回加密数据的base64编码
     return cipheredMsg.toString('base64');
   } catch (error) {

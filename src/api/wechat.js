@@ -13,12 +13,13 @@ export async function app12Callback(ctx) {
   }
 }
 
-export async function sendMessage(message) {
+export async function sendMessage(text, to) {
   try {
-    await qydev.sendMessage(message);
+    await qydev.text(text).to(to).send();
+
     return { ok: true };
   } catch (error) {
-    debug('appRegister() Error: %o', error);
+    debug('sendMessage() Error: %o', error);
     throw error;
   }
 }
