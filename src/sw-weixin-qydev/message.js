@@ -1,6 +1,8 @@
-const debug = require('debug')('sw-weixin-qydev:message');
+import debugModule from 'debug';
 import fetch from 'node-fetch';
 import Boom from 'boom';
+
+const debug = debugModule('sw-weixin-qydev:message');
 
 async function sendMessage(message) {
   try {
