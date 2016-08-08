@@ -1,17 +1,324 @@
+/** @module sw-mongodb-crud/instrument */
 const debug = require('debug')('sw-mongodb-crud:instrument');
+import { mongoUrl } from './config';
 import * as mongodb from '../mongodb';
 
+/** The handle of INSTRUMENT collection */
 let INSTRUMENT;
 
-(async function getDb() {
-  const smartwin = await mongodb.getdb();
-  INSTRUMENT = smartwin.collection('INSTRUMENT');
-}());
-
-export async function getList() {
+/**
+ * init the handle of INSTRUMENT collection.
+ * @function
+ */
+async function getDb() {
   try {
-    debug('getList()');
+    mongodb.connect(mongoUrl);
+    const smartwin = await mongodb.getdb();
+    INSTRUMENT = smartwin.collection('INSTRUMENT');
   } catch (error) {
-    debug('getList() Error: %o', error);
+    debug('instrument.getDb() Error:', error);
+  }
+}
+/**
+ * get instrument list from INSTRUMENT collection.
+ * @function
+ * @param {Object} filter - Query filter documents
+ * specify the conditions that determine which records to select for return
+ * example : { rank: 1, productclass: 8, exchange: 'SHFE', product: 'ru',istrading: 1 }
+ * @return {Object} content - include count and data array.
+ * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ */
+export async function getList(filter) {
+  try {
+    await getDb();
+    const lookup = {
+      from: 'PRODUCT',
+      localField: 'productid',
+      foreignField: 'productid',
+      as: 'product',
+    };
+    const unwind = '$product';
+    const match = {
+      $and: [],
+    };
+    if (filter) {
+      // 合约主力排名过滤
+      if ('rank' in filter) {
+        match.$and.push({ rank: { $in: filter.rank } });
+      }
+      // 普通合约、主连合约、指数合约过滤
+      if ('productclass' in filter) {
+        match.$and.push({ productclass: { $in: filter.productclass } });
+      }
+      // 交易所过滤
+      if ('exchange' in filter) {
+        match.$and.push({ exchangeid: { $in: filter.exchange } });
+      }
+      // 品种过滤
+      if ('product' in filter) {
+        match.$and.push({ productid: { $in: filter.product } });
+      }
+      // 是否正在交易过滤
+      if ('istrading' in filter) {
+        match.$and.push({ istrading: { $in: filter.istrading } });
+      }
+    }
+    if (!match.$and.length) delete match.$and;
+    const projection = {
+      _id: 0,
+      instrumentid: 1,
+      exchangeid: 1,
+      instrumentname: {
+        $cond:
+        [
+          { $or: [{ $eq: ['$productclass', '8'] }, { $eq: ['$productclass', '9'] }] },
+          '$instrumentname',
+           { $concat: ['$product.productname',
+               { $substr: ['$expiredate', 2, 4] }] },
+        ],
+      },
+      volumemultiple: 1,
+      rank: 1,
+      productclass: 1,
+      productid: 1,
+      istrading: 1,
+    };
+    const sort = { exchangeid: 1, productclass: -1, instrumentid: 1 };
+    const instruments = await INSTRUMENT.aggregate([
+      { $lookup: lookup },
+      { $unwind: unwind },
+      { $match: match },
+      { $project: projection },
+      { $sort: sort },
+    ]).toArray();
+
+    return { count: instruments.length, data: instruments };
+  } catch (error) {
+    debug('instrument.getList() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * get instrument list by specified ranks.
+ * @function
+ * @param {number} rank - instruments ranking
+ * example : 1 - dominant, 2 - second dominant, 3 - third......
+ * @return {Object} content - include count and data array.
+ * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ */
+export async function getListByRank(rank) {
+  try {
+    await getDb();
+    const filter = { rank: [rank] };
+    const instruments = await getList(filter);
+
+    return instruments;
+  } catch (error) {
+    debug('instrument.getListByRank() Error: %o', error);
+    throw error;
+  }
+}
+
+/**
+ * get dominant connection instrument list
+ * @function
+ * @return {Object} content - include count and data array.
+ * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ */
+export async function getDominantConnectList() {
+  try {
+    await getDb();
+    const filter = { productclass: ['8'] };
+    const instruments = await getList(filter);
+
+    return instruments;
+  } catch (error) {
+    debug('instrument.getListByRank() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * get product index instrument list
+ * @function
+ * @return {Object} content - include count and data array.
+ * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ */
+export async function getProductIndexList() {
+  try {
+    await getDb();
+    const filter = { productclass: ['9'] };
+    const instruments = await getList(filter);
+
+    return instruments;
+  } catch (error) {
+    debug('instrument.getProductIndexList() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * get instrument list by specified product.
+ * @function
+ * @param {Array .} productid - product id array
+ * example : ['ag', 'ru', 'au']
+ * @param {number} istrading - if is trading now
+ * example : 0|false - is not trading, 1|others - is trading
+ * @return {Object} content - include count and data array.
+ * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ */
+export async function getListByProduct(product, istrading) {
+  try {
+    await getDb();
+    let trading = 1;
+    if (istrading === 0 || istrading === false) {
+      trading = 0;
+    }
+
+    const filter = { product: [product], istrading: [trading] };
+    const instruments = await getList(filter);
+
+    return instruments;
+  } catch (error) {
+    debug('instrument.getListByProduct() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * Obtain one instrument document object by Specified id.
+ * @function
+ * @param {string} instrumentid - unique id for instrument collection
+ * example : 'IF1609'
+ * @return {Object} content - instrument document content.
+ * example : { instrumentDoc }
+ */
+export async function getById(id) {
+  try {
+    await getDb();
+    const match = { instrumentid: id };
+    const instrument = await INSTRUMENT.findOne(match);
+
+    return instrument;
+  } catch (error) {
+    debug('instrument.getById() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * insert  single or multiple instrument documents into instrument collection.
+ * @function
+ * @param {Array.} docArray - instrument document content.
+ * example : { instrumentDoc }
+ * @return {Object} result - return value and count for inserted.
+ * example : { ok: 1, n: 2 }
+ */
+export async function add(docArray) {
+  try {
+    await getDb();
+    let ret = {};
+    debug('docArray: %o', docArray);
+    if (docArray && docArray.length > 0) {
+      ret = await INSTRUMENT.insert(docArray);
+    } else {
+      debug('docArray is not an Array!');
+    }
+
+    return ret.result;
+  } catch (error) {
+    debug('instrument.add() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * update an instrument documents by Specified instrument id.
+ * @function
+ * @param {string} instrumentid - unique id for instrument collection
+ * example : 'ru'
+ * @param {Object} keyvalue - The modifications to apply
+ * example : { key1: value1, key2: 'value2' })
+ * @return {Object} result - return value and count for update.
+ * example : { ok: 1, nModified: 1, n: 1 }
+ */
+export async function set(id, keyvalue) {
+  try {
+    await getDb();
+
+    const match = { instrumentid: id };
+    const ret = await INSTRUMENT.update(
+      match,
+      {
+        $set: keyvalue,
+        $currentDate: { updatedate: true },
+      },
+      {
+        multi: true,
+        upsert: true,
+      }
+    );
+
+    return ret.result;
+  } catch (error) {
+    debug('instrument.set() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * remove an instrument documents by Specified instrument id.
+ * @function
+ * @param {string} instrumentid - unique id for product collection
+ * example : 'ru'
+ * @return {Object} result - return value and count for removed.
+ * example : { ok: 1, n: 5 }
+ */
+export async function remove(id) {
+  try {
+    await getDb();
+    const match = { instrumentid: id };
+    const ret = await INSTRUMENT.remove(match);
+
+    return ret.result;
+  } catch (error) {
+    debug('instrument.remove() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * an test function.
+ * @function
+ */
+export async function runTest() {
+  try {
+    // // instrument.getList
+    // const filter = { rank: [1, 2], product: ['ru'] };
+    // const instruments = await getList(filter);
+    // debug('instrument.getList:', instruments);
+    // // instrument.getRankList
+    // const instruments = await getListByRank(1);
+    // debug('instrument.getListByRank:', instruments.data.map(ins => ins.instrumentid));
+    // // instrument.getDominantConnectList
+    // const DominantConnect = await getDominantConnectList();
+    // debug('instrument.getDominantConnectList:',
+    // DominantConnect.data.map(ins => ins.instrumentid + ins.instrumentname));
+    // // instrument.getProductIndexList
+    // const ProductIndex = await getProductIndexList();
+    // debug('instrument.getProductIndexList:', ProductIndex.data);
+    // // instrument.getProductList
+    // const ProductList = await getListByProduct('ru');
+    // debug('instrument.getProductList:', ProductList.count);
+    // // instrument.getById
+    // const instrument = await getById('IF1609');
+    // debug('instrument.getById', instrument);
+    // // instrument.remove
+    // const retremove = await remove('aaa');
+    // debug('instrument.remove', retremove);
+    // // instrument.set
+    // const retset = await set('aaa', { key1: 2, key2: 'fuckyou' });
+    // debug('instrument.set', retset);
+    // // instrument.add
+    // const retadd = await add([{ instrumentid: 'aaa', key1: 1, key2: 'fuck' },
+    // { instrumentid: 'aaa', key1: 1, key2: 'fuck' }]);
+    // debug('instrument.add', retadd);
+
+    process.exit(0);
+  } catch (error) {
+    debug('instrument.runTest: %o', error);
   }
 }
