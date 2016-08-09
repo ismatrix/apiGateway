@@ -128,7 +128,6 @@ export async function set(id, keyvalue) {
       $currentDate: { updatedate: true },
     };
     const options = {
-      multi: true,
       upsert: true,
     };
 
