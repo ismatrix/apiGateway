@@ -100,9 +100,9 @@ export async function add(docs) {
     await getDb();
 
     debug('docs: %o', docs);
-    const result = await PRODUCT.insertMany(docs);
+    const ret = await PRODUCT.insertMany(docs);
 
-    return result;
+    return ret.result;
   } catch (error) {
     debug('product.add() Error: %o', error);
     throw error;
@@ -118,13 +118,13 @@ export async function add(docs) {
  * @return {Object} result - return value and count for update.
  * example : { ok: 1, nModified: 1, n: 1 }
  */
-export async function set(id, keys) {
+export async function set(id, keyvalue) {
   try {
     await getDb();
 
     const filter = { productid: id };
     const update = {
-      $set: keys,
+      $set: keyvalue,
       $currentDate: { updatedate: true },
     };
     const options = {
@@ -132,9 +132,9 @@ export async function set(id, keys) {
       upsert: true,
     };
 
-    const result = await PRODUCT.updateOne(filter, update, options);
+    const ret = await PRODUCT.updateOne(filter, update, options);
 
-    return result;
+    return ret.result;
   } catch (error) {
     debug('product.set() Error: %o', error);
     throw error;
@@ -152,9 +152,9 @@ export async function remove(id) {
   try {
     await getDb();
     const filter = { productid: id };
-    const result = await PRODUCT.deleteOne(filter);
+    const ret = await PRODUCT.deleteOne(filter);
 
-    return result;
+    return ret.result;
   } catch (error) {
     debug('product.remove() Error: %o', error);
     throw error;
