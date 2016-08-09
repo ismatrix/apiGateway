@@ -1,8 +1,7 @@
 /** @module sw-mongodb-crud/product */
+import * as mongodb from '../mongodb';
 
 const debug = require('debug')('sw-mongodb-crud:product');
-import { mongoUrl } from './config';
-import * as mongodb from '../mongodb';
 
 /** The handle of PRODUCT collection */
 let PRODUCT;
@@ -13,11 +12,10 @@ let PRODUCT;
  */
 async function getDb() {
   try {
-    mongodb.connect(mongoUrl);
     const smartwin = await mongodb.getdb();
     PRODUCT = smartwin.collection('PRODUCT');
   } catch (error) {
-    debug('product.getDb() Error:', error);
+    debug('getDb() Error:', error);
   }
 }
 /**
@@ -63,7 +61,7 @@ export async function getList(filter) {
       { $sort: sort },
     ]).toArray();
 
-    return { count: products.length, data: products };
+    return products;
   } catch (error) {
     debug('product.getList() Error: %o', error);
     throw error;
@@ -80,8 +78,8 @@ export async function getList(filter) {
 export async function getById(id) {
   try {
     await getDb();
-    const match = { productid: id };
-    const product = await PRODUCT.findOne(match);
+    const query = { productid: id };
+    const product = await PRODUCT.findOne(query);
 
     return product;
   } catch (error) {
@@ -97,16 +95,12 @@ export async function getById(id) {
  * @return {Object} result - return value and count for inserted.
  * example : { ok: 1, n: 2 }
  */
-export async function add(docArray) {
+export async function add(docs) {
   try {
     await getDb();
-    let ret = {};
-    debug('docArray: %o', docArray);
-    if (docArray && docArray.length > 0) {
-      ret = await PRODUCT.insert(docArray);
-    } else {
-      debug('docArray is not an Array!');
-    }
+
+    debug('docs: %o', docs);
+    const ret = await PRODUCT.insertMany(docs);
 
     return ret.result;
   } catch (error) {
@@ -115,7 +109,7 @@ export async function add(docArray) {
   }
 }
 /**
- * update an product documents by Specified product id.
+ * update a product documents by Specified product id.
  * @function
  * @param {string} productid - unique id for product collection
  * example : 'ru'
@@ -128,18 +122,16 @@ export async function set(id, keyvalue) {
   try {
     await getDb();
 
-    const match = { productid: id };
-    const ret = await PRODUCT.update(
-      match,
-      {
-        $set: keyvalue,
-        $currentDate: { updatedate: true },
-      },
-      {
-        multi: true,
-        upsert: true,
-      }
-    );
+    const filter = { productid: id };
+    const update = {
+      $set: keyvalue,
+      $currentDate: { updatedate: true },
+    };
+    const options = {
+      upsert: true,
+    };
+
+    const ret = await PRODUCT.updateOne(filter, update, options);
 
     return ret.result;
   } catch (error) {
@@ -158,8 +150,8 @@ export async function set(id, keyvalue) {
 export async function remove(id) {
   try {
     await getDb();
-    const match = { productid: id };
-    const ret = await PRODUCT.remove(match);
+    const filter = { productid: id };
+    const ret = await PRODUCT.deleteOne(filter);
 
     return ret.result;
   } catch (error) {
