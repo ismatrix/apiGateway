@@ -1,7 +1,7 @@
 /** @module sw-mongodb-crud/instrument */
-const debug = require('debug')('sw-mongodb-crud:instrument');
-import { mongoUrl } from './config';
 import * as mongodb from '../mongodb';
+
+const debug = require('debug')('sw-mongodb-crud:instrument');
 
 /** The handle of INSTRUMENT collection */
 let INSTRUMENT;
@@ -12,11 +12,10 @@ let INSTRUMENT;
  */
 async function getDb() {
   try {
-    mongodb.connect(mongoUrl);
     const smartwin = await mongodb.getdb();
     INSTRUMENT = smartwin.collection('INSTRUMENT');
   } catch (error) {
-    debug('instrument.getDb() Error:', error);
+    debug('getDb() Error:', error);
   }
 }
 /**
@@ -92,7 +91,7 @@ export async function getList(filter) {
       { $sort: sort },
     ]).toArray();
 
-    return { count: instruments.length, data: instruments };
+    return instruments;
   } catch (error) {
     debug('instrument.getList() Error: %o', error);
     throw error;
@@ -193,8 +192,8 @@ export async function getListByProduct(product, istrading) {
 export async function getById(id) {
   try {
     await getDb();
-    const match = { instrumentid: id };
-    const instrument = await INSTRUMENT.findOne(match);
+    const query = { instrumentid: id };
+    const instrument = await INSTRUMENT.findOne(query);
 
     return instrument;
   } catch (error) {
@@ -210,16 +209,11 @@ export async function getById(id) {
  * @return {Object} result - return value and count for inserted.
  * example : { ok: 1, n: 2 }
  */
-export async function add(docArray) {
+export async function add(docs) {
   try {
     await getDb();
-    let ret = {};
-    debug('docArray: %o', docArray);
-    if (docArray && docArray.length > 0) {
-      ret = await INSTRUMENT.insert(docArray);
-    } else {
-      debug('docArray is not an Array!');
-    }
+
+    const ret = await INSTRUMENT.insertMany(docs);
 
     return ret.result;
   } catch (error) {
@@ -241,17 +235,18 @@ export async function set(id, keyvalue) {
   try {
     await getDb();
 
-    const match = { instrumentid: id };
+    const filter = { instrumentid: id };
+    const update = {
+      $set: keyvalue,
+      $currentDate: { updatedate: true },
+    };
+    const options = {
+      upsert: true,
+    };
     const ret = await INSTRUMENT.update(
-      match,
-      {
-        $set: keyvalue,
-        $currentDate: { updatedate: true },
-      },
-      {
-        multi: true,
-        upsert: true,
-      }
+      filter,
+      update,
+      options,
     );
 
     return ret.result;
@@ -271,8 +266,8 @@ export async function set(id, keyvalue) {
 export async function remove(id) {
   try {
     await getDb();
-    const match = { instrumentid: id };
-    const ret = await INSTRUMENT.remove(match);
+    const filter = { instrumentid: id };
+    const ret = await INSTRUMENT.deleteOne(filter);
 
     return ret.result;
   } catch (error) {
@@ -286,38 +281,61 @@ export async function remove(id) {
  */
 export async function runTest() {
   try {
-    // // instrument.getList
-    // const filter = { rank: [1, 2], product: ['ru'] };
-    // const instruments = await getList(filter);
-    // debug('instrument.getList:', instruments);
-    // // instrument.getRankList
-    // const instruments = await getListByRank(1);
-    // debug('instrument.getListByRank:', instruments.data.map(ins => ins.instrumentid));
-    // // instrument.getDominantConnectList
-    // const DominantConnect = await getDominantConnectList();
-    // debug('instrument.getDominantConnectList:',
-    // DominantConnect.data.map(ins => ins.instrumentid + ins.instrumentname));
-    // // instrument.getProductIndexList
-    // const ProductIndex = await getProductIndexList();
-    // debug('instrument.getProductIndexList:', ProductIndex.data);
-    // // instrument.getProductList
-    // const ProductList = await getListByProduct('ru');
-    // debug('instrument.getProductList:', ProductList.count);
-    // // instrument.getById
-    // const instrument = await getById('IF1609');
-    // debug('instrument.getById', instrument);
-    // // instrument.remove
-    // const retremove = await remove('aaa');
-    // debug('instrument.remove', retremove);
-    // // instrument.set
-    // const retset = await set('aaa', { key1: 2, key2: 'fuckyou' });
-    // debug('instrument.set', retset);
-    // // instrument.add
-    // const retadd = await add([{ instrumentid: 'aaa', key1: 1, key2: 'fuck' },
-    // { instrumentid: 'aaa', key1: 1, key2: 'fuck' }]);
-    // debug('instrument.add', retadd);
-
-    process.exit(0);
+    // {
+    //   // instrument.getList
+    //   const filter = { rank: [1, 2], product: ['ru'] };
+    //   const instruments = await getList(filter);
+    //   debug('instrument.getList:', instruments);
+    // }
+    // {
+    //   // instrument.getRankList
+    //   const instruments = await getListByRank(1);
+    //   debug('instrument.getListByRank:',
+    //   instruments.map(ins => ins.instrumentid + ins.instrumentname));
+    // }
+    // {
+    //   // instrument.getDominantConnectList
+    //   const DominantConnect = await getDominantConnectList();
+    //   debug('instrument.getDominantConnectList:',
+    //   DominantConnect.map(ins => ins.instrumentid + ins.instrumentname));
+    // }
+    // {
+    //   // instrument.getProductIndexList
+    //   const ProductIndex = await getProductIndexList();
+    //   debug('instrument.getProductIndexList:',
+    //   ProductIndex.map(ins => ins.instrumentid + ins.instrumentname));
+    // }
+    // {
+    //   // instrument.getProductList
+    //   const ProductList = await getListByProduct('ru');
+    //   debug('instrument.getProductList:',
+    //   ProductList.map(ins => ins.instrumentid + ins.instrumentname));
+    // }
+    // {
+    //   // instrument.getById
+    //   const instrument = await getById('IF1609');
+    //   debug('instrument.getById', instrument);
+    // }
+    // {
+    //   // instrument.add
+    //   const retadd = await add([{ instrumentid: 'aaa', key1: 1, key2: 'fuck' },
+    //   { instrumentid: 'bbb', key1: 1, key2: 'fuck' }]);
+    //   debug('instrument.add', retadd);
+    // }
+    // {
+    //   // instrument.set
+    //   const retset = await set('aaa', { key1: 'aaa1111', key2: 'fuckyou111' });
+    //   debug('instrument.set', retset);
+    // }
+    // {
+    //   // instrument.remove
+    //   const retremove1 = await remove('aaa');
+    //   debug('instrument.remove', retremove1);
+    //   const retremove2 = await remove('bbb');
+    //   debug('instrument.remove', retremove2);
+    // }
+    //
+    // process.exit(0);
   } catch (error) {
     debug('instrument.runTest: %o', error);
   }

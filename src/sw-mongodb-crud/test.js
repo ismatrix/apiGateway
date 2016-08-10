@@ -1,5 +1,6 @@
 require('babel-register');
 // const product = require('./product');
 // product.runTest();
-const instrument = require('./instrument');
-instrument.runTest();
+const crud = require('./sw-mongodb-crud');
+crud.product.runTest();
+crud.instrument.runTest();

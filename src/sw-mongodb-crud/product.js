@@ -99,7 +99,7 @@ export async function add(docs) {
   try {
     await getDb();
 
-    debug('docs: %o', docs);
+    // debug('docs: %o', docs);
     const ret = await PRODUCT.insertMany(docs);
 
     return ret.result;
@@ -165,25 +165,36 @@ export async function remove(id) {
  */
 export async function runTest() {
   try {
-    // // product.getList
-    // const filter = { exchangeid: 'SHFE', productid: 'ru' };
-    // const products = await getList(filter);
-    // debug('product.getList:', products);
-    // // product.getById
-    // const product = await getById('IF');
-    // debug('product.getById', product);
-    // // product.remove
-    // const retremove = await remove('aaa');
-    // debug('product.remove', retremove);
-    // // product.set
-    // const retset = await set('aaa', { key1: 1, key2: 'fuck' });
-    // debug('product.set', retset);
-    // product.add
-    // const retadd = await add([{ productid: 'aaa', key1: 1, key2: 'fuck' },
-    // { productid: 'aaa', key1: 1, key2: 'fuck' }]);
-    // debug('product.add', retadd);
-
-    process.exit(0);
+    // {
+    //   // product.getList
+    //   const filter = { exchangeid: 'SHFE', productid: 'ru' };
+    //   const products = await getList(filter);
+    //   debug('product.getList:', products);
+    // }
+    // {
+    //   // product.getById
+    //   const product = await getById('IF');
+    //   debug('product.getById', product);
+    // }
+    // {
+    //   // product.add
+    //   const retadd = await add([{ productid: 'aaa', key1: 1, key2: 'fuck2' },
+    //   { productid: 'bbb', key1: 2, key2: 'fuck2' }]);
+    //   debug('product.add', retadd);
+    // }
+    // {
+    //   // product.set
+    //   const retset = await set('aaa', { key1: 100, key2: 'fuck100' });
+    //   debug('product.set', retset);
+    // }
+    // {
+    //   // product.remove
+    //   const retremove1 = await remove('aaa');
+    //   debug('product.remove', retremove1);
+    //   const retremove2 = await remove('bbb');
+    //   debug('product.remove', retremove2);
+    // }
+    // process.exit(0);
   } catch (error) {
     debug('product.runTest: %o', error);
   }
