@@ -243,7 +243,7 @@ export async function set(id, keyvalue) {
     const options = {
       upsert: true,
     };
-    const ret = await INSTRUMENT.update(
+    const ret = await INSTRUMENT.updateOne(
       filter,
       update,
       options,
