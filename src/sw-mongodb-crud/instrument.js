@@ -189,7 +189,7 @@ export async function getListByProduct(product, istrading) {
  * @return {Object} content - instrument document content.
  * example : { instrumentDoc }
  */
-export async function getById(id) {
+export async function get(id) {
   try {
     await getDb();
     const query = { instrumentid: id };
@@ -197,7 +197,7 @@ export async function getById(id) {
 
     return instrument;
   } catch (error) {
-    debug('instrument.getById() Error: %o', error);
+    debug('instrument.get() Error: %o', error);
     throw error;
   }
 }
@@ -312,9 +312,9 @@ export async function runTest() {
     //   ProductList.map(ins => ins.instrumentid + ins.instrumentname));
     // }
     // {
-    //   // instrument.getById
-    //   const instrument = await getById('IF1609');
-    //   debug('instrument.getById', instrument);
+    //   // instrument.get
+    //   const instrument = await get('IF1609');
+    //   debug('instrument.get', instrument);
     // }
     // {
     //   // instrument.add

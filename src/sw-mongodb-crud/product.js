@@ -75,7 +75,7 @@ export async function getList(filter) {
  * @return {Object} content - product document content.
  * example : { productDoc }
  */
-export async function getById(id) {
+export async function get(id) {
   try {
     await getDb();
     const query = { productid: id };
@@ -83,7 +83,7 @@ export async function getById(id) {
 
     return product;
   } catch (error) {
-    debug('product.getById() Error: %o', error);
+    debug('product.get() Error: %o', error);
     throw error;
   }
 }
@@ -172,9 +172,9 @@ export async function runTest() {
     //   debug('product.getList:', products);
     // }
     // {
-    //   // product.getById
-    //   const product = await getById('IF');
-    //   debug('product.getById', product);
+    //   // product.get
+    //   const product = await get('IF');
+    //   debug('product.get', product);
     // }
     // {
     //   // product.add
