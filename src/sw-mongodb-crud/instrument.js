@@ -107,7 +107,6 @@ export async function getList(filter) {
  */
 export async function getListByRank(rank) {
   try {
-    await getDb();
     const filter = { rank: [rank] };
     const instruments = await getList(filter);
 
@@ -126,7 +125,6 @@ export async function getListByRank(rank) {
  */
 export async function getDominantConnectList() {
   try {
-    await getDb();
     const filter = { productclass: ['8'] };
     const instruments = await getList(filter);
 
@@ -144,7 +142,6 @@ export async function getDominantConnectList() {
  */
 export async function getProductIndexList() {
   try {
-    await getDb();
     const filter = { productclass: ['9'] };
     const instruments = await getList(filter);
 
