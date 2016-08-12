@@ -90,17 +90,17 @@ export async function get(id) {
 /**
  * insert  single or multiple product documents into product collection.
  * @function
- * @param {Array.} docArray - product document content.
+ * @param {Array.} documents - product document content.
  * example : { productDoc }
  * @return {Object} result - return value and count for inserted.
  * example : { ok: 1, n: 2 }
  */
-export async function add(docs) {
+export async function add(documents) {
   try {
     await getDb();
 
-    // debug('docs: %o', docs);
-    const ret = await PRODUCT.insertMany(docs);
+    // debug('documents: %o', documents);
+    const ret = await PRODUCT.insertMany(documents);
 
     return ret.result;
   } catch (error) {

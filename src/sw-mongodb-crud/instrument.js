@@ -24,8 +24,8 @@ async function getDb() {
  * @param {Object} filter - Query filter documents
  * specify the conditions that determine which records to select for return
  * example : { rank: 1, productclass: 8, exchange: 'SHFE', product: 'ru',istrading: 1 }
- * @return {Object} content - include count and data array.
- * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ * @return {Array} instruments - include count and data array.
+ * example : [{instrumentDoc1}, {instrumentDoc1}]
  */
 export async function getList(filter) {
   try {
@@ -102,8 +102,8 @@ export async function getList(filter) {
  * @function
  * @param {number} rank - instruments ranking
  * example : 1 - dominant, 2 - second dominant, 3 - third......
- * @return {Object} content - include count and data array.
- * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ * @return {Array} instruments - include count and data array.
+ * example : [{instrumentDoc1}, {instrumentDoc1}]
  */
 export async function getListByRank(rank) {
   try {
@@ -121,8 +121,8 @@ export async function getListByRank(rank) {
 /**
  * get dominant connection instrument list
  * @function
- * @return {Object} content - include count and data array.
- * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ * @return {Array} instruments - include count and data array.
+ * example : [{instrumentDoc1}, {instrumentDoc1}]
  */
 export async function getDominantConnectList() {
   try {
@@ -139,8 +139,8 @@ export async function getDominantConnectList() {
 /**
  * get product index instrument list
  * @function
- * @return {Object} content - include count and data array.
- * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ * @return {Array} instruments - include count and data array.
+ * example : [{instrumentDoc1}, {instrumentDoc1}]
  */
 export async function getProductIndexList() {
   try {
@@ -157,22 +157,18 @@ export async function getProductIndexList() {
 /**
  * get instrument list by specified product.
  * @function
- * @param {Array .} productid - product id array
+ * @param {Array.} productid - product id array
  * example : ['ag', 'ru', 'au']
  * @param {number} istrading - if is trading now
  * example : 0|false - is not trading, 1|others - is trading
- * @return {Object} content - include count and data array.
- * example : { count: 2, data: [{instrumentDoc1}, {instrumentDoc1}] }
+ * @return {Array} instruments - include count and data array.
+ * example : [{instrumentDoc1}, {instrumentDoc1}]
  */
-export async function getListByProduct(product, istrading) {
+export async function getListByProduct(products, isTrading = 1) {
   try {
     await getDb();
-    let trading = 1;
-    if (istrading === 0 || istrading === false) {
-      trading = 0;
-    }
 
-    const filter = { product: [product], istrading: [trading] };
+    const filter = { product: products, istrading: [isTrading] };
     const instruments = await getList(filter);
 
     return instruments;
@@ -186,7 +182,7 @@ export async function getListByProduct(product, istrading) {
  * @function
  * @param {string} instrumentid - unique id for instrument collection
  * example : 'IF1609'
- * @return {Object} content - instrument document content.
+ * @return {Array} instruments - instrument document content.
  * example : { instrumentDoc }
  */
 export async function get(id) {
@@ -204,16 +200,16 @@ export async function get(id) {
 /**
  * insert  single or multiple instrument documents into instrument collection.
  * @function
- * @param {Array.} docArray - instrument document content.
+ * @param {Array.} documents - instrument document content.
  * example : { instrumentDoc }
  * @return {Object} result - return value and count for inserted.
  * example : { ok: 1, n: 2 }
  */
-export async function add(docs) {
+export async function add(documents) {
   try {
     await getDb();
 
-    const ret = await INSTRUMENT.insertMany(docs);
+    const ret = await INSTRUMENT.insertMany(documents);
 
     return ret.result;
   } catch (error) {
@@ -263,10 +259,10 @@ export async function set(id, keyvalue) {
  * @return {Object} result - return value and count for removed.
  * example : { ok: 1, n: 5 }
  */
-export async function remove(id) {
+export async function remove(instrumentid) {
   try {
     await getDb();
-    const filter = { instrumentid: id };
+    const filter = { instrumentid };
     const ret = await INSTRUMENT.deleteOne(filter);
 
     return ret.result;

@@ -1,3 +1,4 @@
+/** @module sw-mongodb-crud */
 import { mongoUrl } from './config';
 import * as mongodb from '../mongodb';
 

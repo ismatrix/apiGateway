@@ -23,27 +23,27 @@ async function getDb() {
  * @function
  * @param {Object} filter - Query filter documents
  * specify the conditions that determine which records to select for return
- * example : { instrument: ['IF1609','IF1701'], begindate: '20160701', endDate: '20160707' }
- * @return {Array} content - daybar array.
+ * example : { instruments: ['IF1609','IF1701'], startDate: '20160701', endDate: '20160707' }
+ * @return {Array} daybars - daybar array.
  * example : [{daybarDoc1}, {daybarDoc2}]
  */
 export async function getList(filter) {
   try {
     await getDb();
-    let instrument = [];
-    let beginDate = '0';
+    let instruments = [];
+    let startDate = '0';
     let endDate = '99999999';
 
     const query = {
       $and: [],
     };
     // 合约过滤
-    if ('instrument' in filter && filter.instrument.length > 0) {
-      instrument = filter.instrument;
+    if ('instruments' in filter && filter.instruments.length > 0) {
+      instruments = filter.instruments;
     }
     // 开始交易日过滤
     if ('begindate' in filter) {
-      beginDate = filter.begindate;
+      startDate = filter.begindate;
     }
     // 结束交易日过滤
     if ('enddate' in filter) {
@@ -51,11 +51,11 @@ export async function getList(filter) {
     }
     // 合约过滤
     query.$and.push({
-      instrument: { $in: instrument },
+      instruments: { $in: instruments },
     });
     // 交易日范围过滤
     query.$and.push({
-      tradingday: { $gte: beginDate, $lte: endDate },
+      tradingday: { $gte: startDate, $lte: endDate },
     });
 
     const sort = { instrument: 1, tradingday: 1 };
@@ -70,18 +70,15 @@ export async function getList(filter) {
 /**
  * get Last Day bar by specified instrument array.
  * @function
- * @param {Array} insArray - instrument array
+ * @param {Array} instruments - instrument array
  * example : ['IF1609']
- * @return {Array} content - daybar array.
+ * @return {Array} daybars - daybar array.
  * example : [{daybarDoc1}]
  */
-export async function getLast(insArray) {
+export async function getLast(instruments) {
   try {
     await getDb();
-    let instruments = [];
-    if (insArray && insArray.length > 0) {
-      instruments = insArray;
-    }
+
     const match = { instrument: { $in: instruments } };
 
     const sort = { tradingday: -1 };
@@ -141,21 +138,20 @@ export async function getLast(insArray) {
  * @function
  * @param {string} instrumentid - instrument id
  * example : 'IF1609'
- * @param {string} tradingday - tradingday
+ * @param {string} tradingday - ex: options.tradingday
  * example : '20160701'
- * @return {Object} content - daybar document content.
+ * @return {Object} daybar - daybar document content.
  * example : { daybarDoc }
  */
 export async function get(instrumentid, tradingday) {
   try {
     let daybar;
-    if (!tradingday || tradingday === 0 || tradingday === '0') {
+    if (!tradingday) {
       daybar = await getLast([instrumentid]);
     } else {
       await getDb();
       const query = { instrument: instrumentid, tradingday: { $lte: tradingday } };
-      daybar = await DAYBAR.find(query).sort({ tradingday: -1 }).limit(1)
-      .toArray();
+      daybar = await DAYBAR.find(query).sort({ tradingday: -1 }).limit(1).toArray();
     }
     return daybar[0];
   } catch (error) {
@@ -166,16 +162,16 @@ export async function get(instrumentid, tradingday) {
 /**
  * insert  single or multiple daybar documents into daybar collection.
  * @function
- * @param {Array.} docArray - daybar document content.
+ * @param {Array.} daybars - daybar document content.
  * example : { daybarDoc }
  * @return {Object} result - return value and count for inserted.
  * example : { ok: 1, n: 2 }
  */
-export async function add(docs) {
+export async function add(daybars) {
   try {
     await getDb();
 
-    const ret = await DAYBAR.insertMany(docs);
+    const ret = await DAYBAR.insertMany(daybars);
 
     return ret.result;
   } catch (error) {
