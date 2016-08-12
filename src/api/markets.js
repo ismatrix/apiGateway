@@ -344,6 +344,9 @@ export async function getFuturesLastSnapshot(symbols) {
       settlement: { $first: '$settlement' },
       turnover: { $first: '$turnover' },
       volume: { $first: '$volume' },
+      lowerlimit: { $first: '$lowerlimit' },
+      upperlimit: { $first: '$upperlimit' },
+      price: { $first: '$price' },
     };
     const project = {
       _id: 0,
@@ -362,6 +365,9 @@ export async function getFuturesLastSnapshot(symbols) {
       settlement: 1,
       turnover: 1,
       volume: 1,
+      lowerlimit: 1,
+      upperlimit: 1,
+      price: 1,
     };
 
     const lastSnapshot = await DAYBAR.aggregate([
