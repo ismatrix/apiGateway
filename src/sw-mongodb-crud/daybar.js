@@ -51,7 +51,7 @@ export async function getList(filter) {
     }
     // 合约过滤
     query.$and.push({
-      instruments: { $in: instruments },
+      instrument: { $in: instruments },
     });
     // 交易日范围过滤
     query.$and.push({
@@ -75,7 +75,7 @@ export async function getList(filter) {
  * @return {Array} daybars - daybar array.
  * example : [{daybarDoc1}]
  */
-export async function getLast(instruments) {
+export async function getLast(instruments = []) {
   try {
     await getDb();
 
@@ -143,10 +143,10 @@ export async function getLast(instruments) {
  * @return {Object} daybar - daybar document content.
  * example : { daybarDoc }
  */
-export async function get(instrumentid, tradingday) {
+export async function get(instrumentid, tradingday = null) {
   try {
     let daybar;
-    if (!tradingday) {
+    if (tradingday === null) {
       daybar = await getLast([instrumentid]);
     } else {
       await getDb();
