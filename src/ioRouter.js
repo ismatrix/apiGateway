@@ -1,8 +1,10 @@
-const debug = require('debug')('ioRouter');
+import createDebug from 'debug';
 import socketioJwt from 'socketio-jwt';
+import through from 'through2';
 import { jwtSecret } from './config';
 import iceLive from './sw-datafeed-icelive';
-import through from 'through2';
+
+const debug = createDebug('ioRouter');
 
 export default function ioRouter(io) {
   io.on('connection', (socket) => {

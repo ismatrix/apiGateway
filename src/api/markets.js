@@ -1,9 +1,11 @@
-const debug = require('debug')('api:marketData');
+import createDebug from 'debug';
 import Boom from 'boom';
-import * as mongodb from '../mongodb';
-import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
-import * as icePast from '../sw-datafeed-icepast';
 import through from 'through2';
+import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
+import * as mongodb from '../mongodb';
+import * as icePast from '../sw-datafeed-icepast';
+
+const debug = createDebug('api:marketData');
 
 let INDICATORS;
 let INSTRUMENT;

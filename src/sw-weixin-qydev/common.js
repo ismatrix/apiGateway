@@ -1,7 +1,8 @@
-const debug = require('debug')('sw-weixin-qydev:common');
+import createDebug from 'debug';
 import fetch from 'node-fetch';
 import Boom from 'boom';
 
+const debug = createDebug('sw-weixin-qydev:common');
 
 export async function getAccessToken() {
   try {

@@ -1,6 +1,7 @@
-const debug = require('debug')('sw-weixin-qydev:crypto');
+import createDebug from 'debug';
 import crypto from 'crypto';
 
+const debug = createDebug('sw-weixin-qydev:crypto');
 /**
  * 提供基于PKCS7算法的加解密接口
  *

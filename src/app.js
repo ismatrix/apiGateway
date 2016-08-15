@@ -1,4 +1,4 @@
-const debug = require('debug')('koa');
+import createDebug from 'debug';
 import Boom from 'boom';
 import http from 'http';
 import Koa from 'koa';
@@ -6,15 +6,17 @@ import bodyParser from 'koa-bodyparser';
 import jwt from 'koa-jwt';
 import logger from 'koa-logger';
 import compose from 'koa-compose';
-import { koaError } from './errors';
 import cors from 'kcors';
-import { apiRouter } from './httpRouters';
+import serve from 'koa-static';
+import mount from 'koa-mount';
 import socketio from 'socket.io';
+import { koaError } from './errors';
+import { apiRouter } from './httpRouters';
 import ioRouter from './ioRouter';
 import * as mongodb from './mongodb';
 import { jwtSecret, mongoUrl } from './config';
-import serve from 'koa-static';
-import mount from 'koa-mount';
+
+const debug = createDebug('koa');
 
 debug('API Gateway starting...');
 mongodb.connect(mongoUrl);

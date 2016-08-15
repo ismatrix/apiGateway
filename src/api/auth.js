@@ -1,11 +1,13 @@
-const debug = require('debug')('api:auth');
+import createDebug from 'debug';
 import Boom from 'boom';
 import jwt from 'jsonwebtoken';
+import argon2 from 'argon2';
 import * as mongodb from '../mongodb';
 import { jwtSecret, wechatConfig } from '../config';
 import makeQydev from '../sw-weixin-qydev';
-import argon2 from 'argon2';
 import { io } from '../app.js';
+
+const debug = createDebug('api:auth');
 
 let USERS;
 

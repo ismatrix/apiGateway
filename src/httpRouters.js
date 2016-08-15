@@ -1,10 +1,12 @@
-const debug = require('debug')('routers');
+import createDebug from 'debug';
 import * as funds from './api/funds';
 import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
 import { canKoa } from './acl';
+
+const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
 
 apiRouter

@@ -1,35 +1,43 @@
-const debug = require('debug')('acl');
+import createDebug from 'debug';
 import Boom from 'boom';
 import NodeAclCb from 'acl';
 import Promise from 'bluebird';
+
+const debug = createDebug('acl');
 const NodeAcl = Promise.promisifyAll(NodeAclCb);
 const acl = new NodeAcl(new NodeAcl.memoryBackend());
 
 // Departments permissions
 acl.allow([
   {
-    roles: ['系统部'], allows: [
+    roles: ['系统部'],
+    allows: [
       { resources: 'reports/it', permissions: ['read', 'write', 'delete'] },
       { resources: 'users', permissions: ['read', 'write', 'delete'] },
     ] },
   {
-    roles: ['市场部'], allows: [
+    roles: ['市场部'],
+    allows: [
       { resources: 'reports/marketing', permissions: ['read', 'write', 'delete'] },
     ] },
   {
-    roles: ['交易部'], allows: [
+    roles: ['交易部'],
+    allows: [
       { resources: 'reports/trading', permissions: ['read', 'write', 'delete'] },
     ] },
   {
-    roles: ['财务部'], allows: [
+    roles: ['财务部'],
+    allows: [
       { resources: 'reports/finance', permissions: ['read', 'write', 'delete'] },
     ] },
   {
-    roles: ['总经办'], allows: [
+    roles: ['总经办'],
+    allows: [
       { resources: 'reports/management', permissions: ['read', 'write', 'delete'] },
     ] },
   {
-    roles: ['客户'], allows: [
+    roles: ['客户'],
+    allows: [
       { resources: 'reports/customers', permissions: ['read'] },
     ] },
 ]);
@@ -37,7 +45,8 @@ acl.allow([
 // Users permissions
 acl.allow([
   {
-    roles: ['victor'], allows: [
+    roles: ['victor'],
+    allows: [
       { resources: 'funds', permissions: ['read', 'write', 'delete'] },
       { resources: 'funds/:fundid', permissions: ['read', 'write', 'delete'] },
     ] },

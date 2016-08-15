@@ -1,7 +1,9 @@
-const debug = require('debug')('api:users');
+import createDebug from 'debug';
 import Boom from 'boom';
-import * as mongodb from '../mongodb';
 import argon2 from 'argon2';
+import * as mongodb from '../mongodb';
+
+const debug = createDebug('api:users');
 
 let USERS;
 
