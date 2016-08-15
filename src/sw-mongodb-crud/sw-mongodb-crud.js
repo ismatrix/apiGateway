@@ -11,3 +11,5 @@ export * as instrument from './instrument';
 export * as daybar from './daybar';
 export * as fund from './fund';
 export * as codeitem from './codeitem';
+export * as indicators from './indicators';
+export * as user from './user';
