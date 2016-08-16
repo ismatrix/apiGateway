@@ -982,7 +982,7 @@ definitions:
     properties:
       symbols:
         type: array
-        example: ["ni", "IF", "T"]
+        example: ["c1609","c1701","c1705"]
         items:
           type: string
   resContractdailypricespeed:

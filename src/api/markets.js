@@ -2,42 +2,40 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
-import * as mongodb from '../mongodb';
-import * as icePast from '../sw-datafeed-icepast';
+import createIcePastDataFeed from '../sw-datafeed-icepast';
+import {
+  product as dbProduct,
+  daybar as dbDaybar,
+  instrument as dbInstrument,
+  indicators as dbIndicators,
+} from '../sw-mongodb-crud';
 
-const debug = createDebug('api:marketData');
-
-let INDICATORS;
-let INSTRUMENT;
-let PRODUCT;
-let DAYBAR;
-
-(async function getDb() {
-  const smartwin = await mongodb.getdb();
-  INDICATORS = smartwin.collection('INDICATORS');
-  INSTRUMENT = smartwin.collection('INSTRUMENT');
-  PRODUCT = smartwin.collection('PRODUCT');
-  DAYBAR = smartwin.collection('DAYBAR');
-}());
+const debug = createDebug('api:market');
 
 export async function bullBearTrend(sym, startDate, endDate) {
   try {
     if (!sym || !startDate || !endDate) throw Boom.badRequest('Missing parameter');
     let symbols = sym;
-    if (sym.includes('all')) {
-      symbols = await INDICATORS.distinct('symbol', { name: 'bull bear trend' });
-    }
-    debug('bullBearTrend() req symbols %o', symbols);
-    const queryIns = { instrumentid: { $in: symbols } };
-    const projectionIns = { _id: 0, instrumentid: 1, instrumentname: 1 };
-    const contracts = await INSTRUMENT.find(queryIns, projectionIns).toArray();
 
-    const query = { $and: [
-      { symbol: { $in: symbols } },
-      { name: 'bull bear trend' },
-    ] };
-    const projection = { _id: 0, name: 0 };
-    const indicators = await INDICATORS.find(query, projection).toArray();
+    if (sym.includes('all')) {
+      const key = 'symbol';
+      const query = { name: 'bull bear trend' };
+      symbols = await dbIndicators.distinct(key, query);
+    }
+
+    debug('bullBearTrend() req symbols %o', symbols);
+
+    const instrumentOptions = {
+      instruments: symbols,
+    };
+    const contracts = await dbInstrument.getList(instrumentOptions);
+
+    const indicatorsOptions = {
+      symbols,
+      name: 'bull bear trend',
+    };
+    const indicators = await dbIndicators.getMany(indicatorsOptions);
+
     let timeline = indicators[0].dates;
     for (const indicator of indicators) {
       timeline = uniq(timeline.concat(indicator.dates));
@@ -77,22 +75,22 @@ export async function contractDailyPriceSpeed(symbols) {
   try {
     if (!symbols) throw Boom.badRequest('Missing symbols parameter');
 
-    const contractsQuery = { $and: [
-        { istrading: 1 },
-        { rank: { $in: [1, 2, 3] } },
-        { $or: [{ productid: { $in: symbols } }, { instrumentid: { $in: symbols } }] },
-    ] };
-    const contractsProjection = { _id: 0, instrumentid: 1, productid: 1 };
-    const contracts = await INSTRUMENT.find(contractsQuery, contractsProjection).toArray();
+    const options = {
+      rank: [1, 2, 3],
+      istrading: [1],
+      instruments: symbols,
+    };
+
+    const contracts = await dbInstrument.getList(options);
+    debug(contracts);
     const contractSymbols = contracts.map(contract => contract.instrumentid);
     debug('contractDailyPriceSpeed() contractSymbols: %o', contractSymbols);
 
-    const query = { $and: [
-      { symbol: { $in: contractSymbols } },
-      { name: 'contract daily price speed' },
-    ] };
-    const projectionInd = { _id: 0, name: 0 };
-    const indicators = await INDICATORS.find(query, projectionInd).toArray();
+    const indicatorsOptions = {
+      symbols: contractSymbols,
+      name: 'contract daily price speed',
+    };
+    const indicators = await dbIndicators.getMany(indicatorsOptions);
 
     if (!indicators[0]) throw Boom.notFound('Indicators not found');
 
@@ -150,7 +148,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
     let quotes;
     let transformFunction;
     if (resolution === 'minute') {
-      quotes = await icePast.subscribe(symbol, resolution, startDate, endDate);
+      quotes = await createIcePastDataFeed(symbol, resolution, startDate, endDate);
 
       transformFunction = (chunk, enc, callback) => {
         const candlestick = {
@@ -165,15 +163,13 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         callback(null, candlestick);
       };
     } else if (resolution === 'day') {
-      const query = {
-        $and: [
-          { instrument: symbol },
-          { tradingday: { $gte: startDate } },
-          { tradingday: { $lte: endDate } },
-        ],
+      const options = {
+        instruments: [symbol],
+        startDate,
+        endDate,
       };
-
-      quotes = await DAYBAR.find(query).sort({ tradingday: 1 }).stream();
+      const quotesCursor = await dbDaybar.getListCursor(options);
+      quotes = quotesCursor.stream();
 
       transformFunction = (chunk, enc, callback) => {
         const candlestick = {
@@ -201,58 +197,16 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
     if (!ranks || !exchanges || !symbols || !productClasses || !isTrading) {
       throw Boom.badRequest('Missing parameter');
     }
-    const query = {
-      $and: [],
-    };
-    const lookup = {
-      from: 'PRODUCT',
-      localField: 'productid',
-      foreignField: 'productid',
-      as: 'product',
-    };
-    const unwind = '$product';
-    debug('ranks: %o, exchanges: %o, symbols: %o, productClasses: %o, isTrading: %o',
-    ranks, exchanges, symbols, productClasses, isTrading);
 
-    if (!ranks.includes('all')) query.$and.push({ rank: { $in: ranks } });
-    if (!exchanges.includes('all')) query.$and.push({ exchangeid: { $in: exchanges } });
-    if (!symbols.includes('all')) {
-      query.$and.push(
-        { $or: [{ instrumentid: { $in: symbols } }, { productid: { $in: symbols } }] }
-      );
-    }
-    if (!productClasses.includes('all')) query.$and.push({ productclass: { $in: productClasses } });
-    if (!isTrading.includes('all')) query.$and.push({ istrading: { $in: isTrading } });
-    if (!query.$and.length) delete query.$and;
-    debug('getFuturesContracts() db query: %o', query);
+    const options = {};
 
-    const projection = {
-      _id: 0,
-      instrumentid: 1,
-      exchangeid: 1,
-      instrumentname: {
-        $cond:
-        [
-          { $or: [{ $eq: ['$productclass', '8'] }, { $eq: ['$productclass', '9'] }] },
-          '$instrumentname',
-           { $concat: ['$product.productname',
-               { $substr: ['$expiredate', 2, 4] }] },
-        ],
-      },
-      rank: 1,
-      productclass: 1,
-      productid: 1,
-      istrading: 1,
-    };
+    if (!ranks.includes('all')) options.rank = ranks;
+    if (!exchanges.includes('all')) options.exchange = exchanges;
+    if (!symbols.includes('all')) options.product = symbols;
+    if (!productClasses.includes('all')) options.productclass = productClasses;
+    if (!isTrading.includes('all')) options.istrading = isTrading;
 
-    const sort = { exchangeid: 1, productclass: -1, instrumentid: 1 };
-    const contracts = await INSTRUMENT.aggregate([
-      { $lookup: lookup },
-      { $unwind: unwind },
-      { $match: query },
-      { $project: projection },
-      { $sort: sort },
-    ]).toArray();
+    const contracts = await dbInstrument.getList(options);
 
     return { ok: true, contracts };
   } catch (error) {
@@ -263,30 +217,7 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
 
 export async function getFuturesProducts() {
   try {
-    const lookup = {
-      from: 'INSTRUMENT',
-      localField: 'productid',
-      foreignField: 'productid',
-      as: 'instrument',
-    };
-    const unwind = '$instrument';
-    const match = { 'instrument.rank': 1 };
-    const project = {
-      _id: 0,
-      productid: 1,
-      productname: 1,
-      exchangeid: 1,
-      mainins: '$instrument.instrumentname',
-      maininsopeninterest: '$instrument.openinterest',
-    };
-    const sort = { maininsopeninterest: -1 };
-    const products = await PRODUCT.aggregate([
-      { $lookup: lookup },
-      { $unwind: unwind },
-      { $match: match },
-      { $project: project },
-      { $sort: sort },
-    ]).toArray();
+    const products = await dbProduct.getList();
 
     return { ok: true, products };
   } catch (error) {
@@ -297,9 +228,7 @@ export async function getFuturesProducts() {
 
 export async function getFuturesProductsByExchange() {
   try {
-    const query = {};
-    const projection = { _id: 0, productname: 1, exchangeid: 1, productid: 1 };
-    const products = await PRODUCT.find(query, projection).toArray();
+    const products = await dbProduct.getList();
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
     debug('exchangesid %o', exchangesid);
@@ -326,58 +255,8 @@ export async function getFuturesLastSnapshot(symbols) {
     if (!symbols || symbols.length < 1) {
       throw Boom.badRequest('Missing instrument parameter');
     }
-    const match = { instrument: { $in: symbols } };
 
-    const sort = { tradingday: -1 };
-    const group = {
-      _id: '$instrument',
-      maxtradingday: { $max: '$tradingday' },
-      instrument: { $first: '$instrument' },
-      tradingday: { $first: '$tradingday' },
-      average: { $first: '$average' },
-      close: { $first: '$close' },
-      high: { $first: '$high' },
-      low: { $first: '$low' },
-      open: { $first: '$open' },
-      openinterest: { $first: '$openinterest' },
-      preclose: { $first: '$preclose' },
-      preoopeninterest: { $first: '$preoopeninterest' },
-      presettlement: { $first: '$presettlement' },
-      settlement: { $first: '$settlement' },
-      turnover: { $first: '$turnover' },
-      volume: { $first: '$volume' },
-      lowerlimit: { $first: '$lowerlimit' },
-      upperlimit: { $first: '$upperlimit' },
-      price: { $first: '$price' },
-    };
-    const project = {
-      _id: 0,
-      maxtradingday: 1,
-      instrument: 1,
-      tradingday: 1,
-      average: 1,
-      close: 1,
-      high: 1,
-      low: 1,
-      open: 1,
-      openinterest: 1,
-      preclose: 1,
-      preoopeninterest: 1,
-      presettlement: 1,
-      settlement: 1,
-      turnover: 1,
-      volume: 1,
-      lowerlimit: 1,
-      upperlimit: 1,
-      price: 1,
-    };
-
-    const lastSnapshot = await DAYBAR.aggregate([
-      { $match: match },
-      { $sort: sort },
-      { $group: group },
-      { $project: project },
-    ]).toArray();
+    const lastSnapshot = await dbDaybar.getLast(symbols);
 
     return { ok: true, lastSnapshot };
   } catch (error) {

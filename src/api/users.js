@@ -1,44 +1,41 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import argon2 from 'argon2';
-import * as mongodb from '../mongodb';
+import {
+  user as dbUser,
+} from '../sw-mongodb-crud';
 
 const debug = createDebug('api:users');
-
-let USERS;
-
-(async function getDb() {
-  const smartwin = await mongodb.getdb();
-  USERS = smartwin.collection('USER');
-}());
-
 
 export async function setUserPassword(userid, newPassword, password) {
   try {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!newPassword) throw Boom.badRequest('Missing newPassword parameter');
 
-    const dbUser = await USERS.findOne({ userid }, { password: 1 });
-    if (!dbUser) throw Boom.notFound('User not found');
+    const user = await dbUser.getOne({ userid });
 
-    if (newPassword && !dbUser.password) {
+    if (!user) throw Boom.notFound('User not found');
+
+    if (newPassword && !user.password) {
       const salt = await argon2.generateSalt();
       const hashedPassword = await argon2.hash(newPassword, salt);
 
-      const update = { $set: { password: hashedPassword } };
-      await USERS.findOneAndUpdate({ userid }, update);
+      const set = { password: hashedPassword };
+      const filter = { userid };
+      await dbUser.setOne(filter, set);
 
       return { ok: true };
-    } else if (newPassword && password && dbUser.password) {
-      const dbHashedPassword = dbUser.password;
+    } else if (newPassword && password && user.password) {
+      const dbHashedPassword = user.password;
 
       if (await argon2.verify(dbHashedPassword, password)) {
         debug(`getTokenByPassword(). ${userid} oldPassword is correct. Changing for new one`);
         const salt = await argon2.generateSalt();
         const hashedPassword = await argon2.hash(newPassword, salt);
 
-        const update = { $set: { password: hashedPassword } };
-        await USERS.findOneAndUpdate({ userid }, update);
+        const set = { password: hashedPassword };
+        const filter = { userid };
+        await dbUser.setOne(filter, set);
 
         return { ok: true };
       }
@@ -55,10 +52,7 @@ export async function getMeProfile(userid) {
   try {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
 
-    const projection = {
-      _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1, password: 1,
-    };
-    const profile = await USERS.findOne({ userid }, projection);
+    const profile = await dbUser.getOne({ userid });
 
     if (!profile) throw Boom.notFound('User not found');
 
@@ -74,10 +68,7 @@ export async function getMeProfile(userid) {
 
 export async function getUsers() {
   try {
-    const projection = {
-      _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1,
-    };
-    const users = await USERS.find({}, projection).toArray();
+    const users = await dbUser.getMany();
 
     if (!users) throw Boom.notFound('Users not found');
 
