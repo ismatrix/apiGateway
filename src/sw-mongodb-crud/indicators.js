@@ -12,45 +12,56 @@ async function getDb() {
     INDICATORS = smartwin.collection('INDICATORS');
   } catch (error) {
     debug('getDb() Error:', error);
+    throw error;
   }
 }
 
-export async function getMany(options) {
+export async function getMany(options = {}) {
   try {
     await getDb();
 
     const query = {
       $and: [],
     };
-    if ('symbol' in options) query.$and.push({ symbol: { $in: options.symbols } });
-    if ('name' in options) query.$and.push({ name: 'bull bear trend' });
+    if ('symbols' in options) query.$and.push({ symbol: { $in: options.symbols } });
+    if ('name' in options) query.$and.push({ name: options.name });
+
+    if (!query.$and.length) delete query.$and;
 
     const projection = { _id: 0, name: 0 };
     const funds = await INDICATORS.find(query, projection).toArray();
     return funds;
   } catch (error) {
-    debug('getList() Error: %o', error);
+    debug('getMany() Error: %o', error);
+    throw error;
   }
 }
 
-export async function distinct(options) {
-  try {
-    await getDb();
-    return INDICATORS.distinct(options.key, options.filter);
-  } catch (error) {
-    debug('distinct() Error: %o', error);
-  }
-}
 
-export async function addMany(documents) {
+export async function addMany(indicators) {
   try {
+    if (!indicators) throw Error('Missing indicators parameter');
+
     await getDb();
 
-    const ret = await INDICATORS.insertMany(documents);
+    const ret = await INDICATORS.insertMany(indicators);
 
     return ret.result;
   } catch (error) {
-    debug('instrument.add() Error: %o', error);
+    debug('addMany() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function distinct(key, filter) {
+  try {
+    if (!key) throw Error('Missing key parameter');
+    if (!filter) throw Error('Missing filter parameter');
+
+    await getDb();
+    return INDICATORS.distinct(key, filter);
+  } catch (error) {
+    debug('distinct() Error: %o', error);
     throw error;
   }
 }

@@ -12,10 +12,11 @@ async function getDb() {
     FUND = smartwin.collection('FUND');
   } catch (error) {
     debug('getDb() Error:', error);
+    throw error;
   }
 }
 
-export async function getOne(query) {
+export async function getOne(query = {}) {
   try {
     await getDb();
 
@@ -32,14 +33,14 @@ export async function getOne(query) {
     return fund;
   } catch (error) {
     debug('getOne() Error: %o', error);
+    throw error;
   }
 }
 
-export async function getMany() {
+export async function getMany(query = {}) {
   try {
     await getDb();
 
-    const filter = {};
     const projection = {
       _id: 0,
       fundid: 1,
@@ -48,22 +49,25 @@ export async function getMany() {
       funddate: 1,
       equityinitial: 1,
     };
-    const funds = await FUND.find(filter, projection).toArray();
+    const funds = await FUND.find(query, projection).toArray();
     return funds;
   } catch (error) {
     debug('getMany() Error: %o', error);
+    throw error;
   }
 }
 
 export async function addMany(documents) {
   try {
+    if (!documents) throw Error('Missing documents parameter');
+
     await getDb();
 
     const ret = await FUND.insertMany(documents);
 
     return ret.result;
   } catch (error) {
-    debug('instrument.add() Error: %o', error);
+    debug('addMany() Error: %o', error);
     throw error;
   }
 }

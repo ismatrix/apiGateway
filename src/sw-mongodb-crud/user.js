@@ -12,10 +12,11 @@ async function getDb() {
     USER = smartwin.collection('USER');
   } catch (error) {
     debug('getDb() Error:', error);
+    throw error;
   }
 }
 
-export async function getOne(query) {
+export async function getOne(query = {}) {
   try {
     await getDb();
 
@@ -24,11 +25,12 @@ export async function getOne(query) {
     const user = await USER.findOne(query, projection);
     return user;
   } catch (error) {
-    debug('getList() Error: %o', error);
+    debug('getOne() Error: %o', error);
+    throw error;
   }
 }
 
-export async function getMany() {
+export async function getMany(query = {}) {
   try {
     await getDb();
 
@@ -36,28 +38,35 @@ export async function getMany() {
       _id: 0, userid: 1, name: 1, department: 1, email: 1, avatar: 1,
     };
 
-    const users = await USER.find({}, projection).toArray();
+    const users = await USER.find(query, projection).toArray();
     return users;
   } catch (error) {
-    debug('getList() Error: %o', error);
+    debug('getMany() Error: %o', error);
+    throw error;
   }
 }
 
 export async function setOne(filter, set) {
   try {
+    if (!filter) throw Error('Missing filter parameter');
+    if (!set) throw Error('Missing set parameter');
+
     await getDb();
     const update = { $set: set };
     const ret = await USER.updateOne(filter, update);
 
     return ret.result;
   } catch (error) {
-    debug('instrument.add() Error: %o', error);
+    debug('setOne() Error: %o', error);
     throw error;
   }
 }
 
 export async function setOneAndGet(filter, set) {
   try {
+    if (!filter) throw Error('Missing filter parameter');
+    if (!set) throw Error('Missing set parameter');
+
     await getDb();
     const options = { upsert: true, returnOriginal: false };
     const update = { $set: set };
@@ -65,20 +74,22 @@ export async function setOneAndGet(filter, set) {
 
     return result.value;
   } catch (error) {
-    debug('instrument.add() Error: %o', error);
+    debug('setOneAndGet() Error: %o', error);
     throw error;
   }
 }
 
-export async function addMany(documents) {
+export async function addMany(users) {
   try {
+    if (!users) throw Error('Missing users parameter');
+
     await getDb();
 
-    const ret = await USER.insertMany(documents);
+    const ret = await USER.insertMany(users);
 
     return ret.result;
   } catch (error) {
-    debug('instrument.add() Error: %o', error);
+    debug('addMany() Error: %o', error);
     throw error;
   }
 }

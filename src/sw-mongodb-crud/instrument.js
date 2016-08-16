@@ -65,8 +65,9 @@ export async function getList(filter) {
         match.$and.push({ instrumentid: { $in: filter.instruments } });
       }
     }
-    debug(match.$and[0], match.$and[1], match.$and[2], match.$and[3]);
+
     if (!match.$and.length) delete match.$and;
+
     const projection = {
       _id: 0,
       instrumentid: 1,
