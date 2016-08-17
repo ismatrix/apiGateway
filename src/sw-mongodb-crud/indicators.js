@@ -16,7 +16,7 @@ async function getDb() {
   }
 }
 
-export async function getMany(options = {}) {
+export async function getList(options = {}) {
   try {
     await getDb();
 
@@ -32,13 +32,13 @@ export async function getMany(options = {}) {
     const funds = await INDICATORS.find(query, projection).toArray();
     return funds;
   } catch (error) {
-    debug('getMany() Error: %o', error);
+    debug('getList() Error: %o', error);
     throw error;
   }
 }
 
 
-export async function addMany(indicators) {
+export async function add(indicators) {
   try {
     if (!indicators) throw Error('Missing indicators parameter');
 
@@ -48,7 +48,7 @@ export async function addMany(indicators) {
 
     return ret.result;
   } catch (error) {
-    debug('addMany() Error: %o', error);
+    debug('add() Error: %o', error);
     throw error;
   }
 }

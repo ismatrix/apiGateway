@@ -168,7 +168,7 @@ export async function getLast(instruments = []) {
  * @return {Object} daybar - daybar document content.
  * example : { daybarDoc }
  */
-export async function getOne(instrumentid, tradingday = null) {
+export async function get(instrumentid, tradingday = null) {
   try {
     let daybar;
     if (tradingday === null) {
@@ -180,7 +180,7 @@ export async function getOne(instrumentid, tradingday = null) {
     }
     return daybar[0];
   } catch (error) {
-    debug('daybar.get() Error: %o', error);
+    debug('get() Error: %o', error);
     throw error;
   }
 }

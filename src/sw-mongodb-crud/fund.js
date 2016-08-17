@@ -16,7 +16,7 @@ async function getDb() {
   }
 }
 
-export async function getOne(query = {}) {
+export async function get(query = {}) {
   try {
     await getDb();
 
@@ -32,12 +32,12 @@ export async function getOne(query = {}) {
 
     return fund;
   } catch (error) {
-    debug('getOne() Error: %o', error);
+    debug('get() Error: %o', error);
     throw error;
   }
 }
 
-export async function getMany(query = {}) {
+export async function getList(query = {}) {
   try {
     await getDb();
 
@@ -52,12 +52,12 @@ export async function getMany(query = {}) {
     const funds = await FUND.find(query, projection).toArray();
     return funds;
   } catch (error) {
-    debug('getMany() Error: %o', error);
+    debug('getList() Error: %o', error);
     throw error;
   }
 }
 
-export async function addMany(documents) {
+export async function add(documents) {
   try {
     if (!documents) throw Error('Missing documents parameter');
 
@@ -67,7 +67,7 @@ export async function addMany(documents) {
 
     return ret.result;
   } catch (error) {
-    debug('addMany() Error: %o', error);
+    debug('add() Error: %o', error);
     throw error;
   }
 }
