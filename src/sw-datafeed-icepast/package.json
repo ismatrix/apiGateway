@@ -1,0 +1,11 @@
+{
+  "name": "sw-datafeed-icepast",
+  "version": "1.0.0",
+  "description": "Smartwin trading engine datafeed for IcePast",
+  "main": "sw-datafeed-icepast.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
