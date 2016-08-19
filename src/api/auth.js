@@ -6,7 +6,7 @@ import { jwtSecret, wechatConfig } from '../config';
 import makeQydev from '../sw-weixin-qydev';
 import { io } from '../app.js';
 import {
-  user as dbUser,
+  user as userDB,
 } from '../sw-mongodb-crud';
 
 const debug = createDebug('api:auth');
@@ -49,7 +49,7 @@ export async function getTokenByWechatScan(code, state) {
 
     const set = qyUserObj;
     const filter = { userid };
-    const dbUserObj = await dbUser.setAndGet(filter, set);
+    const dbUserObj = await userDB.setAndGet(filter, set);
 
     if (!dbUserObj) {
       throw Boom.badImplementation('Cannot add user to database');
@@ -81,7 +81,7 @@ export async function getTokenByPassword(userid, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!password) throw Boom.badRequest('Missing password parameter');
 
-    const dbUserObj = await dbUser.get({ userid });
+    const dbUserObj = await userDB.get({ userid });
     debug(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');

@@ -4,10 +4,10 @@ import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
 import createIcePastDataFeed from '../sw-datafeed-icepast';
 import {
-  product as dbProduct,
-  daybar as dbDaybar,
-  instrument as dbInstrument,
-  indicators as dbIndicators,
+  product as productDB,
+  daybar as daybarDB,
+  instrument as instrumentDB,
+  indicators as indicatorsDB,
 } from '../sw-mongodb-crud';
 
 const debug = createDebug('api:market');
@@ -20,7 +20,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
     if (sym.includes('all')) {
       const key = 'symbol';
       const query = { name: 'bull bear trend' };
-      symbols = await dbIndicators.distinct(key, query);
+      symbols = await indicatorsDB.distinct(key, query);
     }
 
     debug('bullBearTrend() req symbols %o', symbols);
@@ -28,13 +28,13 @@ export async function bullBearTrend(sym, startDate, endDate) {
     const instrumentOptions = {
       instruments: symbols,
     };
-    const contracts = await dbInstrument.getList(instrumentOptions);
+    const contracts = await instrumentDB.getList(instrumentOptions);
 
     const indicatorsOptions = {
       symbols,
       name: 'bull bear trend',
     };
-    const indicators = await dbIndicators.getList(indicatorsOptions);
+    const indicators = await indicatorsDB.getList(indicatorsOptions);
 
     let timeline = indicators[0].dates;
     for (const indicator of indicators) {
@@ -81,7 +81,7 @@ export async function contractDailyPriceSpeed(symbols) {
       instruments: symbols,
     };
 
-    const contracts = await dbInstrument.getList(options);
+    const contracts = await instrumentDB.getList(options);
     debug(contracts);
     const contractSymbols = contracts.map(contract => contract.instrumentid);
     debug('contractDailyPriceSpeed() contractSymbols: %o', contractSymbols);
@@ -90,7 +90,7 @@ export async function contractDailyPriceSpeed(symbols) {
       symbols: contractSymbols,
       name: 'contract daily price speed',
     };
-    const indicators = await dbIndicators.getList(indicatorsOptions);
+    const indicators = await indicatorsDB.getList(indicatorsOptions);
 
     if (!indicators[0]) throw Boom.notFound('Indicators not found');
 
@@ -168,7 +168,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         startDate,
         endDate,
       };
-      const quotesCursor = await dbDaybar.getListCursor(options);
+      const quotesCursor = await daybarDB.getListCursor(options);
       quotes = quotesCursor.stream();
 
       transformFunction = (chunk, enc, callback) => {
@@ -206,7 +206,7 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
     if (!productClasses.includes('all')) options.productclass = productClasses;
     if (!isTrading.includes('all')) options.istrading = isTrading;
 
-    const contracts = await dbInstrument.getList(options);
+    const contracts = await instrumentDB.getList(options);
 
     return { ok: true, contracts };
   } catch (error) {
@@ -217,7 +217,7 @@ export async function getFuturesContracts(ranks, exchanges, symbols, productClas
 
 export async function getFuturesProducts() {
   try {
-    const products = await dbProduct.getList();
+    const products = await productDB.getList();
 
     return { ok: true, products };
   } catch (error) {
@@ -228,7 +228,7 @@ export async function getFuturesProducts() {
 
 export async function getFuturesProductsByExchange() {
   try {
-    const products = await dbProduct.getList();
+    const products = await productDB.getList();
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
     debug('exchangesid %o', exchangesid);
@@ -256,7 +256,7 @@ export async function getFuturesLastSnapshot(symbols) {
       throw Boom.badRequest('Missing instrument parameter');
     }
 
-    const lastSnapshot = await dbDaybar.getLast(symbols);
+    const lastSnapshot = await daybarDB.getLast(symbols);
 
     return { ok: true, lastSnapshot };
   } catch (error) {

@@ -1,13 +1,13 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { fund as dbFund } from '../sw-mongodb-crud';
+import { fund as fundDB } from '../sw-mongodb-crud';
 
 const debug = createDebug('api:funds');
 
 
 export async function getFunds() {
   try {
-    const funds = await dbFund.getList();
+    const funds = await fundDB.getList();
 
     if (!funds.length > 0) throw Boom.notFound('Funds not found');
 
@@ -22,7 +22,7 @@ export async function getFundById(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fund = await dbFund.getOne({ fundid });
+    const fund = await fundDB.getOne({ fundid });
 
     if (!fund) throw Boom.notFound('Fund not found');
 
