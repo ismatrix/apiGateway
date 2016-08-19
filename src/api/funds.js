@@ -22,7 +22,7 @@ export async function getFundById(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fund = await fundDB.getOne({ fundid });
+    const fund = await fundDB.get({ fundid });
 
     if (!fund) throw Boom.notFound('Fund not found');
 
