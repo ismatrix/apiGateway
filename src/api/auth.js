@@ -21,7 +21,7 @@ export async function createUserToken(userObj) {
     }
     const dpt = userObj.department.map((obj) => obj.name);
     const jwtTokenData = {
-      _id: userObj._i,
+      _id: userObj._id,
       userid: userObj.userid,
       dpt,
     };
