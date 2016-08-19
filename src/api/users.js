@@ -12,7 +12,7 @@ export async function setUserPassword(userid, newPassword, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!newPassword) throw Boom.badRequest('Missing newPassword parameter');
 
-    const user = await dbUser.getOne({ userid });
+    const user = await dbUser.get({ userid });
 
     if (!user) throw Boom.notFound('User not found');
 
@@ -22,7 +22,7 @@ export async function setUserPassword(userid, newPassword, password) {
 
       const set = { password: hashedPassword };
       const filter = { userid };
-      await dbUser.setOne(filter, set);
+      await dbUser.set(filter, set);
 
       return { ok: true };
     } else if (newPassword && password && user.password) {
@@ -35,7 +35,7 @@ export async function setUserPassword(userid, newPassword, password) {
 
         const set = { password: hashedPassword };
         const filter = { userid };
-        await dbUser.setOne(filter, set);
+        await dbUser.set(filter, set);
 
         return { ok: true };
       }
@@ -52,7 +52,7 @@ export async function getMeProfile(userid) {
   try {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
 
-    const profile = await dbUser.getOne({ userid });
+    const profile = await dbUser.get({ userid });
 
     if (!profile) throw Boom.notFound('User not found');
 
@@ -68,7 +68,7 @@ export async function getMeProfile(userid) {
 
 export async function getUsers() {
   try {
-    const users = await dbUser.getMany();
+    const users = await dbUser.getList();
 
     if (!users) throw Boom.notFound('Users not found');
 

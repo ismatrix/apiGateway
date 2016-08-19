@@ -49,7 +49,7 @@ export async function getTokenByWechatScan(code, state) {
 
     const set = qyUserObj;
     const filter = { userid };
-    const dbUserObj = await dbUser.setOneAndGet(filter, set);
+    const dbUserObj = await dbUser.setAndGet(filter, set);
 
     if (!dbUserObj) {
       throw Boom.badImplementation('Cannot add user to database');
@@ -81,7 +81,7 @@ export async function getTokenByPassword(userid, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!password) throw Boom.badRequest('Missing password parameter');
 
-    const dbUserObj = await dbUser.getOne({ userid });
+    const dbUserObj = await dbUser.get({ userid });
     debug(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');

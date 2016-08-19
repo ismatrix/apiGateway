@@ -34,7 +34,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
       symbols,
       name: 'bull bear trend',
     };
-    const indicators = await dbIndicators.getMany(indicatorsOptions);
+    const indicators = await dbIndicators.getList(indicatorsOptions);
 
     let timeline = indicators[0].dates;
     for (const indicator of indicators) {
@@ -90,7 +90,7 @@ export async function contractDailyPriceSpeed(symbols) {
       symbols: contractSymbols,
       name: 'contract daily price speed',
     };
-    const indicators = await dbIndicators.getMany(indicatorsOptions);
+    const indicators = await dbIndicators.getList(indicatorsOptions);
 
     if (!indicators[0]) throw Boom.notFound('Indicators not found');
 

@@ -7,7 +7,7 @@ const debug = createDebug('api:funds');
 
 export async function getFunds() {
   try {
-    const funds = await dbFund.getMany();
+    const funds = await dbFund.getList();
 
     if (!funds.length > 0) throw Boom.notFound('Funds not found');
 
