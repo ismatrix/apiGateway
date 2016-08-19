@@ -1,9 +1,12 @@
 // http://mongodb.github.io/node-mongodb-native/2.1/reference/ecmascript6/crud/
 // http://mongodb.github.io/node-mongodb-native/2.1/api/index.html
-const MongoClient = require('mongodb').MongoClient;
-const events = require('events');
+import mongodb from 'mongodb';
+import createDebug from 'debug';
+import events from 'events';
+
+const debug = createDebug('mongodb');
 const event = new events.EventEmitter();
-const debug = require('debug')('sw-mongodb-crud:mongodb');
+const MongoClient = mongodb.MongoClient;
 
 let connectionInstance;
 let gurl;

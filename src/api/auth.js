@@ -2,27 +2,26 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
-import * as mongodb from '../mongodb';
 import { jwtSecret, wechatConfig } from '../config';
 import makeQydev from '../sw-weixin-qydev';
 import { io } from '../app.js';
+import {
+  user as dbUser,
+} from '../sw-mongodb-crud';
 
 const debug = createDebug('api:auth');
-
-let USERS;
-
-(async function getDb() {
-  const smartwin = await mongodb.getdb();
-  USERS = smartwin.collection('USER');
-}());
 
 const qydev = makeQydev(wechatConfig);
 
 export async function createUserToken(userObj) {
   try {
+    if (!userObj.department) {
+      throw Boom.badImplementation(
+        'Cannot create token because this user does not belong to any department');
+    }
     const dpt = userObj.department.map((obj) => obj.name);
     const jwtTokenData = {
-      _id: userObj._id,
+      _id: userObj._i,
       userid: userObj.userid,
       dpt,
     };
@@ -31,6 +30,7 @@ export async function createUserToken(userObj) {
     return jwtToken;
   } catch (error) {
     debug('createUserToken() Error: %o', error);
+    throw error;
   }
 }
 
@@ -47,15 +47,15 @@ export async function getTokenByWechatScan(code, state) {
     qyUserObj.userid = userid;
     qyUserObj.avatar = qyUserObj.avatar.replace('http://', 'https://');
 
-    const update = { $set: qyUserObj };
-    const options = { upsert: true, returnOriginal: false };
-    const dbUserObj = await USERS.findOneAndUpdate({ userid }, update, options);
+    const set = qyUserObj;
+    const filter = { userid };
+    const dbUserObj = await dbUser.setOneAndGet(filter, set);
 
     if (!dbUserObj) {
       throw Boom.badImplementation('Cannot add user to database');
     }
 
-    const token = await createUserToken(dbUserObj.value);
+    const token = await createUserToken(dbUserObj);
     if (token) {
       const decoded = jwt.decode(token);
       if (decoded.userid === userid) {
@@ -81,8 +81,8 @@ export async function getTokenByPassword(userid, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!password) throw Boom.badRequest('Missing password parameter');
 
-    const dbUserObj = await USERS.findOne({ userid });
-
+    const dbUserObj = await dbUser.getOne({ userid });
+    debug(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');
 

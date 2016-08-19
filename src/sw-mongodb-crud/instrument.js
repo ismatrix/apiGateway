@@ -61,8 +61,13 @@ export async function getList(filter) {
       if ('istrading' in filter) {
         match.$and.push({ istrading: { $in: filter.istrading } });
       }
+      if ('instruments' in filter) {
+        match.$and.push({ instrumentid: { $in: filter.instruments } });
+      }
     }
+
     if (!match.$and.length) delete match.$and;
+
     const projection = {
       _id: 0,
       instrumentid: 1,

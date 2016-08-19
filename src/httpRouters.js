@@ -55,11 +55,6 @@ apiRouter
 apiRouter
   .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
   .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
-  .get('/funds/level', async ctx => { ctx.body = await funds.getAllPositionLevel(); })
-  .get('/funds/checkreport/:tradingday', async ctx => { ctx.body = await funds.checkreport(); })
-  .get('/funds/rtequity', async ctx => { ctx.body = await funds.getRealTimeEquity(); })
-  .get('/funds/equity/:fundid', async ctx => { ctx.body = await funds.getEquity(); })
-  .get('/funds/position/:fundid', async ctx => { ctx.body = await funds.getPosition(); })
   ;
 
 apiRouter
