@@ -76,11 +76,12 @@ export async function getTokenByWechatScan(code, state) {
   }
 }
 
-export async function getTokenByPassword(userid, password) {
+export async function getTokenByPassword(_userid, password) {
   try {
-    if (!userid) throw Boom.badRequest('Missing userid parameter');
+    if (!_userid) throw Boom.badRequest('Missing userid parameter');
     if (!password) throw Boom.badRequest('Missing password parameter');
 
+    const userid = _userid.toLowerCase();
     const dbUserObj = await userDB.get({ userid });
     debug(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');

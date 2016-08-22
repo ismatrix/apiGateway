@@ -26,7 +26,7 @@ apiRouter
     }
   })
   .post('/public/auth/password', async ctx => {
-    const userid = ctx.request.body.userid.toLowerCase();
+    const userid = ctx.request.body.userid;
     const password = ctx.request.body.password;
     ctx.body = await auth.getTokenByPassword(userid, password);
   })
