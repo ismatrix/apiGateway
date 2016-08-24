@@ -363,12 +363,12 @@ export async function getTotalCostOut(fundid, tradingday) {
  * @param {string} tradingday - 交易日 ，为null，返回最大交易日，否则返回小于tradingday的最大交易日
  * @return {string} max tradingday - 返回最大的交易日.
  */
-export async function getMaxTradingday(fundid, tradingday) {
+export async function getMaxTradingday(fundid, tradingday, f = null) {
   try {
     await getDb();
     const match = { fundid };
     if (tradingday) {
-      match.tradingday = { $lt: tradingday };
+      match.tradingday = f ? { $lte: tradingday } : { $lt: tradingday };
     }
     const group = {
       _id: null,
@@ -439,12 +439,13 @@ export async function calcDividendNetValue(fundid) {
  * @return {Array} funds - include count and data array.
  * example : [{fundDoc1}, {fundDoc1}]
  */
-export async function getNetValues(fundid, tradingday) {
+export async function getNetValues(fundid, iTradingday) {
   try {
+    const tradingday = await getMaxTradingday(fundid, iTradingday, 1);
     const equity = await get(fundid, tradingday);
     const fundinfo = await fund.get(fundid);
-    const structRatio = fund.equityinferior > 0 ?
-    Math.round((fund.equitybeginning / fund.equityinferior) * 100) / 100 : null;
+    const structRatio = fundinfo.equityinferior > 0 ?
+    Math.round((fundinfo.equitybeginning / fundinfo.equityinferior) * 100) / 100 : null;
     // 期初总权益
     const equityBeginning = fundinfo.equitybeginning;
     // 申购追加的份额
@@ -697,6 +698,11 @@ export async function runTest() {
     {
       // equity.getNetValues
       const equity = await getNetValues('3000380', '20160701');
+      debug('equity.getNetValues:', equity);
+    }
+    {
+      // equity.getNetValues
+      const equity = await getNetValues('1285', '20160822');
       debug('equity.getNetValues:', equity);
     }
     // {
