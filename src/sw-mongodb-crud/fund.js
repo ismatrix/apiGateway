@@ -1,7 +1,9 @@
 /** @module sw-mongodb-crud/fund */
+import createDebug from 'debug';
 import * as mongodb from '../mongodb';
+import * as equity from './equity';
 
-const debug = require('debug')('sw-mongodb-crud:fund');
+const debug = createDebug('sw-mongodb-crud:fund');
 
 /** The handle of FUND collection */
 let FUND;
@@ -163,6 +165,25 @@ export async function remove(fundid) {
     throw error;
   }
 }
+
+/**
+ * 获取指定基金某日净值
+ * @function
+ * @return {Array} funds - include count and data array.
+ * example : [{fundDoc1}, {fundDoc1}]
+ */
+export async function getNetValue(fundid, tradingay) {
+  try {
+    const filter = { state: 'online' };
+    const funds = await getList(filter);
+
+    return funds;
+  } catch (error) {
+    debug('fund.getOnlineList() Error: %o', error);
+    throw error;
+  }
+}
+
 /**
  * an test function.
  * @function
