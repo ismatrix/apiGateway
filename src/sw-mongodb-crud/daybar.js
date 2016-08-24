@@ -19,8 +19,19 @@ async function getDb() {
   }
 }
 
-function getListStandard(filter) {
+/**
+ * get daybar list from DAYBAR collection.
+ * @function
+ * @param {Object} filter - Query filter documents
+ * specify the conditions that determine which records to select for return
+ * example : { instruments: ['IF1609','IF1701'], startDate: '20160701', endDate: '20160707' }
+ * @return {Array} daybars - daybar array.
+ * example : [{daybarDoc1}, {daybarDoc2}]
+ */
+export async function getList(filter) {
   try {
+    await getDb();
+
     let instruments = [];
     let startDate = '0';
     let endDate = '99999999';
@@ -51,26 +62,7 @@ function getListStandard(filter) {
 
     const sort = { instrument: 1, tradingday: 1 };
 
-    return { query, sort };
-  } catch (error) {
-    debug('getListStandard() Error:', error);
-  }
-}
-/**
- * get daybar list from DAYBAR collection.
- * @function
- * @param {Object} filter - Query filter documents
- * specify the conditions that determine which records to select for return
- * example : { instruments: ['IF1609','IF1701'], startDate: '20160701', endDate: '20160707' }
- * @return {Array} daybars - daybar array.
- * example : [{daybarDoc1}, {daybarDoc2}]
- */
-export async function getList(filter) {
-  try {
-    await getDb();
-
-    const standard = getListStandard(filter);
-    const daybars = await DAYBAR.find(standard.query).sort(standard.sort).toArray();
+    const daybars = await DAYBAR.find(query).sort(sort).toArray();
 
     return daybars;
   } catch (error) {
@@ -79,19 +71,6 @@ export async function getList(filter) {
   }
 }
 
-export async function getListCursor(filter) {
-  try {
-    await getDb();
-
-    const standard = getListStandard(filter);
-    const daybars = await DAYBAR.find(standard.query).sort(standard.sort);
-
-    return daybars;
-  } catch (error) {
-    debug('daybar.getList() Error: %o', error);
-    throw error;
-  }
-}
 /**
  * get Last Day bar by specified instrument array.
  * @function
