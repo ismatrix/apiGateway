@@ -4,6 +4,7 @@ import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
+import * as codemap from './api/codemap';
 import { canKoa } from './acl';
 
 const debug = createDebug('routers');
@@ -53,8 +54,51 @@ apiRouter
   ;
 
 apiRouter
+  .get('/codemap/catalogs', async ctx => {
+    ctx.body = await codemap.getCatalogs();
+  })
+  .post('/codemap/catalogs', async ctx => {
+    const catalogs = ctx.request.body.catalogs;
+    ctx.body = await codemap.postCatalogs(catalogs);
+  })
+  .get('/codemap/:catalogKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    ctx.body = await codemap.getCatalog(catalogKey);
+  })
+  .put('/codemap/:catalogKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const catalog = ctx.request.body.catalog;
+    ctx.body = await codemap.putCatalog(catalogKey, catalog);
+  })
+  .get('/codemap/:catalogKey/items', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    ctx.body = await codemap.getCatalogItems(catalogKey);
+  })
+  .post('/codemap/:catalogKey/items', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const items = ctx.request.body.items;
+    ctx.body = await codemap.postCatalogItems(catalogKey, items);
+  })
+  .get('/codemap/:catalogKey/items/:itemKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const itemKey = ctx.params.itemKey;
+    ctx.body = await codemap.getCatalogItem(catalogKey, itemKey);
+  })
+  .put('/codemap/:catalogKey/items/:itemKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const itemKey = ctx.params.itemKey;
+    const item = ctx.request.body.item;
+    ctx.body = await codemap.putCatalogItem(catalogKey, itemKey, item);
+  })
+  ;
+
+apiRouter
   .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
-  .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
+  .get('/funds/:fundid', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getFundById(fundid);
+  })
+  .put('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
   ;
 
 apiRouter

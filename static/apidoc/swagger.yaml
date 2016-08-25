@@ -63,7 +63,7 @@ paths:
             $ref: '#/definitions/authPassword'
       responses:
         '200':
-          description: A token
+          description: A token response
           schema:
             type: object
             required:
@@ -74,8 +74,7 @@ paths:
                 type: boolean
                 default: true
               token:
-                type: string
-                example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
+                $ref: '#/definitions/Token'
         '401':
           description: Invalid password
         '404':
@@ -95,6 +94,7 @@ paths:
             type: object
             required:
               - ok
+              - users
             properties:
               ok:
                 type: boolean
@@ -144,7 +144,7 @@ paths:
         - Users
       responses:
         '200':
-          description: Successful operation
+          description: The operation result response (true or false)
           schema:
             type: object
             required:
@@ -180,13 +180,17 @@ paths:
                 $ref: '#/definitions/Funds'
         '404':
           description: Funds not found
-  /funds/:id:
+  /funds/{fundid}:
     get:
-      summary: Get a fund by id
-      description: >
-        Get aa fund details by his id.
+      summary: Get a fund by its id
       tags:
         - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
       responses:
         '200':
           description: The fund data
@@ -203,6 +207,38 @@ paths:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
+    put:
+      summary: Create or update a fund by its id
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated fund
+          required: true
+          schema:
+            type: object
+            required:
+              - fund
+            properties:
+              fund:
+                $ref: '#/definitions/Fund'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /markets/futures/contracts:
     post:
       tags:
@@ -407,6 +443,243 @@ paths:
                 items:
                   $ref: '#/definitions/resContractdailypricespeed'
       security: []
+  /codemap/catalogs:
+    get:
+      tags:
+        - Codemap
+      summary: Get catalogs
+      parameters:
+        - name: catalogs
+          in: query
+          description: filter for catalogs
+          required: false
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Catalogs response
+          schema:
+            type: object
+            required:
+              - ok
+              - catalogs
+            properties:
+              ok:
+                type: boolean
+                default: true
+              catalogs:
+                type: array
+                items:
+                  $ref: '#/definitions/Catalog'
+    post:
+      tags:
+        - Codemap
+      summary: Post catalogs
+      parameters:
+        - name: body
+          in: body
+          description: Array of new catalogs to create
+          required: true
+          schema:
+            type: object
+            required:
+              - catalogs
+            properties:
+              catalogs:
+                $ref: '#/definitions/Catalogs'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codemap/{catalogKey}:
+    get:
+      summary: Get a catalog by its key
+      tags:
+        - Codemap
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A catalog response
+          schema:
+            type: object
+            required:
+              - ok
+              - catalog
+            properties:
+              ok:
+                type: boolean
+                default: true
+              catalog:
+                $ref: '#/definitions/Catalog'
+    put:
+      summary: Create or update a catalog
+      tags:
+        - Codemap
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the new or updated catalog
+          required: true
+          schema:
+            type: object
+            required:
+              - catalog
+            properties:
+              catalog:
+                $ref: '#/definitions/Catalog'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codemap/{catalogKey}/items:
+    get:
+      tags:
+        - Codemap
+      summary: Get catalogs
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Items of the catalog
+          schema:
+            type: object
+            required:
+              - ok
+              - items
+            properties:
+              ok:
+                type: boolean
+                default: true
+              items:
+                $ref: '#/definitions/CatalogItems'
+    post:
+      tags:
+        - Codemap
+      summary: Post items to a catalog
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The items to create or update in the catalog
+          required: true
+          schema:
+            type: object
+            required:
+              - items
+            properties:
+              items:
+                $ref: '#/definitions/CatalogItems'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codemap/{catalogKey}/items/{itemKey}:
+    get:
+      summary: Get an item by its key
+      tags:
+        - Codemap
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+        - name: itemKey
+          in: path
+          description: The catalog item unique key
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The item response
+          schema:
+            type: object
+            required:
+              - ok
+              - item
+            properties:
+              ok:
+                type: boolean
+                default: true
+              item:
+                $ref: '#/definitions/CatalogItem'
+    put:
+      summary: Create or update an item in a catalog
+      tags:
+        - Codemap
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+        - name: itemKey
+          in: path
+          description: The catalog item key
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the new or updated item
+          required: true
+          schema:
+            type: object
+            required:
+              - item
+            properties:
+              item:
+                $ref: '#/definitions/CatalogItem'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /authenticate:
     post:
       tags:
@@ -548,7 +821,7 @@ paths:
           schema:
             $ref: '#/definitions/Error500'
         '501':
-          description: Method not implemented"
+          description: Method not implemented
           schema:
             $ref: '#/definitions/Error501'
 securityDefinitions:
@@ -557,6 +830,9 @@ securityDefinitions:
     name: Authorization
     in: header
 definitions:
+  Token:
+    type: string
+    example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
   Users:
     type: array
     items:
@@ -619,19 +895,49 @@ definitions:
     properties:
       fundid:
         type: string
-        example: "3000380"
+        example: "82660"
       fundname:
         type: string
-        example: "慧网进取G号"
-      investmentadviser:
+        example: "慧网慧创稳健12号"
+      manager:
         type: string
-        example: "慧网基金"
-      funddate:
+        example: "慧网"
+      consultant:
         type: string
-        format: date-time
-      equityinitial:
-        type: number
-        example: 2000000
+        example: 慧网基金
+      hoster:
+        type: string
+        example: 第一创业
+      transferbank:
+        type: string
+        example: "null"
+      fundcode:
+        type: string
+        example: SSSSSS
+      fundmanager:
+        type: string
+        example: 王祥
+      fundtype:
+        type: string
+        example: structured
+      equitybeginning:
+        type: string
+        example: "40000000"
+      equityprior:
+        type: string
+        example: "30000000"
+      equityinferior:
+        type: string
+        example: "10000000"
+      issuedate:
+        type: string
+        example: 2016-05-18T16:00:00Z
+      state:
+        type: string
+        example: online
+      updatedate:
+        type: string
+        example: 2016-06-17T03:34:35Z
   putPassword:
     type: object
     required:
@@ -850,12 +1156,6 @@ definitions:
       endDate:
         type: string
         example: "20160401"
-  Token:
-    type: object
-    properties:
-      token:
-        type: string
-        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0"
   reqLiveTick:
     type: object
     required:
@@ -977,6 +1277,42 @@ definitions:
         example: [1, 1, 0, 0,-1, -1]
         items:
           type: number
+  Catalogs:
+    type: array
+    items:
+      $ref: '#/definitions/Catalog'
+  Catalog:
+    type: object
+    required:
+      - key
+      - name
+      - description
+    properties:
+      key:
+        type: string
+        example: fund.status
+      name:
+        type: string
+        example: 基金状态
+      description:
+        type: string
+        example: 标识基金账户当前的状态或类型
+  CatalogItems:
+    type: array
+    items:
+      $ref: '#/definitions/CatalogItem'
+  CatalogItem:
+    type: object
+    properties:
+      catalog:
+        type: string
+        example: the item's catalog
+      key:
+        type: string
+        example: item key
+      zh:
+        type: string
+        example: item value
   reqContractdailypricespeed:
     type: object
     properties:

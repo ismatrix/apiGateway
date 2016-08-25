@@ -126,7 +126,6 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
     if (!symbol || !resolution || !startDate || !endDate) {
       throw Boom.badRequest('Missing parameter');
     }
-    if (!['minute', 'day'].includes(resolution)) throw Boom.badRequest('Wrong resolution value');
 
     const op = '{"ok":true,"quotes":[';
     const sep = '\n,\n';
@@ -145,10 +144,9 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         callback();
       }
     );
-    let quotes;
     let transformFunction;
     if (resolution === 'minute') {
-      quotes = await createIcePastDataFeed(symbol, resolution, startDate, endDate);
+      const quotes = await createIcePastDataFeed(symbol, resolution, startDate, endDate);
 
       transformFunction = (chunk, enc, callback) => {
         const candlestick = {
@@ -162,30 +160,27 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         };
         callback(null, candlestick);
       };
+
+      return quotes.pipe(through.obj(transformFunction)).pipe(stringifyIce);
     } else if (resolution === 'day') {
       const options = {
         instruments: [symbol],
         startDate,
         endDate,
       };
-      const quotesCursor = await daybarDB.getListCursor(options);
-      quotes = quotesCursor.stream();
-
-      transformFunction = (chunk, enc, callback) => {
-        const candlestick = {
-          timestamp: parseInt(chunk.timestamp, 10),
-          open: chunk.open,
-          high: chunk.high,
-          low: chunk.low,
-          close: chunk.close,
-          volume: chunk.volume,
-          tradingDay: chunk.tradingday,
-        };
-        callback(null, candlestick);
-      };
+      const dbQuotes = await daybarDB.getList(options);
+      const quotes = dbQuotes.map((quote) => ({
+        timestamp: parseInt(quote.timestamp, 10),
+        open: quote.open,
+        high: quote.high,
+        low: quote.low,
+        close: quote.close,
+        volume: quote.volume,
+        tradingDay: quote.tradingday,
+      }));
+      return { ok: true, quotes };
     }
-    return quotes.pipe(through.obj(transformFunction))
-    .pipe(stringifyIce);
+    throw Boom.badRequest('Wrong resolution value');
   } catch (error) {
     debug('getFuturesQuotes() Error: %o', error);
     throw error;
