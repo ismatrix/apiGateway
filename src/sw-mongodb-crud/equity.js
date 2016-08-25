@@ -128,6 +128,37 @@ export async function getCostOutList(fundid) {
   }
 }
 /**
+ * 获取指定基金，最大的交易日”
+ * @function
+ * @param {string} fundid - 基金ID
+ * @param {string} tradingday - 交易日 ，为null，返回最大交易日，否则返回小于tradingday的最大交易日
+ * @param {string} f - 标识 最大交易日是否包含当前输入的交易日
+ * @return {string} max tradingday - 返回最大的交易日.
+ */
+export async function getMaxTradingday(fundid, tradingday, f = null) {
+  try {
+    await getDb();
+    const match = { fundid };
+    if (tradingday) {
+      match.tradingday = f ? { $lte: tradingday } : { $lt: tradingday };
+    }
+    const group = {
+      _id: null,
+      maxtradingday: { $max: '$tradingday' },
+    };
+    const maxtradingday = await EQUITY.aggregate([
+      { $match: match },
+      { $group: group },
+    ]).toArray();
+
+    return maxtradingday.length > 0 ? maxtradingday[0].maxtradingday : null;
+  } catch (error) {
+    debug('equity.getMaxTradingday() Error: %o', error);
+    throw error;
+  }
+}
+
+/**
  * Obtain one equity document object by Specified id.
  * @function
  * @param {string} fundid - unique id for equity collection
@@ -135,8 +166,9 @@ export async function getCostOutList(fundid) {
  * @return {Array} equitys - equity document content.
  * example : { equityDoc }
  */
-export async function get(fundid, tradingday) {
+export async function get(fundid, iTradingday) {
   try {
+    const tradingday = await getMaxTradingday(fundid, iTradingday, 1);
     await getDb();
     const query = { fundid, tradingday };
     const equity = await EQUITY.findOne(query);
@@ -430,36 +462,6 @@ export async function getTotal(fundid, tradingday = '99999999') {
   }
 }
 
-/**
- * 获取指定基金，最大的交易日”
- * @function
- * @param {string} fundid - 基金ID
- * @param {string} tradingday - 交易日 ，为null，返回最大交易日，否则返回小于tradingday的最大交易日
- * @param {string} f - 标识 最大交易日是否包含当前输入的交易日
- * @return {string} max tradingday - 返回最大的交易日.
- */
-export async function getMaxTradingday(fundid, tradingday, f = null) {
-  try {
-    await getDb();
-    const match = { fundid };
-    if (tradingday) {
-      match.tradingday = f ? { $lte: tradingday } : { $lt: tradingday };
-    }
-    const group = {
-      _id: null,
-      maxtradingday: { $max: '$tradingday' },
-    };
-    const maxtradingday = await EQUITY.aggregate([
-      { $match: match },
-      { $group: group },
-    ]).toArray();
-
-    return maxtradingday.length > 0 ? maxtradingday[0].maxtradingday : null;
-  } catch (error) {
-    debug('equity.getMaxTradingday() Error: %o', error);
-    throw error;
-  }
-}
 /**
  * 获取指定基金，指定tradingay的“前一天的字段值”
  * @function
@@ -929,6 +931,11 @@ export async function runTest() {
     //   const total = await getTotalDividend('3000380', '20160823');
     //   debug('equity.getTotalDividend', total);
     // }
+    {
+      // equity.getTotal
+      const total = await getTotal('800002', '20160823');
+      debug('equity.getTotal', total);
+    }
     // {
     //   // equity.add
     //   const retadd = await add([{ fundid: 'aaa', key1: 1, key2: 'fuck' },

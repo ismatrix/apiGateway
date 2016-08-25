@@ -29,22 +29,12 @@ async function getDb() {
  * @return {Array} funds - include count and data array.
  * example : [{fundDoc1}, {fundDoc1}]
  */
-export async function getList(filter) {
+export async function getList(filter, project = { fundid: 1, fundname: 1, issuedate: 1 }) {
   try {
     await getDb();
 
     const query = filter;
     const sort = { state: 1, issuedate: 1 };
-    const project = {
-      _id: 0,
-      period: 0,
-      buysell: 0,
-      fixedcost: 0,
-      reward: 0,
-      trading: 0,
-      service: 0,
-    };
-
     const funds = await FUND.find(query, project).sort(sort).toArray();
 
     return funds;
@@ -220,8 +210,8 @@ export async function runTest() {
   try {
     // {
     //   // fund.getList
-    //   const filter = { state: 'clearout' };
-    //   const funds = await getList(filter);
+    //   // const filter = { state: 'clearout' };
+    //   const funds = await getList({},{});
     //   debug('fund.getList:', funds);
     // }
     // {
