@@ -4,7 +4,7 @@ import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
-import * as codeitem from './api/codeitem';
+import * as codemap from './api/codemap';
 import { canKoa } from './acl';
 
 const debug = createDebug('routers');
@@ -54,40 +54,40 @@ apiRouter
   ;
 
 apiRouter
-  .get('/codeitem/catalogs', async ctx => {
+  .get('/codemap/catalogs', async ctx => {
     const catalogs = ctx.query.catalogs;
-    ctx.body = await codeitem.getCatalogs(catalogs);
+    ctx.body = await codemap.getCatalogs(catalogs);
   })
-  .post('/codeitem/catalogs', async ctx => {
+  .post('/codemap/catalogs', async ctx => {
     const catalogs = ctx.request.body.catalogs;
-    ctx.body = await codeitem.postCatalogs(catalogs);
+    ctx.body = await codemap.postCatalogs(catalogs);
   })
-  .get('/codeitem/:catalog', async ctx => {
+  .get('/codemap/:catalog', async ctx => {
     const catalog = ctx.params.catalog;
-    ctx.body = await codeitem.getCatalog(catalog);
+    ctx.body = await codemap.getCatalog(catalog);
   })
-  .put('/codeitem/:catalog', async ctx => {
+  .put('/codemap/:catalog', async ctx => {
     const catalog = ctx.params.catalog;
-    ctx.body = await codeitem.putCatalog(catalog);
+    ctx.body = await codemap.putCatalog(catalog);
   })
-  .get('/codeitem/:catalog/items', async ctx => {
+  .get('/codemap/:catalog/items', async ctx => {
     const catalog = ctx.params.catalog;
-    ctx.body = await codeitem.getCatalogItems(catalog);
+    ctx.body = await codemap.getCatalogItems(catalog);
   })
-  .post('/codeitem/:catalog/items', async ctx => {
+  .post('/codemap/:catalog/items', async ctx => {
     const catalog = ctx.params.catalog;
     const items = ctx.request.body.items;
-    ctx.body = await codeitem.postCatalogItems(catalog, items);
+    ctx.body = await codemap.postCatalogItems(catalog, items);
   })
-  .get('/codeitem/:catalog/items/:item', async ctx => {
+  .get('/codemap/:catalog/items/:item', async ctx => {
     const catalog = ctx.params.catalog;
     const item = ctx.params.item;
-    ctx.body = await codeitem.getCatalogItem(catalog, item);
+    ctx.body = await codemap.getCatalogItem(catalog, item);
   })
-  .put('/codeitem/:catalog/items/:item', async ctx => {
+  .put('/codemap/:catalog/items/:item', async ctx => {
     const catalog = ctx.params.catalog;
     const item = ctx.params.item;
-    ctx.body = await codeitem.putCatalogItem(catalog, item);
+    ctx.body = await codemap.putCatalogItem(catalog, item);
   })
   ;
 

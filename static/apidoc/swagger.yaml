@@ -411,10 +411,10 @@ paths:
                 items:
                   $ref: '#/definitions/resContractdailypricespeed'
       security: []
-  /codeitem/catalogs:
+  /codemap/catalogs:
     get:
       tags:
-        - Codeitem
+        - Codemap
       summary: Get catalogs
       parameters:
         - name: catalogs
@@ -442,7 +442,7 @@ paths:
                   $ref: '#/definitions/Catalog'
     post:
       tags:
-        - Codeitem
+        - Codemap
       summary: Post catalogs
       parameters:
         - name: body
@@ -462,15 +462,15 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /codeitem/{catalog}:
+  /codemap/{catalogKey}:
     get:
-      summary: Get a catalog by its name
+      summary: Get a catalog by its key
       tags:
-        - Codeitem
+        - Codemap
       parameters:
-        - name: catalog
+        - name: catalogKey
           in: path
-          description: The catalog name
+          description: The catalog key
           required: true
           type: string
       responses:
@@ -490,11 +490,11 @@ paths:
     put:
       summary: Create or update a catalog
       tags:
-        - Codeitem
+        - Codemap
       parameters:
-        - name: catalog
+        - name: catalogKey
           in: path
-          description: The catalog name
+          description: The catalog key
           required: true
           type: string
         - name: body
@@ -514,15 +514,15 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /codeitem/{catalog}/items:
+  /codemap/{catalogKey}/items:
     get:
       tags:
-        - Codeitem
+        - Codemap
       summary: Get catalogs
       parameters:
-        - name: catalog
+        - name: catalogKey
           in: path
-          description: The catalog unique name
+          description: The catalog key
           required: true
           type: string
       responses:
@@ -541,7 +541,7 @@ paths:
                 $ref: '#/definitions/CatalogItems'
     post:
       tags:
-        - Codeitem
+        - Codemap
       summary: Post items to a catalog
       parameters:
         - name: catalog
@@ -566,20 +566,20 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /codeitem/{catalog}/items/{item}:
+  /codemap/{catalogKey}/items/{itemKey}:
     get:
-      summary: Get an item by its name
+      summary: Get an item by its key
       tags:
-        - Codeitem
+        - Codemap
       parameters:
-        - name: catalog
+        - name: catalogKey
           in: path
-          description: The catalog name
+          description: The catalog key
           required: true
           type: string
-        - name: item
+        - name: itemKey
           in: path
-          description: The item unique name
+          description: The catalog item unique key
           required: true
           type: string
       responses:
@@ -599,16 +599,16 @@ paths:
     put:
       summary: Create or update an item in a catalog
       tags:
-        - Codeitem
+        - Codemap
       parameters:
-        - name: catalog
+        - name: catalogKey
           in: path
-          description: The catalog name
+          description: The catalog key
           required: true
           type: string
-        - name: item
+        - name: itemKey
           in: path
-          description: The item unique name
+          description: The catalog item key
           required: true
           type: string
         - name: body
@@ -1203,13 +1203,13 @@ definitions:
       - name
       - remark
     properties:
-      catalog:
+      key:
         type: string
         example: fund.status
       name:
         type: string
         example: 基金状态
-      remark:
+      description:
         type: string
         example: 标识基金账户当前的状态或类型
   CatalogItems:
@@ -1219,6 +1219,9 @@ definitions:
   CatalogItem:
     type: object
     properties:
+      catalog:
+        type: string
+        example: the item's catalog
       key:
         type: string
         example: item key
