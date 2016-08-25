@@ -180,13 +180,17 @@ paths:
                 $ref: '#/definitions/Funds'
         '404':
           description: Funds not found
-  /funds/:id:
+  /funds/{fundid}:
     get:
-      summary: Get a fund by id
-      description: >
-        Get aa fund details by his id.
+      summary: Get a fund by its id
       tags:
         - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
       responses:
         '200':
           description: The fund data
@@ -407,6 +411,223 @@ paths:
                 items:
                   $ref: '#/definitions/resContractdailypricespeed'
       security: []
+  /codeitem/catalogs:
+    get:
+      tags:
+        - Codeitem
+      summary: Get catalogs
+      parameters:
+        - name: catalogs
+          in: query
+          description: filter for catalogs
+          required: false
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: Catalogs
+          schema:
+            type: object
+            required:
+              - ok
+              - catalogs
+            properties:
+              ok:
+                type: boolean
+                default: true
+              catalogs:
+                type: array
+                items:
+                  $ref: '#/definitions/Catalog'
+    post:
+      tags:
+        - Codeitem
+      summary: Post catalogs
+      parameters:
+        - name: body
+          in: body
+          description: Array of new catalogs to create
+          required: true
+          schema:
+            $ref: '#/definitions/Catalogs'
+      responses:
+        '200':
+          description: A catalogs response
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codeitem/{catalog}:
+    get:
+      summary: Get a catalog by its name
+      tags:
+        - Codeitem
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A catalog response
+          schema:
+            type: object
+            required:
+              - ok
+              - catalog
+            properties:
+              ok:
+                type: boolean
+                default: true
+              catalog:
+                $ref: '#/definitions/Catalog'
+    put:
+      summary: Create or update a catalog
+      tags:
+        - Codeitem
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the new or updated catalog
+          required: true
+          schema:
+            $ref: '#/definitions/Catalog'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codeitem/{catalog}/items:
+    get:
+      tags:
+        - Codeitem
+      summary: Get catalogs
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog unique name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Items of the catalog
+          schema:
+            type: object
+            required:
+              - ok
+              - items
+            properties:
+              ok:
+                type: boolean
+                default: true
+              items:
+                $ref: '#/definitions/CatalogItems'
+    post:
+      tags:
+        - Codeitem
+      summary: Post items to a catalog
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The items to create or update in the catalog
+          required: true
+          schema:
+            $ref: '#/definitions/CatalogItems'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codeitem/{catalog}/items/{item}:
+    get:
+      summary: Get an item by its name
+      tags:
+        - Codeitem
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+        - name: item
+          in: path
+          description: The item unique name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The item response
+          schema:
+            type: object
+            required:
+              - ok
+              - item
+            properties:
+              ok:
+                type: boolean
+                default: true
+              item:
+                $ref: '#/definitions/CatalogItem'
+    put:
+      summary: Create or update an item in a catalog
+      tags:
+        - Codeitem
+      parameters:
+        - name: catalog
+          in: path
+          description: The catalog name
+          required: true
+          type: string
+        - name: item
+          in: path
+          description: The item unique name
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the new or updated item
+          required: true
+          schema:
+            $ref: '#/definitions/CatalogItem'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /authenticate:
     post:
       tags:
@@ -548,7 +769,7 @@ paths:
           schema:
             $ref: '#/definitions/Error500'
         '501':
-          description: Method not implemented"
+          description: Method not implemented
           schema:
             $ref: '#/definitions/Error501'
 securityDefinitions:
@@ -850,12 +1071,6 @@ definitions:
       endDate:
         type: string
         example: "20160401"
-  Token:
-    type: object
-    properties:
-      token:
-        type: string
-        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0"
   reqLiveTick:
     type: object
     required:
@@ -977,6 +1192,39 @@ definitions:
         example: [1, 1, 0, 0,-1, -1]
         items:
           type: number
+  Catalogs:
+    type: array
+    items:
+      $ref: '#/definitions/Catalog'
+  Catalog:
+    type: object
+    required:
+      - catalog
+      - name
+      - remark
+    properties:
+      catalog:
+        type: string
+        example: fund.status
+      name:
+        type: string
+        example: 基金状态
+      remark:
+        type: string
+        example: 标识基金账户当前的状态或类型
+  CatalogItems:
+    type: array
+    items:
+      $ref: '#/definitions/CatalogItem'
+  CatalogItem:
+    type: object
+    properties:
+      key:
+        type: string
+        example: item key
+      zh:
+        type: string
+        example: item value
   reqContractdailypricespeed:
     type: object
     properties:

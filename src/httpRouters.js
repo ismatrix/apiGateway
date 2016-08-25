@@ -4,6 +4,7 @@ import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
+import * as codeitem from './api/codeitem';
 import { canKoa } from './acl';
 
 const debug = createDebug('routers');
@@ -49,6 +50,44 @@ apiRouter
     const newPassword = ctx.request.body.newPassword;
     const userid = ctx.state.user.userid;
     ctx.body = await users.setUserPassword(userid, newPassword, password);
+  })
+  ;
+
+apiRouter
+  .get('/codeitem/catalogs', async ctx => {
+    const catalogs = ctx.query.catalogs;
+    ctx.body = await codeitem.getCatalogs(catalogs);
+  })
+  .post('/codeitem/catalogs', async ctx => {
+    const catalogs = ctx.request.body.catalogs;
+    ctx.body = await codeitem.postCatalogs(catalogs);
+  })
+  .get('/codeitem/:catalog', async ctx => {
+    const catalog = ctx.params.catalog;
+    ctx.body = await codeitem.getCatalog(catalog);
+  })
+  .put('/codeitem/:catalog', async ctx => {
+    const catalog = ctx.params.catalog;
+    ctx.body = await codeitem.putCatalog(catalog);
+  })
+  .get('/codeitem/:catalog/items', async ctx => {
+    const catalog = ctx.params.catalog;
+    ctx.body = await codeitem.getCatalogItems(catalog);
+  })
+  .post('/codeitem/:catalog/items', async ctx => {
+    const catalog = ctx.params.catalog;
+    const items = ctx.request.body.items;
+    ctx.body = await codeitem.postCatalogItems(catalog, items);
+  })
+  .get('/codeitem/:catalog/items/:item', async ctx => {
+    const catalog = ctx.params.catalog;
+    const item = ctx.params.item;
+    ctx.body = await codeitem.getCatalogItem(catalog, item);
+  })
+  .put('/codeitem/:catalog/items/:item', async ctx => {
+    const catalog = ctx.params.catalog;
+    const item = ctx.params.item;
+    ctx.body = await codeitem.putCatalogItem(catalog, item);
   })
   ;
 
