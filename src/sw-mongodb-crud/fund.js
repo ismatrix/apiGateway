@@ -167,10 +167,24 @@ export async function remove(fundid) {
 }
 
 /**
+ * 获取基金信息合计金额
+ * @function
+ * @return {Object} netvalues - 参见EQUITY.getTotal
+ */
+export async function getTotal(fundid, tradingay) {
+  try {
+    const total = await equity.getTotal(fundid, tradingay);
+
+    return total;
+  } catch (error) {
+    debug('fund.getTotal() Error: %o', error);
+    throw error;
+  }
+}
+/**
  * 获取指定基金某日净值
  * @function
  * @return {Object} netvalues - 参见EQUITY.getNetValues
- * example : {netvalueDoc}
  */
 export async function getNetValues(fundid, tradingay) {
   try {
@@ -186,7 +200,6 @@ export async function getNetValues(fundid, tradingay) {
  * 获取指定基金所有净值曲线信息
  * @function
  * @return {Array} netvalues - 参见EQUITY.getNetLines
- * example : [{netvalueDoc}, {netvalueDoc}]
  */
 export async function getNetLines(fundid) {
   try {

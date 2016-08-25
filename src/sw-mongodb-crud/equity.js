@@ -23,10 +23,9 @@ async function getDb() {
 /**
  * get equity list from EQUITY collection.
  * @function
- * @param {Object} filter - Query filter documents
- * specify the conditions that determine which records to select for return
- * @return {Array} equitys - include count and data array.
- * example : [{equityDoc1}, {equityDoc1}]
+ * @param {Object} filter - 过滤条件，空则返回所有记录
+ * @param {Object} project - 返回的字段，空则返回所有
+ * @return {Array} equitys - [{equityDoc1}, {equityDoc1}]
  */
 export async function getList(filter, project) {
   try {
@@ -46,6 +45,7 @@ export async function getList(filter, project) {
 /**
  * 获取指定基金的”固定收益存款列表“
  * @function
+ * @param {string} fundid
  * @return {Array} History FixedIncome List
  */
 export async function getFixedIncomeList(fundid) {
@@ -62,6 +62,7 @@ export async function getFixedIncomeList(fundid) {
 /**
  * 获取指定基金的”申购追加信息列表“
  * @function
+ * @param {string} fundid
  * @return {Array} History Appended List
  */
 export async function getAppendList(fundid) {
@@ -78,6 +79,7 @@ export async function getAppendList(fundid) {
 /**
  * 获取指定基金的”赎回信息列表“
  * @function
+ * @param {string} fundid
  * @return {Array} History Redemption List
  */
 export async function getRedemptionList(fundid) {
@@ -94,6 +96,7 @@ export async function getRedemptionList(fundid) {
 /**
  * 获取指定基金的”分红列表“
  * @function
+ * @param {string} fundid
  * @return {Array} History Dividend List
  */
 export async function getDividendList(fundid) {
@@ -110,6 +113,7 @@ export async function getDividendList(fundid) {
 /**
  * 获取指定基金的”固定成本扣除列表“
  * @function
+ * @param {string} fundid
  * @return {Array} History Dividend List
  */
 export async function getCostOutList(fundid) {
@@ -127,11 +131,9 @@ export async function getCostOutList(fundid) {
  * Obtain one equity document object by Specified id.
  * @function
  * @param {string} fundid - unique id for equity collection
- * example : '1339'
  * @param {string} tradingday - unique tradingday for equity collection
- * example : '20160428'
  * @return {Array} equitys - equity document content.
- * example : { fundDoc }
+ * example : { equityDoc }
  */
 export async function get(fundid, tradingday) {
   try {
@@ -146,16 +148,18 @@ export async function get(fundid, tradingday) {
   }
 }
 /**
- * get total value by specified fundid,tradingday and field
+ * 获取指定基金、指定时间之前（包含指定时间）某一字段的总合计
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total - include count and data array.
- * example : [{equityDoc1}, {equityDoc1}]
  */
 export async function getTotalByField(fundid, tradingday, field) {
   try {
     await getDb();
     const match = { fundid, tradingday: { $lte: tradingday } };
     // disctinct append.amount by append.share
+    // 申购日资金并未进入交易户，append.amount持续补充到进入交易户日期
     if (field === 'append.amount') {
       match['append.share'] = { $gt: 0 };
     }
@@ -176,6 +180,8 @@ export async function getTotalByField(fundid, tradingday, field) {
 /**
  * 获取指定基金截止到tradingay的”固定收益存款金额合计“
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalFixedIncome(fundid, tradingday) {
@@ -190,6 +196,8 @@ export async function getTotalFixedIncome(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的”固定收益存款收益合计“
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalFixedIncomeReturns(fundid, tradingday) {
@@ -204,6 +212,8 @@ export async function getTotalFixedIncomeReturns(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“申购追加资金合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalAppend(fundid, tradingday) {
@@ -218,6 +228,8 @@ export async function getTotalAppend(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“申购追加份额合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalAppendShare(fundid, tradingday) {
@@ -232,6 +244,8 @@ export async function getTotalAppendShare(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“赎回资金合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalRedemption(fundid, tradingday) {
@@ -246,6 +260,8 @@ export async function getTotalRedemption(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“分红金额合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalDividend(fundid, tradingday) {
@@ -260,6 +276,8 @@ export async function getTotalDividend(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“分红净值合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalDividendNetValue(fundid, tradingday) {
@@ -274,6 +292,8 @@ export async function getTotalDividendNetValue(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalCost(fundid, tradingday) {
@@ -288,6 +308,8 @@ export async function getTotalCost(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本中的优先成本合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalPriority(fundid, tradingday) {
@@ -302,6 +324,8 @@ export async function getTotalPriority(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本中的管理费成本合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalManagement(fundid, tradingday) {
@@ -316,6 +340,8 @@ export async function getTotalManagement(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本中的外包费成本合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalOutsource(fundid, tradingday) {
@@ -330,6 +356,8 @@ export async function getTotalOutsource(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本中的托管费成本合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalHosting(fundid, tradingday) {
@@ -344,12 +372,58 @@ export async function getTotalHosting(fundid, tradingday) {
 /**
  * 获取指定基金截止到tradingay的“固定成本已被期货公司扣除合计”
  * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
  * @return {Number} total
  */
 export async function getTotalCostOut(fundid, tradingday) {
   try {
     const total = await getTotalByField(fundid, tradingday, 'fixedcost.actual');
     return Math.round(total * 100) / 100;
+  } catch (error) {
+    debug('equity.getTotalCostOut() Error: %o', error);
+    throw error;
+  }
+}
+
+/**
+ * 获取指定基金截止到tradingay的所有固定成本
+ * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
+ * @return {Number} total
+ */
+export async function getTotal(fundid, tradingday = '99999999') {
+  try {
+    const totalFixedIncome = await getTotalFixedIncome(fundid, tradingday);
+    const totalFixedIncomeReturns = await getTotalFixedIncomeReturns(fundid, tradingday);
+    const totalAppend = await getTotalAppend(fundid, tradingday);
+    const totalAppendShare = await getTotalAppendShare(fundid, tradingday);
+    const totalRedemption = await getTotalRedemption(fundid, tradingday);
+    const totalDividend = await getTotalDividend(fundid, tradingday);
+    const totalDividendNetValue = await getTotalDividendNetValue(fundid, tradingday);
+    const totalCost = await getTotalCost(fundid, tradingday);
+    const totalPriority = await getTotalPriority(fundid, tradingday);
+    const totalManagement = await getTotalManagement(fundid, tradingday);
+    const totalOutsource = await getTotalOutsource(fundid, tradingday);
+    const totalHosting = await getTotalHosting(fundid, tradingday);
+    const totalCostOut = await getTotalCostOut(fundid, tradingday);
+    const total = {
+      fixedincome: totalFixedIncome,
+      fixedincomereturns: totalFixedIncomeReturns,
+      append: totalAppend,
+      appendshare: totalAppendShare,
+      redemption: totalRedemption,
+      dividend: totalDividend,
+      dividendnetvalue: totalDividendNetValue,
+      cost: totalCost,
+      priority: totalPriority,
+      management: totalManagement,
+      outsource: totalOutsource,
+      hosting: totalHosting,
+      costout: totalCostOut,
+    };
+    return total;
   } catch (error) {
     debug('equity.getTotalCostOut() Error: %o', error);
     throw error;
@@ -526,6 +600,7 @@ export async function getNetValues(fundid, iTradingday) {
     throw error;
   }
 }
+
 /**
  * 获取指定基金所有净值曲线信息
  * @function
@@ -542,6 +617,8 @@ export async function getNetLines(fundid) {
     Math.round((fundinfo.equitybeginning / fundinfo.equityinferior) * 100) / 100 : null;
     // 期初总权益
     const equityBeginning = fundinfo.equitybeginning;
+    // 前一个净值
+    let preLastNetValue = null;
     for (let i = 0; i < equityList.length; i++) {
       const equity = equityList[i];
       const tradingday = equity.tradingday;
@@ -607,6 +684,14 @@ export async function getNetLines(fundid) {
         },
         updatedate: equity.updatedate,
       };
+      if (i === 0) {
+        netvalues.netvalue.returns = 0;
+        preLastNetValue = netvalues.netvalue.last;
+      } else {
+        netvalues.netvalue.returns =
+        Math.round((netvalues.netvalue.last - preLastNetValue) * 10000) / 100;
+        preLastNetValue = netvalues.netvalue.last;
+      }
       netLines.push(netvalues);
     }
 
@@ -616,6 +701,7 @@ export async function getNetLines(fundid) {
     throw error;
   }
 }
+
 /**
  * insert  single or multiple equity documents into equity collection.
  * @function
@@ -801,13 +887,11 @@ export async function runTest() {
     //   const equity = await getNetValues('1339', '20151124');
     //   debug('equity.getNetValues:', equity);
     // }
-    {
-      // equity.getNetLines
-      const equity = await getNetLines('1285');
-      debug('equity.getNetLines:', equity.map(v =>
-        `${v.fundid},${v.tradingday},${v.netvalue.last}
-        ,${v.netvalue.dividend},${v.netvalue.inferior}`));
-    }
+    // {
+    //   // equity.getNetLines
+    //   const equity = await getNetLines('1285');
+    //   debug('equity.getNetLines:', equity);
+    // }
     // {
     //   // equity.calcDividendNetValue
     //   const equity = await calcDividendNetValue('3000380');
