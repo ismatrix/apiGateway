@@ -55,45 +55,50 @@ apiRouter
 
 apiRouter
   .get('/codemap/catalogs', async ctx => {
-    const catalogs = ctx.query.catalogs;
-    ctx.body = await codemap.getCatalogs(catalogs);
+    ctx.body = await codemap.getCatalogs();
   })
   .post('/codemap/catalogs', async ctx => {
     const catalogs = ctx.request.body.catalogs;
     ctx.body = await codemap.postCatalogs(catalogs);
   })
-  .get('/codemap/:catalog', async ctx => {
-    const catalog = ctx.params.catalog;
-    ctx.body = await codemap.getCatalog(catalog);
+  .get('/codemap/:catalogKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    ctx.body = await codemap.getCatalog(catalogKey);
   })
-  .put('/codemap/:catalog', async ctx => {
-    const catalog = ctx.params.catalog;
-    ctx.body = await codemap.putCatalog(catalog);
+  .put('/codemap/:catalogKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const catalog = ctx.request.body.catalog;
+    ctx.body = await codemap.putCatalog(catalogKey, catalog);
   })
-  .get('/codemap/:catalog/items', async ctx => {
-    const catalog = ctx.params.catalog;
-    ctx.body = await codemap.getCatalogItems(catalog);
+  .get('/codemap/:catalogKey/items', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    ctx.body = await codemap.getCatalogItems(catalogKey);
   })
-  .post('/codemap/:catalog/items', async ctx => {
-    const catalog = ctx.params.catalog;
+  .post('/codemap/:catalogKey/items', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
     const items = ctx.request.body.items;
-    ctx.body = await codemap.postCatalogItems(catalog, items);
+    ctx.body = await codemap.postCatalogItems(catalogKey, items);
   })
-  .get('/codemap/:catalog/items/:item', async ctx => {
-    const catalog = ctx.params.catalog;
-    const item = ctx.params.item;
-    ctx.body = await codemap.getCatalogItem(catalog, item);
+  .get('/codemap/:catalogKey/items/:itemKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const itemKey = ctx.params.itemKey;
+    ctx.body = await codemap.getCatalogItem(catalogKey, itemKey);
   })
-  .put('/codemap/:catalog/items/:item', async ctx => {
-    const catalog = ctx.params.catalog;
-    const item = ctx.params.item;
-    ctx.body = await codemap.putCatalogItem(catalog, item);
+  .put('/codemap/:catalogKey/items/:itemKey', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const itemKey = ctx.params.itemKey;
+    const item = ctx.request.body.item;
+    ctx.body = await codemap.putCatalogItem(catalogKey, itemKey, item);
   })
   ;
 
 apiRouter
   .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
-  .get('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
+  .get('/funds/:fundid', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getFundById(fundid);
+  })
+  .put('/funds/:fundid', async ctx => { ctx.body = await funds.getFundById(ctx.params.fundid); })
   ;
 
 apiRouter
