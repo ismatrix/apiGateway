@@ -5,4 +5,5 @@ const crud = require('./sw-mongodb-crud');
 // crud.instrument.runTest();
 // crud.daybar.runTest();
 // crud.codeitem.runTest();
-crud.fund.runTest();
+// crud.fund.runTest();
+crud.equity.runTest();

@@ -1,7 +1,9 @@
 /** @module sw-mongodb-crud/fund */
+import createDebug from 'debug';
 import * as mongodb from '../mongodb';
+import * as equity from './equity';
 
-const debug = require('debug')('sw-mongodb-crud:fund');
+const debug = createDebug('sw-mongodb-crud:fund');
 
 /** The handle of FUND collection */
 let FUND;
@@ -27,22 +29,12 @@ async function getDb() {
  * @return {Array} funds - include count and data array.
  * example : [{fundDoc1}, {fundDoc1}]
  */
-export async function getList(filter) {
+export async function getList(filter, project = { fundid: 1, fundname: 1, issuedate: 1 }) {
   try {
     await getDb();
 
     const query = filter;
     const sort = { state: 1, issuedate: 1 };
-    const project = {
-      _id: 0,
-      period: 0,
-      buysell: 0,
-      fixedcost: 0,
-      reward: 0,
-      trading: 0,
-      service: 0,
-    };
-
     const funds = await FUND.find(query, project).sort(sort).toArray();
 
     return funds;
@@ -163,6 +155,53 @@ export async function remove(fundid) {
     throw error;
   }
 }
+
+/**
+ * 获取基金信息合计金额
+ * @function
+ * @return {Object} netvalues - 参见EQUITY.getTotal
+ */
+export async function getTotal(fundid, tradingay) {
+  try {
+    const total = await equity.getTotal(fundid, tradingay);
+
+    return total;
+  } catch (error) {
+    debug('fund.getTotal() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * 获取指定基金某日净值
+ * @function
+ * @return {Object} netvalues - 参见EQUITY.getNetValues
+ */
+export async function getNetValues(fundid, tradingay) {
+  try {
+    const netvalues = await equity.getNetValues(fundid, tradingay);
+
+    return netvalues;
+  } catch (error) {
+    debug('fund.getNetValues() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * 获取指定基金所有净值曲线信息
+ * @function
+ * @return {Array} netvalues - 参见EQUITY.getNetLines
+ */
+export async function getNetLines(fundid) {
+  try {
+    const netlines = await equity.getNetLines(fundid);
+
+    return netlines;
+  } catch (error) {
+    debug('fund.getNetValues() Error: %o', error);
+    throw error;
+  }
+}
+
 /**
  * an test function.
  * @function
@@ -171,8 +210,8 @@ export async function runTest() {
   try {
     // {
     //   // fund.getList
-    //   const filter = { state: 'clearout' };
-    //   const funds = await getList(filter);
+    //   // const filter = { state: 'clearout' };
+    //   const funds = await getList({},{});
     //   debug('fund.getList:', funds);
     // }
     // {

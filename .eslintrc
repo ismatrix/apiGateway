@@ -15,5 +15,6 @@
     "generator-star-spacing": 0,
     "require-yield": 0,
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    no-mixed-operators: ["error", {"allowSamePrecedence": true}],
   }
 }
