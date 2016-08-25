@@ -169,17 +169,32 @@ export async function remove(fundid) {
 /**
  * 获取指定基金某日净值
  * @function
- * @return {Array} funds - include count and data array.
- * example : [{fundDoc1}, {fundDoc1}]
+ * @return {Object} netvalues - 参见EQUITY.getNetValues
+ * example : {netvalueDoc}
  */
-export async function getNetValue(fundid, tradingay) {
+export async function getNetValues(fundid, tradingay) {
   try {
-    const filter = { state: 'online' };
-    const funds = await getList(filter);
+    const netvalues = await equity.getNetValues(fundid, tradingay);
 
-    return funds;
+    return netvalues;
   } catch (error) {
-    debug('fund.getOnlineList() Error: %o', error);
+    debug('fund.getNetValues() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * 获取指定基金所有净值曲线信息
+ * @function
+ * @return {Array} netvalues - 参见EQUITY.getNetLines
+ * example : [{netvalueDoc}, {netvalueDoc}]
+ */
+export async function getNetLines(fundid) {
+  try {
+    const netlines = await equity.getNetLines(fundid);
+
+    return netlines;
+  } catch (error) {
+    debug('fund.getNetValues() Error: %o', error);
     throw error;
   }
 }

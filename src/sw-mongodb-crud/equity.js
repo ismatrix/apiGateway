@@ -361,6 +361,7 @@ export async function getTotalCostOut(fundid, tradingday) {
  * @function
  * @param {string} fundid - 基金ID
  * @param {string} tradingday - 交易日 ，为null，返回最大交易日，否则返回小于tradingday的最大交易日
+ * @param {string} f - 标识 最大交易日是否包含当前输入的交易日
  * @return {string} max tradingday - 返回最大的交易日.
  */
 export async function getMaxTradingday(fundid, tradingday, f = null) {
@@ -436,8 +437,8 @@ export async function calcDividendNetValue(fundid) {
 /**
  * 获取指定基金某日净值
  * @function
- * @return {Array} funds - include count and data array.
- * example : [{fundDoc1}, {fundDoc1}]
+ * @return {Object} netvalues - 参见EQUITY.getNetValues
+ * example : {netvalueDoc}
  */
 export async function getNetValues(fundid, iTradingday) {
   try {
@@ -493,7 +494,7 @@ export async function getNetValues(fundid, iTradingday) {
 
     const calcInferiorNetValue = (netvalue, ratio) => {
       if (!ratio) return null;
-      return 1 + ((netvalue - 1) * ratio);
+      return Math.round((1 + ((netvalue - 1) * ratio)) * 10000) / 10000;
     };
 
     const netvalues = {
@@ -522,6 +523,96 @@ export async function getNetValues(fundid, iTradingday) {
     return netvalues;
   } catch (error) {
     debug('equity.getNetValues() Error: %o', error);
+    throw error;
+  }
+}
+/**
+ * 获取指定基金所有净值曲线信息
+ * @function
+ * @return {Array} netvalues - 参见EQUITY.getNetLines
+ * example : [{netvalueDoc}, {netvalueDoc}]
+ */
+export async function getNetLines(fundid) {
+  try {
+    const netLines = [];
+    const equityList = await getList({ fundid });
+    const fundinfo = await fund.get(fundid);
+    // 结构化劣后比例
+    const structRatio = fundinfo.equityinferior > 0 ?
+    Math.round((fundinfo.equitybeginning / fundinfo.equityinferior) * 100) / 100 : null;
+    // 期初总权益
+    const equityBeginning = fundinfo.equitybeginning;
+    for (let i = 0; i < equityList.length; i++) {
+      const equity = equityList[i];
+      const tradingday = equity.tradingday;
+
+      // 申购追加的份额
+      const totalAppendShare = await getTotalAppendShare(fundid, tradingday);
+      // 历史赎回的金额
+      const totalRedemption = await getTotalRedemption(fundid, tradingday);
+
+      // 固定收益金额
+      const totalFixedIncome = await getTotalFixedIncome(fundid, tradingday);
+      // 固定收益总收益
+      const totalFixedIncomeReturns = await getTotalFixedIncomeReturns(fundid, tradingday);
+      // 历史分红净值累积
+      const totalDividendNetValue = await getTotalDividendNetValue(fundid, tradingday);
+      // 总固定成本，优先＋管理费＋外包＋托管
+      const totalCost = equity.fixedcost.total;
+      // 总固定成本，实际扣除的
+      const totalCostOut = await getTotalCostOut(fundid, tradingday);
+      // 当日申购追加的金额
+      const totalAppend = equity.append.amount;
+
+      const calcNetvalue = (x) => {
+        if (!x) return null;
+        const netvalue =
+          (x
+          + totalFixedIncome
+          + totalFixedIncomeReturns
+          + totalCostOut
+          - totalCost
+          + totalAppend) /
+          (equityBeginning
+          + totalAppendShare
+          - totalRedemption);
+        return Math.round(netvalue * 10000) / 10000;
+      };
+
+      const calcInferiorNetValue = (netvalue, ratio) => {
+        if (!ratio) return null;
+        return Math.round((1 + ((netvalue - 1) * ratio)) * 10000) / 10000;
+      };
+
+      const netvalues = {
+        fundid,
+        tradingday,
+        equity: {
+          last: equity.equity,
+          open: equity.open,
+          high: equity.high,
+          low: equity.low,
+          close: equity.close,
+          settle: equity.settle,
+        },
+        netvalue: {
+          last: calcNetvalue(equity.equity),
+          open: calcNetvalue(equity.open),
+          high: calcNetvalue(equity.high),
+          low: calcNetvalue(equity.low),
+          close: calcNetvalue(equity.close),
+          settle: calcNetvalue(equity.settle),
+          dividend: totalDividendNetValue,
+          inferior: calcInferiorNetValue(calcNetvalue(equity.equity), structRatio),
+        },
+        updatedate: equity.updatedate,
+      };
+      netLines.push(netvalues);
+    }
+
+    return netLines;
+  } catch (error) {
+    debug('equity.getNetLines() Error: %o', error);
     throw error;
   }
 }
@@ -695,15 +786,27 @@ export async function runTest() {
     //   const equity = await getPreVal('1285', '20160701', 'fixedcost.remark');
     //   debug('equity.getPreVal:', equity);
     // }
+    // {
+    //   // equity.getNetValues
+    //   const equity = await getNetValues('3000380', '20160701');
+    //   debug('equity.getNetValues:', equity);
+    // }
+    // {
+    //   // equity.getNetValues
+    //   const equity = await getNetValues('1285', '20160822');
+    //   debug('equity.getNetValues:', equity);
+    // }
+    // {
+    //   // equity.getNetValues
+    //   const equity = await getNetValues('1339', '20151124');
+    //   debug('equity.getNetValues:', equity);
+    // }
     {
-      // equity.getNetValues
-      const equity = await getNetValues('3000380', '20160701');
-      debug('equity.getNetValues:', equity);
-    }
-    {
-      // equity.getNetValues
-      const equity = await getNetValues('1285', '20160822');
-      debug('equity.getNetValues:', equity);
+      // equity.getNetLines
+      const equity = await getNetLines('1285');
+      debug('equity.getNetLines:', equity.map(v =>
+        `${v.fundid},${v.tradingday},${v.netvalue.last}
+        ,${v.netvalue.dividend},${v.netvalue.inferior}`));
     }
     // {
     //   // equity.calcDividendNetValue
