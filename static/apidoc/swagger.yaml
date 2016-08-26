@@ -177,7 +177,7 @@ paths:
                 type: boolean
                 default: true
               funds:
-                $ref: '#/definitions/Funds'
+                $ref: '#/definitions/FundsShort'
         '404':
           description: Funds not found
   /funds/{fundid}:
@@ -1096,6 +1096,25 @@ definitions:
       order:
         type: number
         example: 200
+  FundsShort:
+    type: array
+    items:
+      $ref: '#/definitions/FundShort'
+  FundShort:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: "57ba69a99eb8738ec16705a7"
+      fundid:
+        type: string
+        example: "800002"
+      fundname:
+        type: string
+        example: 慧网趋势1号,
+      issuedate:
+        string: string
+        example: "2014-09-16T16:00:00.000Z"
   Funds:
     type: array
     items:
@@ -1103,27 +1122,30 @@ definitions:
   Fund:
     type: object
     properties:
+      _id:
+        type: string
+        example: "57ba69a99eb8738ec16705a7"
       fundid:
         type: string
-        example: "82660"
+        example: "800002"
       fundname:
         type: string
-        example: "慧网慧创稳健12号"
+        example: 慧网趋势1号
       manager:
         type: string
-        example: "慧网"
+        example: 南华
       consultant:
         type: string
         example: 慧网基金
       hoster:
         type: string
-        example: 第一创业
+        example: "null"
       transferbank:
         type: string
         example: "null"
       fundcode:
         type: string
-        example: SSSSSS
+        example: "06690263"
       fundmanager:
         type: string
         example: 王祥
@@ -1131,23 +1153,196 @@ definitions:
         type: string
         example: structured
       equitybeginning:
-        type: string
-        example: "40000000"
+        type: number
+        example: 30000000
       equityprior:
-        type: string
-        example: "30000000"
+        type: number
+        example: 20000000
       equityinferior:
-        type: string
-        example: "10000000"
+        type: number
+        example: 10000000
       issuedate:
         type: string
-        example: 2016-05-18T16:00:00Z
+        example: "2014-09-16T16:00:00.000Z"
+      period:
+        type: object
+        properties:
+          type:
+            type: string
+            example: month
+          value:
+            type: number
+            example: 12
       state:
         type: string
-        example: online
+        example: clearout
       updatedate:
         type: string
-        example: 2016-06-17T03:34:35Z
+        example: "2016-01-05T06:13:38.000Z"
+      buysell:
+        type: object
+        properties:
+          closeperiod:
+            type: object
+            properties:
+              type:
+                type: string
+                example: month
+              value:
+                type: number
+                example: 3
+          openday:
+            type: object
+            properties:
+              type:
+                type: string
+                example: month
+              value:
+                type: number
+                example: 3
+          threshold:
+            type: number
+            example: 1000000
+          buyfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          sellfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      fixedcost:
+        type: object
+        properties:
+          priorfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          managefee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: fixed
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          hostfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          outsourcefee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      reward:
+        type: object
+        properties:
+          manager:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          consultant:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      trading:
+        type: object
+        properties:
+          api:
+            type: string
+            example: ctp
+          brokerid:
+            type: string
+            example: "null"
+          brokername:
+            type: string
+            example: 南华
+          account:
+            type: string
+            example: "null"
+          password:
+            type: string
+            example: "12345"
+          server:
+            type: array
+            example: ["null"]
+            items:
+              type: string
+          cellid:
+            type: string
+            example: "800002"
+      service:
+        type: object
+        properties:
+          ip:
+            type: string
+            example: "127.0.0.1"
+          port:
+            type: string
+            example: "0000"
+          key:
+            type: string
+            example: HWQS1
   Total:
     type: object
     required:
