@@ -74,7 +74,7 @@ export async function getItemList(catalog) {
 }
 
 /**
- * Obtain one codemap object by Specified catalog.
+ * 获取catalog.key的中文名称.
  * @function
  * @param {string} catalog
  * example : 'trade.action'
@@ -167,7 +167,7 @@ export async function set(catalog, keyvalue) {
   }
 }
 /**
- * 更新目录信息.
+ * 更新ITEM信息.
  * @function
  * @param {string} catalog
  * @param {string} key
@@ -212,7 +212,7 @@ export async function remove(catalog) {
   }
 }
 /**
- * remove an codemap documents by Specified catalog id and key.
+ * 删除一个catalog的item.
  * @function
  * @param {string} catalog
  * @param {string} key - item key
@@ -241,50 +241,50 @@ export async function removeItem(catalog, key) {
  * init codemap collection, insert initial doc inito codemap
  * @function
  */
-// async function init() {
-//   try {
-//     const smartwin = await mongodb.getdb();
-//     const retdel = await smartwin.collection('CODEMAP').deleteMany();
-//     debug('init drop collection %o', retdel.result);
-//
-//     const docs = [
-//       {
-//         catalog: 'fund.status',
-//         name: '基金状态',
-//         description: '标识基金账户当前的状态或类型',
-//         items: [
-//           { key: 'online', zh: '正在运行' },
-//           { key: 'offline', zh: '已下线' },
-//         ],
-//       },
-//       {
-//         catalog: 'trade.direction',
-//         name: '交易下单方向',
-//         description: '交易下单方向',
-//         items: [
-//           { key: 'long', zh: '多', ctp: 1, sungard: 0 },
-//           { key: 'short', zh: '空', ctp: 2, sungard: 1 },
-//         ],
-//       },
-//       {
-//         catalog: 'trade.action',
-//         name: '交易指令',
-//         description: '交易指令开平标志',
-//         items: [
-//           { key: 'open', zh: '开仓', ctp: 1, sungard: 1 },
-//           { key: 'close', zh: '平仓', ctp: 2, sungard: 2 },
-//           { key: 'closetoday', zh: '平今', ctp: 3, sungard: 3 },
-//           { key: 'closeyesterday', zh: '平昨', ctp: 4, sungard: 4 },
-//         ],
-//       },
-//     ];
-//     const ret = await add(docs);
-//     return ret;
-//   } catch (error) {
-//     debug('codemap.init() Error: %o', error);
-//     throw error;
-//   }
-// }
+async function init() {
+  try {
+    const smartwin = await mongodb.getdb();
+    const retdel = await smartwin.collection('CODEMAP').deleteMany();
+    debug('init drop collection %o', retdel.result);
+
+    const docs = [
+      {
+        catalog: 'fund.status',
+        name: '基金状态',
+        description: '标识基金账户当前的状态或类型',
+        items: [
+          { key: 'online', zh: '正在运行' },
+          { key: 'offline', zh: '已下线' },
+        ],
+      },
+      {
+        catalog: 'trade.direction',
+        name: '交易下单方向',
+        description: '交易下单方向',
+        items: [
+          { key: 'long', zh: '多', ctp: 1, sungard: 0 },
+          { key: 'short', zh: '空', ctp: 2, sungard: 1 },
+        ],
+      },
+      {
+        catalog: 'trade.action',
+        name: '交易指令',
+        description: '交易指令开平标志',
+        items: [
+          { key: 'open', zh: '开仓', ctp: 1, sungard: 1 },
+          { key: 'close', zh: '平仓', ctp: 2, sungard: 2 },
+          { key: 'closetoday', zh: '平今', ctp: 3, sungard: 3 },
+          { key: 'closeyesterday', zh: '平昨', ctp: 4, sungard: 4 },
+        ],
+      },
+    ];
+    const ret = await add(docs);
+    return ret;
+  } catch (error) {
+    debug('codemap.init() Error: %o', error);
+    throw error;
+  }
+}
 /**
  * an test function.
  * @function
@@ -311,11 +311,11 @@ export async function runTest() {
     //   debug('codemap.getName', await getName('trade.action', 'closetoday'));
     //   debug('codemap.getName', await getName('fund.status', 'online'));
     // }
-    // {
-    //   // codemap.init
-    //   const retinit = await init();
-    //   debug('codemap.init', retinit);
-    // }
+    {
+      // codemap.init
+      const retinit = await init();
+      debug('codemap.init', retinit);
+    }
     // {
     //   // codemap.add
     //   const catalogs = [
