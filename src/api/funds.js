@@ -34,7 +34,7 @@ export async function getFund(fundid) {
   }
 }
 
-export async function putFund(fundid, fund) {
+export async function postFund(fundid, fund) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!fund) throw Boom.badRequest('Missing fund parameter');
@@ -48,7 +48,7 @@ export async function putFund(fundid, fund) {
   }
 }
 
-export async function getTotal(fundid, tradingday ) {
+export async function getTotal(fundid, tradingday) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 

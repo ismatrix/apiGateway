@@ -180,6 +180,34 @@ paths:
                 $ref: '#/definitions/FundsShort'
         '404':
           description: Funds not found
+  /fund:
+    post:
+      summary: Create or update a fund
+      tags:
+        - Funds
+      parameters:
+        - name: body
+          in: body
+          description: The new or updated fund
+          required: true
+          schema:
+            type: object
+            required:
+              - fund
+            properties:
+              fund:
+                $ref: '#/definitions/Fund'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}:
     get:
       summary: Get a fund by its id
@@ -207,38 +235,6 @@ paths:
                 $ref: '#/definitions/Fund'
         '404':
           description: Fund not found
-    put:
-      summary: Create or update a fund by its id
-      tags:
-        - Funds
-      parameters:
-        - name: fundid
-          in: path
-          description: The fund id
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: The new or updated fund
-          required: true
-          schema:
-            type: object
-            required:
-              - fund
-            properties:
-              fund:
-                $ref: '#/definitions/Fund'
-      responses:
-        '200':
-          description: The operation result response (true or false)
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
   /funds/{fundid}/total:
     get:
       summary: Get the total
@@ -809,7 +805,7 @@ paths:
     post:
       tags:
         - Codemap
-      summary: Post catalogs
+      summary: Add many catalogs
       parameters:
         - name: body
           in: body
@@ -817,6 +813,29 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Catalogs'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codemap/catalog:
+    post:
+      tags:
+        - Codemap
+      summary: Add or Update a catalog
+      parameters:
+        - name: body
+          in: body
+          description: The catalog to create
+          required: true
+          schema:
+            $ref: '#/definitions/Catalog'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -853,8 +872,8 @@ paths:
                 default: true
               catalog:
                 $ref: '#/definitions/Catalog'
-    put:
-      summary: Create or update a catalog
+    delete:
+      summary: Delete a catalog
       tags:
         - Codemap
       parameters:
@@ -863,12 +882,6 @@ paths:
           description: The catalog key
           required: true
           type: string
-        - name: body
-          in: body
-          description: the new or updated catalog
-          required: true
-          schema:
-            $ref: '#/definitions/Catalog'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -908,7 +921,7 @@ paths:
     post:
       tags:
         - Codemap
-      summary: Post items to a catalog
+      summary: Add many items to a catalog
       parameters:
         - name: catalogKey
           in: path
@@ -921,6 +934,34 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/CatalogItems'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /codemap/{catalogKey}/item:
+    post:
+      tags:
+        - Codemap
+      summary: Add or Update an item in a catalog
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The item to create or update in the catalog
+          required: true
+          schema:
+            $ref: '#/definitions/CatalogItem'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -962,8 +1003,8 @@ paths:
                 default: true
               item:
                 $ref: '#/definitions/CatalogItem'
-    put:
-      summary: Create or update an item in a catalog
+    delete:
+      summary: Delete an item in a catalog
       tags:
         - Codemap
       parameters:
@@ -977,12 +1018,6 @@ paths:
           description: The catalog item key
           required: true
           type: string
-        - name: body
-          in: body
-          description: the new or updated item
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogItem'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -1233,7 +1268,7 @@ definitions:
         example: "800002"
       fundname:
         type: string
-        example: 慧网趋势1号,
+        example: 慧网趋势1号
       issuedate:
         string: string
         example: "2014-09-16T16:00:00.000Z"
@@ -2038,11 +2073,11 @@ definitions:
   Catalog:
     type: object
     required:
-      - key
+      - catalog
       - name
       - description
     properties:
-      key:
+      catalog:
         type: string
         example: fund.status
       name:
@@ -2057,10 +2092,9 @@ definitions:
       $ref: '#/definitions/CatalogItem'
   CatalogItem:
     type: object
+    required:
+      - key
     properties:
-      catalog:
-        type: string
-        example: the item's catalog
       key:
         type: string
         example: item key

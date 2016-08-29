@@ -126,14 +126,12 @@ export async function addItem(catalog, itemDoc) {
       $addToSet: { items: itemDoc },
       $currentDate: { updatedate: true },
     };
-    const options = {
-      upsert: true,
-    };
+
     const ret = await CODEMAP.updateOne(
       filter,
       update,
-      options,
     );
+
     return ret.result;
   } catch (error) {
     debug('codemap.addItem() Error: %o', error);

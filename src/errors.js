@@ -30,7 +30,7 @@ export async function koaError(ctx, next) {
     ctx.status = 500;
     ctx.body = {
       ok: false,
-      error: error.message,
+      error: error.message || error,
     };
   }
 }
