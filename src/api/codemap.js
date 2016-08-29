@@ -53,7 +53,7 @@ export async function postCatalog(catalogKey, catalog) {
 
     return { ok: true };
   } catch (error) {
-    debug('putCatalog() Error: %o', error);
+    debug('postCatalog() Error: %o', error);
     throw error;
   }
 }
@@ -66,7 +66,7 @@ export async function deleteCatalog(catalogKey) {
 
     return { ok: true };
   } catch (error) {
-    debug('putCatalogItem() Error: %o', error);
+    debug('deleteCatalog() Error: %o', error);
     throw error;
   }
 }
@@ -132,7 +132,7 @@ export async function postCatalogItem(catalogKey, itemKey, item) {
 
     return { ok: true };
   } catch (error) {
-    debug('putCatalogItem() Error: %o', error);
+    debug('postCatalogItem() Error: %o', error);
     throw error;
   }
 }
@@ -146,7 +146,7 @@ export async function deleteCatalogItem(catalogKey, itemKey) {
 
     return { ok: true };
   } catch (error) {
-    debug('putCatalogItem() Error: %o', error);
+    debug('deleteCatalogItem() Error: %o', error);
     throw error;
   }
 }
