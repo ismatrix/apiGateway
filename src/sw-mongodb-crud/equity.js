@@ -688,11 +688,12 @@ export async function getNetLines(fundid) {
       };
       if (i === 0) {
         netvalues.netvalue.returns = 0;
-        preLastNetValue = netvalues.netvalue.last;
+        preLastNetValue = netvalues.netvalue.last + netvalues.netvalue.dividend;
       } else {
         netvalues.netvalue.returns =
-        Math.round((netvalues.netvalue.last - preLastNetValue) * 10000) / 100;
-        preLastNetValue = netvalues.netvalue.last;
+        Math.round((netvalues.netvalue.last + netvalues.netvalue.dividend
+          - preLastNetValue) * 10000) / 100;
+        preLastNetValue = netvalues.netvalue.last + netvalues.netvalue.dividend;
       }
       netLines.push(netvalues);
     }
@@ -931,11 +932,11 @@ export async function runTest() {
     //   const total = await getTotalDividend('3000380', '20160823');
     //   debug('equity.getTotalDividend', total);
     // }
-    {
-      // equity.getTotal
-      const total = await getTotal('800002', '20160823');
-      debug('equity.getTotal', total);
-    }
+    // {
+    //   // equity.getTotal
+    //   const total = await getTotal('800002', '20160823');
+    //   debug('equity.getTotal', total);
+    // }
     // {
     //   // equity.add
     //   const retadd = await add([{ fundid: 'aaa', key1: 1, key2: 'fuck' },
