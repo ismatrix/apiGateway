@@ -311,11 +311,11 @@ export async function runTest() {
     //   debug('codemap.getName', await getName('trade.action', 'closetoday'));
     //   debug('codemap.getName', await getName('fund.status', 'online'));
     // }
-    {
-      // codemap.init
-      const retinit = await init();
-      debug('codemap.init', retinit);
-    }
+    // {
+    //   // codemap.init
+    //   const retinit = await init();
+    //   debug('codemap.init', retinit);
+    // }
     // {
     //   // codemap.add
     //   const catalogs = [
