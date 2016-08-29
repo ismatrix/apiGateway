@@ -1,9 +1,10 @@
 import createDebug from 'debug';
-import * as funds from './api/funds';
-import * as markets from './api/markets';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
+import * as funds from './api/funds';
+import * as orders from './api/orders';
+import * as markets from './api/markets';
 import * as codemap from './api/codemap';
 import { canKoa } from './acl';
 
@@ -101,6 +102,25 @@ apiRouter
   ;
 
 apiRouter
+  .get('/orders', async ctx => {
+    const fundid = ctx.query.fundid;
+    ctx.body = await orders.getOrders(fundid);
+  })
+  .get('/order', async ctx => {
+    const orderno = ctx.query.orderno;
+    ctx.body = await orders.getOrder(orderno);
+  })
+  .post('/order', async ctx => {
+    const order = ctx.request.body;
+    ctx.body = await orders.postOrder(order);
+  })
+  .delete('/order', async ctx => {
+    const orderToDelete = ctx.request.body;
+    ctx.body = await orders.deleteOrder(orderToDelete);
+  })
+  ;
+
+apiRouter
   .get('/codemap/catalogs', async ctx => {
     ctx.body = await codemap.getCatalogs();
   })
@@ -145,27 +165,6 @@ apiRouter
     const catalogKey = ctx.params.catalogKey;
     const itemKey = ctx.params.itemKey;
     ctx.body = await codemap.deleteCatalog(catalogKey, itemKey);
-  })
-  ;
-
-apiRouter
-  .get('/orders', async ctx => { ctx.body = await funds.getFunds(); })
-  .get('/order', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getFund(fundid);
-  })
-  .post('/order', async ctx => {
-    const fund = ctx.request.body.fund;
-    const fundid = fund.fundid;
-    ctx.body = await funds.postFund(fundid, fund);
-  })
-  .put('/order', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getDividends(fundid);
-  })
-  .delete('/order', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getCostOuts(fundid);
   })
   ;
 

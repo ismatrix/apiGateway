@@ -451,15 +451,20 @@ paths:
       tags:
         - Orders
       parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
         - name: startTime
           in: query
-          description: The fund id
+          description: The start time filter
           required: false
           type: string
           format: date-time
         - name: endTime
           in: query
-          description: The fund id
+          description: The end time filter
           required: false
           type: string
           format: date-time
@@ -485,7 +490,7 @@ paths:
       tags:
         - Orders
       parameters:
-        - name: orderID
+        - name: orderno
           in: query
           description: The order id
           required: true
@@ -513,29 +518,7 @@ paths:
           description: The new order to submit
           required: true
           schema:
-            $ref: '#/definitions/Order'
-      responses:
-        '200':
-          description: The operation result response (true or false)
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
-    put:
-      summary: Modify a pending order
-      tags:
-        - Orders
-      parameters:
-        - name: body
-          in: body
-          description: The updated order to submit
-          required: true
-          schema:
-            $ref: '#/definitions/Order'
+            $ref: '#/definitions/OrderPost'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -1182,21 +1165,126 @@ definitions:
   Order:
     type: object
     properties:
-      orderID:
+      fundid:
         type: string
-        example: 02910
-      transactTime:
+        example: "1296"
+      frontid:
         type: string
-        example: "2016-08-26"
-      timestamp:
+        example: 只有ctp用到
+      sessionid:
         type: string
-        example: "2016-08-26"
+        example: 连接id 撤单的时候用到
+      privateno:
+        type: string
+        example: ctp.OrderRef / st.private_no
+      exchangeid:
+        type: string
+        example: 市场代码	ctp.ExchangID / st.MarketCode
+      orderid:
+        type: string
+        example:	ctp.OrderSysID / st.order_no
+      tradingday:
+        type: string
+        example: "20160801"
+      brokerid:
+        type: string
+        example: 经纪
+      requestid:
+        type: string
+        example: 请求id
+      instrumentid:
+        type: string
+        example: "IF1609"
+      direction:
+        type: string
+        example: 多空
+      offsetflag:
+        type: string
+        example: 开平标志
+      hedgeflag:
+        type: string
+        example: 套保标志
+      price:
+        type: string
+        example: 委托价格
+      volume:
+        type: string
+        example: 委托数量
+      ordertype:
+        type: string
+        example: 委托类型
+      orderstatus:
+        type: string
+        example: 报单状态
+      volumetraded:
+        type: string
+        example: 报单状态
+      insertdatetime:
+        type: string
+        example: example
+      ordertime:
+        type: string
+        example: 委托时间  期货公司给交易所
+      updatetime:
+        type: string
+        example: 最后修改时间
+  OrderPost:
+    type: object
+    properties:
+      fundid:
+        type: string
+        example: "1239"
+      exchangeid:
+        type: string
+        example: "SHFE"
+        enum: ["SHFE", "CZCE", "DCE", "CFFEX"]
+      brokerid:
+        type: string
+        example: "1234"
+      instrumentid:
+        type: string
+        example: "IF1609"
+      ordertype:
+        type: string
+        example: "1"
+        enum: ["0", "1", "2", "3", "4"]
+      direction:
+        type: string
+        example: "L"
+        enum: ["L", "S"]
+      offsetflag:
+        type: string
+        example: "O"
+        enum: ["O", "C"]
+      hedgeflag:
+        type: string
+        example: "0"
+        enum: ["0", "1", "2"]
+      price:
+        type: number
+        example: 1394
+      volume:
+        type: number
+        example: 3
+      donetype:
+        type: string
+        example: "0"
+        enum: ["0", "1", "2", "3"]
   OrderDelete:
     type: object
     properties:
-      orderID:
+      fundid:
         type: string
-        example: 02910
+        example: "hello"
+      orderno:
+        type: string
+        example: "02910"
+      instrumentid:
+        type: string
+        example: "IF1609"
+      privateno:
+        type: string
+        example: "private number"
   Token:
     type: string
     example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
@@ -1260,9 +1348,6 @@ definitions:
   FundShort:
     type: object
     properties:
-      _id:
-        type: string
-        example: "57ba69a99eb8738ec16705a7"
       fundid:
         type: string
         example: "800002"
@@ -1279,9 +1364,6 @@ definitions:
   Fund:
     type: object
     properties:
-      _id:
-        type: string
-        example: "57ba69a99eb8738ec16705a7"
       fundid:
         type: string
         example: "800002"
