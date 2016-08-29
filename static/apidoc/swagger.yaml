@@ -177,7 +177,7 @@ paths:
                 type: boolean
                 default: true
               funds:
-                $ref: '#/definitions/Funds'
+                $ref: '#/definitions/FundsShort'
         '404':
           description: Funds not found
   /funds/{fundid}:
@@ -228,6 +228,343 @@ paths:
             properties:
               fund:
                 $ref: '#/definitions/Fund'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /funds/{fundid}/total:
+    get:
+      summary: Get the total
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: query
+          description: The tradingday
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The Total
+          schema:
+            type: object
+            required:
+              - ok
+              - total
+            properties:
+              ok:
+                type: boolean
+                default: true
+              total:
+                $ref: '#/definitions/Total'
+  /funds/{fundid}/netValue:
+    get:
+      summary: Get the netValue
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: query
+          description: The tradingday
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The NetValue
+          schema:
+            type: object
+            required:
+              - ok
+              - netValue
+            properties:
+              ok:
+                type: boolean
+                default: true
+              netValue:
+                $ref: '#/definitions/NetValue'
+  /funds/{fundid}/netValues:
+    get:
+      summary: Get an array of NetValue
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of NetValue
+          schema:
+            type: object
+            required:
+              - ok
+              - netValues
+            properties:
+              ok:
+                type: boolean
+                default: true
+              netValues:
+                $ref: '#/definitions/NetValues'
+  /funds/{fundid}/fixedIncomes:
+    get:
+      summary: Get an array of FixedIncome
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of FixedIncome
+          schema:
+            type: object
+            required:
+              - ok
+              - fixedIncomes
+            properties:
+              ok:
+                type: boolean
+                default: true
+              fixedIncomes:
+                $ref: '#/definitions/FixedIncomes'
+  /funds/{fundid}/appends:
+    get:
+      summary: Get an array of Append
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of Append
+          schema:
+            type: object
+            required:
+              - ok
+              - appends
+            properties:
+              ok:
+                type: boolean
+                default: true
+              appends:
+                $ref: '#/definitions/Appends'
+  /funds/{fundid}/redemptions:
+    get:
+      summary: Get an array of Redemption
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of Redemption
+          schema:
+            type: object
+            required:
+              - ok
+              - redemptions
+            properties:
+              ok:
+                type: boolean
+                default: true
+              redemptions:
+                $ref: '#/definitions/Redemptions'
+  /funds/{fundid}/dividends:
+    get:
+      summary: Get an array of Dividend
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of Dividend
+          schema:
+            type: object
+            required:
+              - ok
+              - dividends
+            properties:
+              ok:
+                type: boolean
+                default: true
+              dividends:
+                $ref: '#/definitions/Dividends'
+  /funds/{fundid}/costOuts:
+    get:
+      summary: Get an array of CostOut
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of CostOut
+          schema:
+            type: object
+            required:
+              - ok
+              - costOuts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              costOuts:
+                $ref: '#/definitions/CostOuts'
+  /orders:
+    get:
+      summary: Get all orders
+      tags:
+        - Orders
+      parameters:
+        - name: startTime
+          in: query
+          description: The fund id
+          required: false
+          type: string
+          format: date-time
+        - name: endTime
+          in: query
+          description: The fund id
+          required: false
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: The orders array
+          schema:
+            type: object
+            required:
+              - ok
+              - orders
+            properties:
+              ok:
+                type: boolean
+                default: true
+              orders:
+                type: array
+                items:
+                  $ref: '#/definitions/Order'
+  /order:
+    get:
+      summary: Get all details about a particular order
+      tags:
+        - Orders
+      parameters:
+        - name: orderID
+          in: query
+          description: The order id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The Order
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+              order:
+                $ref: '#/definitions/Order'
+    post:
+      summary: Send an Order
+      tags:
+        - Orders
+      parameters:
+        - name: body
+          in: body
+          description: The new order to submit
+          required: true
+          schema:
+            type: object
+            required:
+              - order
+            properties:
+              order:
+                $ref: '#/definitions/Order'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    put:
+      summary: Modify a pending order
+      tags:
+        - Orders
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: Delete a pending order
+      tags:
+        - Orders
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
       responses:
         '200':
           description: The operation result response (true or false)
@@ -830,6 +1167,18 @@ securityDefinitions:
     name: Authorization
     in: header
 definitions:
+  Order:
+    type: object
+    properties:
+      orderID:
+        type: string
+        example: 02910
+      transactTime:
+        type: string
+        example: "2016-08-26"
+      timestamp:
+        type: string
+        example: "2016-08-26"
   Token:
     type: string
     example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
@@ -886,6 +1235,25 @@ definitions:
       order:
         type: number
         example: 200
+  FundsShort:
+    type: array
+    items:
+      $ref: '#/definitions/FundShort'
+  FundShort:
+    type: object
+    properties:
+      _id:
+        type: string
+        example: "57ba69a99eb8738ec16705a7"
+      fundid:
+        type: string
+        example: "800002"
+      fundname:
+        type: string
+        example: 慧网趋势1号,
+      issuedate:
+        string: string
+        example: "2014-09-16T16:00:00.000Z"
   Funds:
     type: array
     items:
@@ -893,27 +1261,31 @@ definitions:
   Fund:
     type: object
     properties:
+      _id:
+        type: string
+        example: "57ba69a99eb8738ec16705a7"
       fundid:
         type: string
-        example: "82660"
+        example: "800002"
+        description: "Each fund has a unique fundid"
       fundname:
         type: string
-        example: "慧网慧创稳健12号"
+        example: 慧网趋势1号
       manager:
         type: string
-        example: "慧网"
+        example: 南华
       consultant:
         type: string
         example: 慧网基金
       hoster:
         type: string
-        example: 第一创业
+        example: "null"
       transferbank:
         type: string
         example: "null"
       fundcode:
         type: string
-        example: SSSSSS
+        example: "06690263"
       fundmanager:
         type: string
         example: 王祥
@@ -921,23 +1293,422 @@ definitions:
         type: string
         example: structured
       equitybeginning:
-        type: string
-        example: "40000000"
+        type: number
+        example: 30000000
       equityprior:
-        type: string
-        example: "30000000"
+        type: number
+        example: 20000000
       equityinferior:
-        type: string
-        example: "10000000"
+        type: number
+        example: 10000000
       issuedate:
         type: string
-        example: 2016-05-18T16:00:00Z
+        example: "2014-09-16T16:00:00.000Z"
+      period:
+        type: object
+        properties:
+          type:
+            type: string
+            example: month
+          value:
+            type: number
+            example: 12
       state:
         type: string
-        example: online
+        example: clearout
       updatedate:
         type: string
-        example: 2016-06-17T03:34:35Z
+        example: "2016-01-05T06:13:38.000Z"
+      buysell:
+        type: object
+        properties:
+          closeperiod:
+            type: object
+            properties:
+              type:
+                type: string
+                example: month
+              value:
+                type: number
+                example: 3
+          openday:
+            type: object
+            properties:
+              type:
+                type: string
+                example: month
+              value:
+                type: number
+                example: 3
+          threshold:
+            type: number
+            example: 1000000
+          buyfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          sellfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      fixedcost:
+        type: object
+        properties:
+          priorfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          managefee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: fixed
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          hostfee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          outsourcefee:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      reward:
+        type: object
+        properties:
+          manager:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+          consultant:
+            type: object
+            properties:
+              type:
+                type: string
+                example: percent
+              value:
+                type: number
+                example: 0
+              min:
+                type: number
+                example: 0
+      trading:
+        type: object
+        properties:
+          api:
+            type: string
+            example: ctp
+          brokerid:
+            type: string
+            example: "null"
+          brokername:
+            type: string
+            example: 南华
+          account:
+            type: string
+            example: "null"
+          password:
+            type: string
+            example: "12345"
+          server:
+            type: array
+            example: ["null"]
+            items:
+              type: string
+          cellid:
+            type: string
+            example: "800002"
+      service:
+        type: object
+        properties:
+          ip:
+            type: string
+            example: "127.0.0.1"
+          port:
+            type: string
+            example: "0000"
+          key:
+            type: string
+            example: HWQS1
+  Total:
+    type: object
+    required:
+      - fixedincome
+    properties:
+      fixedincome:
+        type: number
+        example: 30000000
+      fixedincomereturns:
+        type: number
+        example: 0
+      append:
+        type: number
+        example: 0
+      appendshare:
+        type: number
+        example: 0
+      redemption:
+        type: number
+        example: 0
+      dividend:
+        type: number
+        example: 0
+      dividendnetvalue:
+        type: number
+        example: 0
+      cost:
+        type: number
+        example: 219241.39
+      priority:
+        type: number
+        example: 197698.63
+      management:
+        type: number
+        example: 17952.29
+      outsource:
+        type: number
+        example: 0
+      hosting:
+        type: number
+        example: 3590.47
+      costout:
+        type: number
+        example: 0
+  NetValues:
+    type: array
+    items:
+      $ref: '#/definitions/NetValue'
+  NetValue:
+    type: object
+    required:
+      - fundid
+    properties:
+      fundid:
+        type: string
+        example: 1285
+      tradingday:
+        type: string
+        example: 20160115
+      equity:
+        type: object
+        properties:
+          last:
+            type: number
+            example: 28804043.61
+          open:
+            type: number
+            example: 28804043.61
+          high:
+            type: number
+            example: 28804043.61
+          low:
+            type: number
+            example: 28804043.61
+          close:
+            type: number
+            example: "null"
+          settle:
+            type: number
+            example: "null"
+      netvalue:
+        type: object
+        properties:
+          last:
+            type: number
+            example: 0.9764
+          open:
+            type: number
+            example: 0.9764
+          high:
+            type: number
+            example: 0.9764
+          low:
+            type: number
+            example: 0.9764
+          close:
+            type: number
+            example: "null"
+          settle:
+            type: number
+            example: "null"
+          dividend:
+            type: number
+            example: 0
+          inferior:
+            type: number
+            example: 0.9292
+      updatedate:
+        type: string
+        example: "2016-01-15T12:51:01.000Z"
+  FixedIncomes:
+    type: array
+    items:
+      $ref: '#/definitions/FixedIncome'
+  FixedIncome:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20160113"
+      fixedincome:
+        type: object
+        properties:
+          amount:
+            type: number
+            example: 30000000
+  Appends:
+    type: array
+    items:
+      $ref: '#/definitions/Append'
+  Append:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20160308"
+      append:
+        type: object
+        properties:
+          amount:
+            type: number
+            example: 5000000
+          netvalue:
+            type: number
+            example: 1.2469
+          share:
+            type: number
+            example: 4009944.66
+  Redemptions:
+    type: array
+    items:
+      $ref: '#/definitions/Redemption'
+  Redemption:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20160616"
+      redemption:
+        type: object
+        properties:
+          amount:
+            type: number
+            example: 80000
+          netvalue:
+            type: number
+            example: 0
+          share:
+            type: number
+            example: 0
+          actual:
+            type: number
+            example: 80000
+  Dividends:
+    type: array
+    items:
+      $ref: '#/definitions/Dividend'
+  Dividend:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20140905"
+      dividend:
+        type: object
+        properties:
+          amount:
+            type: number
+            example: 200000
+          netvalue:
+            type: number
+            example: 0
+  CostOuts:
+    type: array
+    items:
+      $ref: '#/definitions/CostOut'
+  CostOut:
+    type: object
+    properties:
+        tradingday:
+          type: number
+          example: 20160119
+        fixedcost:
+          type: object
+          properties:
+            total:
+              type: number
+              example: 259046.54
+            priority:
+              type: number
+              example: 233643.84
+            management:
+              type: number
+              example: 21168.91
+            outsource:
+              type: number
+              example: 0
+            hosting:
+              type: number
+              example: 4233.79
+            actual:
+              type: number
+              example: 79942.03
+            remark:
+              type: string
+              example: 期货公司实际扣除明细备注
   putPassword:
     type: object
     required:
