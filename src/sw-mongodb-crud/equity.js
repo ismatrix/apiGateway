@@ -592,7 +592,8 @@ export async function getNetValues(fundid, iTradingday) {
         close: calcNetvalue(equity.close),
         settle: calcNetvalue(equity.settle),
         dividend: totalDividendNetValue,
-        inferior: calcInferiorNetValue(calcNetvalue(equity.equity), structRatio),
+        inferior: calcInferiorNetValue(
+          calcNetvalue(equity.equity) + totalDividendNetValue, structRatio),
       },
       updatedate: equity.updatedate,
     };
@@ -682,7 +683,8 @@ export async function getNetLines(fundid) {
           close: calcNetvalue(equity.close),
           settle: calcNetvalue(equity.settle),
           dividend: totalDividendNetValue,
-          inferior: calcInferiorNetValue(calcNetvalue(equity.equity), structRatio),
+          inferior: calcInferiorNetValue(
+            calcNetvalue(equity.equity) + totalDividendNetValue, structRatio),
         },
         updatedate: equity.updatedate,
       };
