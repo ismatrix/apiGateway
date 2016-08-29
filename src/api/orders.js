@@ -11,7 +11,9 @@ export async function getOrders(fundid) {
 
     await simNowBroker.connect();
     await simNowBroker.subscribe('victor', fundid);
-    const orders = await simNowBroker.queryOrder(fundid);
+    // const orders = await simNowBroker.queryOrder(fundid);
+    const orders = await simNowBroker.queryRawPosition('068074', 1);
+    debug('orders %o', orders);
 
     return { ok: true, orders };
   } catch (error) {
