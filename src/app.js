@@ -31,7 +31,7 @@ ioRouter(io);
 // Koa koa REST API middleware
 koa.use(logger());
 koa.use(cors());
-koa.use(koaError);
+koa.use(koaError());
 koa.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
 koa.use(bodyParser());
 koa.use(apiRouter.routes());
