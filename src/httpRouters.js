@@ -54,6 +54,53 @@ apiRouter
   ;
 
 apiRouter
+  .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
+  .get('/funds/:fundid', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getFund(fundid);
+  })
+  .post('/fund', async ctx => {
+    const fund = ctx.request.body.fund;
+    const fundid = fund.fundid;
+    ctx.body = await funds.postFund(fundid, fund);
+  })
+  .get('/funds/:fundid/total', async ctx => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await funds.getTotal(fundid, tradingday);
+  })
+  .get('/funds/:fundid/netValue', async ctx => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await funds.getNetValue(fundid, tradingday);
+  })
+  .get('/funds/:fundid/netValues', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getNetValues(fundid);
+  })
+  .get('/funds/:fundid/fixedIncomes', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getFixedIncomes(fundid);
+  })
+  .get('/funds/:fundid/appends', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getAppends(fundid);
+  })
+  .get('/funds/:fundid/redemptions', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getRedemptions(fundid);
+  })
+  .get('/funds/:fundid/dividends', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getDividends(fundid);
+  })
+  .get('/funds/:fundid/costOuts', async ctx => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getCostOuts(fundid);
+  })
+  ;
+
+apiRouter
   .get('/codemap/catalogs', async ctx => {
     ctx.body = await codemap.getCatalogs();
   })
@@ -102,47 +149,21 @@ apiRouter
   ;
 
 apiRouter
-  .get('/funds', async ctx => { ctx.body = await funds.getFunds(); })
-  .get('/funds/:fundid', async ctx => {
+  .get('/orders', async ctx => { ctx.body = await funds.getFunds(); })
+  .get('/order', async ctx => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getFund(fundid);
   })
-  .post('/fund', async ctx => {
+  .post('/order', async ctx => {
     const fund = ctx.request.body.fund;
     const fundid = fund.fundid;
     ctx.body = await funds.postFund(fundid, fund);
   })
-  .get('/funds/:fundid/total', async ctx => {
-    const fundid = ctx.params.fundid;
-    const tradingday = ctx.query.tradingday;
-    ctx.body = await funds.getTotal(fundid, tradingday);
-  })
-  .get('/funds/:fundid/netValue', async ctx => {
-    const fundid = ctx.params.fundid;
-    const tradingday = ctx.query.tradingday;
-    ctx.body = await funds.getNetValue(fundid, tradingday);
-  })
-  .get('/funds/:fundid/netValues', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getNetValues(fundid);
-  })
-  .get('/funds/:fundid/fixedIncomes', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getFixedIncomes(fundid);
-  })
-  .get('/funds/:fundid/appends', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getAppends(fundid);
-  })
-  .get('/funds/:fundid/redemptions', async ctx => {
-    const fundid = ctx.params.fundid;
-    ctx.body = await funds.getRedemptions(fundid);
-  })
-  .get('/funds/:fundid/dividends', async ctx => {
+  .put('/order', async ctx => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getDividends(fundid);
   })
-  .get('/funds/:fundid/costOuts', async ctx => {
+  .delete('/order', async ctx => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getCostOuts(fundid);
   })
@@ -188,4 +209,4 @@ apiRouter
   })
   ;
 
-export { apiRouter };
+export default apiRouter;
