@@ -146,9 +146,9 @@ export async function getCostOuts(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const costOut = await equityDB.getCostOutList(fundid);
+    const costOuts = await equityDB.getCostOutList(fundid);
 
-    return { ok: true, costOut };
+    return { ok: true, costOuts };
   } catch (error) {
     debug('getFund() Error: %o', error);
     throw error;
