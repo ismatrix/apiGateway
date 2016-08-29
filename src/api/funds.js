@@ -48,10 +48,9 @@ export async function putFund(fundid, fund) {
   }
 }
 
-export async function getTotal(fundid, tradingday) {
+export async function getTotal(fundid, tradingday ) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
-    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
     const total = await equityDB.getTotal(fundid, tradingday);
 

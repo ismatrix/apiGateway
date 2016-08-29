@@ -283,7 +283,7 @@ paths:
         - name: tradingday
           in: query
           description: The tradingday
-          required: false
+          required: true
           type: string
       responses:
         '200':
@@ -517,12 +517,7 @@ paths:
           description: The new order to submit
           required: true
           schema:
-            type: object
-            required:
-              - order
-            properties:
-              order:
-                $ref: '#/definitions/Order'
+            $ref: '#/definitions/Order'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -539,11 +534,12 @@ paths:
       tags:
         - Orders
       parameters:
-        - name: fundid
-          in: path
-          description: The fund id
+        - name: body
+          in: body
+          description: The updated order to submit
           required: true
-          type: string
+          schema:
+            $ref: '#/definitions/Order'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -560,11 +556,12 @@ paths:
       tags:
         - Orders
       parameters:
-        - name: fundid
-          in: path
-          description: The fund id
+        - name: body
+          in: body
+          description: The order to delete
           required: true
-          type: string
+          schema:
+            $ref: '#/definitions/OrderDelete'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -819,12 +816,7 @@ paths:
           description: Array of new catalogs to create
           required: true
           schema:
-            type: object
-            required:
-              - catalogs
-            properties:
-              catalogs:
-                $ref: '#/definitions/Catalogs'
+            $ref: '#/definitions/Catalogs'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -876,12 +868,7 @@ paths:
           description: the new or updated catalog
           required: true
           schema:
-            type: object
-            required:
-              - catalog
-            properties:
-              catalog:
-                $ref: '#/definitions/Catalog'
+            $ref: '#/definitions/Catalog'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -933,12 +920,7 @@ paths:
           description: The items to create or update in the catalog
           required: true
           schema:
-            type: object
-            required:
-              - items
-            properties:
-              items:
-                $ref: '#/definitions/CatalogItems'
+            $ref: '#/definitions/CatalogItems'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -1000,12 +982,7 @@ paths:
           description: the new or updated item
           required: true
           schema:
-            type: object
-            required:
-              - item
-            properties:
-              item:
-                $ref: '#/definitions/CatalogItem'
+            $ref: '#/definitions/CatalogItem'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -1179,6 +1156,12 @@ definitions:
       timestamp:
         type: string
         example: "2016-08-26"
+  OrderDelete:
+    type: object
+    properties:
+      orderID:
+        type: string
+        example: 02910
   Token:
     type: string
     example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'

@@ -58,7 +58,7 @@ apiRouter
     ctx.body = await codemap.getCatalogs();
   })
   .post('/codemap/catalogs', async ctx => {
-    const catalogs = ctx.request.body.catalogs;
+    const catalogs = ctx.request.body;
     ctx.body = await codemap.postCatalogs(catalogs);
   })
   .get('/codemap/:catalogKey', async ctx => {
@@ -67,7 +67,7 @@ apiRouter
   })
   .put('/codemap/:catalogKey', async ctx => {
     const catalogKey = ctx.params.catalogKey;
-    const catalog = ctx.request.body.catalog;
+    const catalog = ctx.request.body;
     ctx.body = await codemap.putCatalog(catalogKey, catalog);
   })
   .get('/codemap/:catalogKey/items', async ctx => {
@@ -76,7 +76,7 @@ apiRouter
   })
   .post('/codemap/:catalogKey/items', async ctx => {
     const catalogKey = ctx.params.catalogKey;
-    const items = ctx.request.body.items;
+    const items = ctx.request.body;
     ctx.body = await codemap.postCatalogItems(catalogKey, items);
   })
   .get('/codemap/:catalogKey/items/:itemKey', async ctx => {
@@ -87,7 +87,7 @@ apiRouter
   .put('/codemap/:catalogKey/items/:itemKey', async ctx => {
     const catalogKey = ctx.params.catalogKey;
     const itemKey = ctx.params.itemKey;
-    const item = ctx.request.body.item;
+    const item = ctx.request.body;
     ctx.body = await codemap.putCatalogItem(catalogKey, itemKey, item);
   })
   ;
