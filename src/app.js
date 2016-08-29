@@ -10,7 +10,7 @@ import cors from 'kcors';
 import serve from 'koa-static';
 import mount from 'koa-mount';
 import socketio from 'socket.io';
-import { koaError } from './errors';
+import koaError from './errors';
 import { apiRouter } from './httpRouters';
 import ioRouter from './ioRouter';
 import * as mongodb from './mongodb';

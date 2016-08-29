@@ -1,6 +1,6 @@
 const debug = require('debug')('errors');
 
-export async function koaError(ctx, next) {
+export default async function koaError(ctx, next) {
   try {
     await next();
   } catch (error) {
