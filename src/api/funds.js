@@ -1,7 +1,9 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { fund as fundDB } from '../sw-mongodb-crud';
-import { equity as equityDB } from '../sw-mongodb-crud';
+import {
+  fund as fundDB,
+  equity as equityDB,
+} from '../sw-mongodb-crud';
 
 const debug = createDebug('api:funds');
 
