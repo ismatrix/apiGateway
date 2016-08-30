@@ -1,18 +1,20 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import createIceBroker from '../sw-broker-ice';
+import { funds } from '../config';
 
-const simNowBroker = createIceBroker('sender:tcp -p 20001 -h invesmart.win');
 const debug = createDebug('api:orders');
 
 export async function getOrders(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    await simNowBroker.connect();
-    await simNowBroker.subscribe('victor', fundid);
-    // const orders = await simNowBroker.queryOrder(fundid);
-    const orders = await simNowBroker.queryRawPosition('068074', 1);
+    const fund = funds.find((aFund) => aFund.fundid === fundid);
+    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
+    const iceBroker = createIceBroker(iceUrl, fundid);
+
+    const orders = await iceBroker.queryOrder(fundid);
+
     debug('orders %o', orders);
 
     return { ok: true, orders };
@@ -39,9 +41,12 @@ export async function postOrder(order) {
   try {
     if (!order) throw Boom.badRequest('Missing order parameter');
 
-    await simNowBroker.connect();
-    await simNowBroker.subscribe('victor', '068074');
-    await simNowBroker.order(order);
+    const fundid = order.fundid;
+    const fund = funds.find((aFund) => aFund.fundid === fundid);
+    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
+    const iceBroker = createIceBroker(iceUrl, fundid);
+
+    await iceBroker.order(order);
 
     return { ok: true };
   } catch (error) {
@@ -61,6 +66,12 @@ export async function deleteOrder({
     if (!orderno) throw Boom.badRequest('Missing orderno parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
+
+    const fund = funds.find((aFund) => aFund.fundid === fundid);
+    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
+    const iceBroker = createIceBroker(iceUrl, fundid);
+
+    await iceBroker.cancelOrder(fundid, instrumentid, privateno, orderno);
 
     return { ok: true };
   } catch (error) {

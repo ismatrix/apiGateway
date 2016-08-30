@@ -9,3 +9,20 @@ export const wechatConfig = {
 };
 
 export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
+
+export const funds = [
+  {
+    fundid: '068074',
+    service: {
+      ip: 'code.invesmart.net',
+      port: '20011',
+    },
+  },
+  {
+    fundid: '1248',
+    service: {
+      ip: '120.76.98.94',
+      port: '20028',
+    },
+  },
+];
