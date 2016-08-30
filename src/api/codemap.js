@@ -15,22 +15,6 @@ export async function getCatalogs() {
   }
 }
 
-export async function postCatalogs(catalogs) {
-  try {
-    if (!catalogs) throw Boom.badRequest('Missing catalogs parameter');
-
-    await codemapDB.add(catalogs);
-
-    return { ok: true };
-  } catch (error) {
-    if (error.message.includes('E11000 duplicate key error')) {
-      throw Boom.badRequest('Catalog already exists in DB');
-    }
-    debug('postCatalogs() Error: %o', error);
-    throw error;
-  }
-}
-
 export async function getCatalog(catalogKey) {
   try {
     if (!catalogKey) throw Boom.badRequest('Missing catalogKey parameter');
@@ -80,28 +64,6 @@ export async function getCatalogItems(catalogKey) {
     return { ok: true, items };
   } catch (error) {
     debug('getCatalogItems() Error: %o', error);
-    throw error;
-  }
-}
-
-export async function postCatalogItems(catalogKey, items) {
-  try {
-    if (!catalogKey) throw Boom.badRequest('Missing catalogKey parameter');
-    if (!items) throw Boom.badRequest('Missing items parameter');
-
-    const hasCatalog = await codemapDB.get(catalogKey);
-
-    if (!hasCatalog) {
-      throw Boom.badRequest('Catalog does not exist');
-    }
-
-    const addAllItems = items.map(async (item) => await codemapDB.addItem(catalogKey, item));
-
-    const [...result] = await Promise.all(addAllItems);
-
-    return { ok: true, result };
-  } catch (error) {
-    debug('postCatalogItems() Error: %o', error);
     throw error;
   }
 }

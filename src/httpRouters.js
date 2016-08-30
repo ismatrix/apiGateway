@@ -124,10 +124,6 @@ apiRouter
   .get('/codemap/catalogs', async ctx => {
     ctx.body = await codemap.getCatalogs();
   })
-  .post('/codemap/catalogs', async ctx => {
-    const catalogs = ctx.request.body;
-    ctx.body = await codemap.postCatalogs(catalogs);
-  })
   .post('/codemap/catalog', async ctx => {
     const catalog = ctx.request.body;
     const catalogKey = catalog.catalog;
@@ -145,11 +141,6 @@ apiRouter
     const catalogKey = ctx.params.catalogKey;
     ctx.body = await codemap.getCatalogItems(catalogKey);
   })
-  .post('/codemap/:catalogKey/items', async ctx => {
-    const catalogKey = ctx.params.catalogKey;
-    const items = ctx.request.body;
-    ctx.body = await codemap.postCatalogItems(catalogKey, items);
-  })
   .post('/codemap/:catalogKey/item', async ctx => {
     const catalogKey = ctx.params.catalogKey;
     const item = ctx.request.body;
@@ -164,7 +155,7 @@ apiRouter
   .delete('/codemap/:catalogKey/items/:itemKey', async ctx => {
     const catalogKey = ctx.params.catalogKey;
     const itemKey = ctx.params.itemKey;
-    ctx.body = await codemap.deleteCatalog(catalogKey, itemKey);
+    ctx.body = await codemap.deleteCatalogItem(catalogKey, itemKey);
   })
   ;
 

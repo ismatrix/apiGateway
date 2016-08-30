@@ -785,28 +785,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Catalog'
-    post:
-      tags:
-        - Codemap
-      summary: Add many catalogs
-      parameters:
-        - name: body
-          in: body
-          description: Array of new catalogs to create
-          required: true
-          schema:
-            $ref: '#/definitions/Catalogs'
-      responses:
-        '200':
-          description: The operation result response (true or false)
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
   /codemap/catalog:
     post:
       tags:
@@ -901,33 +879,6 @@ paths:
                 default: true
               items:
                 $ref: '#/definitions/CatalogItems'
-    post:
-      tags:
-        - Codemap
-      summary: Add many items to a catalog
-      parameters:
-        - name: catalogKey
-          in: path
-          description: The catalog name
-          required: true
-          type: string
-        - name: body
-          in: body
-          description: The items to create or update in the catalog
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogItems'
-      responses:
-        '200':
-          description: The operation result response (true or false)
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
   /codemap/{catalogKey}/item:
     post:
       tags:
