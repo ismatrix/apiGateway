@@ -84,13 +84,27 @@ export async function getCatalogItem(catalogKey, itemKey) {
   }
 }
 
-export async function postCatalogItem(catalogKey, itemKey, item) {
+export async function putCatalogItem(catalogKey, itemKey, item) {
   try {
     if (!catalogKey) throw Boom.badRequest('Missing catalogKey parameter');
     if (!itemKey) throw Boom.badRequest('Missing itemKey parameter');
     if (!item) throw Boom.badRequest('Missing item parameter');
 
     await codemapDB.setItem(catalogKey, itemKey, item);
+
+    return { ok: true };
+  } catch (error) {
+    debug('postCatalogItem() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function postCatalogItem(catalogKey, item) {
+  try {
+    if (!catalogKey) throw Boom.badRequest('Missing catalogKey parameter');
+    if (!item) throw Boom.badRequest('Missing item parameter');
+
+    await codemapDB.addItem(catalogKey, item);
 
     return { ok: true };
   } catch (error) {

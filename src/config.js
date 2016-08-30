@@ -21,8 +21,8 @@ export const funds = [
   {
     fundid: '1248',
     service: {
-      ip: '120.76.98.94',
-      port: '20028',
+      ip: '121.40.36.116',
+      port: '20029',
     },
   },
 ];

@@ -883,7 +883,34 @@ paths:
     post:
       tags:
         - Codemap
-      summary: Add or Update an item in a catalog
+      summary: Add an item in a catalog
+      parameters:
+        - name: catalogKey
+          in: path
+          description: The catalog key
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The item to create or update in the catalog
+          required: true
+          schema:
+            $ref: '#/definitions/CatalogItem'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    put:
+      tags:
+        - Codemap
+      summary: Update an item in a catalog
       parameters:
         - name: catalogKey
           in: path

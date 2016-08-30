@@ -141,11 +141,16 @@ apiRouter
     const catalogKey = ctx.params.catalogKey;
     ctx.body = await codemap.getCatalogItems(catalogKey);
   })
-  .post('/codemap/:catalogKey/item', async ctx => {
+  .put('/codemap/:catalogKey/item', async ctx => {
     const catalogKey = ctx.params.catalogKey;
     const item = ctx.request.body;
     const itemKey = item.key;
-    ctx.body = await codemap.postCatalogItem(catalogKey, itemKey, item);
+    ctx.body = await codemap.putCatalogItem(catalogKey, itemKey, item);
+  })
+  .post('/codemap/:catalogKey/item', async ctx => {
+    const catalogKey = ctx.params.catalogKey;
+    const item = ctx.request.body;
+    ctx.body = await codemap.postCatalogItem(catalogKey, item);
   })
   .get('/codemap/:catalogKey/items/:itemKey', async ctx => {
     const catalogKey = ctx.params.catalogKey;
