@@ -78,7 +78,7 @@ export async function contractDailyPriceSpeed(symbols) {
     const options = {
       rank: [1, 2, 3],
       istrading: [1],
-      instruments: symbols,
+      product: symbols,
     };
 
     const contracts = await instrumentDB.getList(options);
