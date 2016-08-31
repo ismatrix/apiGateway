@@ -58,7 +58,7 @@
     Slice.defineOperations(Trade.TdSession, Trade.TdSessionPrx,
     {
         "setCallBack": [, , , , , [3], [[Ice.Identity]], , , , ],
-        "heartBeat": [, , , , , , , , , , ],
+        "heartBeat": [, , , , , [3], , , , , ],
         "queryAccount": [, , , , , ["CM.AccountListHelper"], , , , , ],
         "queryPosition": [, , , , , ["CM.PositionListHelper"], [[7]], , , , ],
         "queryOrder": [, , , , , ["CM.OrderListHelper"], [[7]], , , , ],

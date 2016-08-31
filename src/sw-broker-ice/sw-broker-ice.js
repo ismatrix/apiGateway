@@ -55,13 +55,14 @@ export default function createIceBroker(iceUrl, fundID) {
   const destroySession = async () => {
     try {
       debug('destroying communicator');
-      debug('communicator %o', communicator);
+
       const communicatorDestroyPromise = () => new Promise(
         resolve => {
           communicator.destroy().finally(() => resolve());
         }
       );
       if (communicator && communicator.destroy) await communicatorDestroyPromise();
+
       debug('finished destroySession()');
       return;
     } catch (error) {
@@ -83,8 +84,10 @@ export default function createIceBroker(iceUrl, fundID) {
 
       const id = new Ice.InitializationData();
       id.properties = Ice.createProperties();
-      id.properties.setProperty('Ice.Default.InvocationTimeout', '3000');
-      id.properties.setProperty('Ice.Override.ConnectTimeout', '3000');
+      id.properties.setProperty('Ice.Default.InvocationTimeout', '10000');
+      id.properties.setProperty('Ice.ACM.Close', '4');
+      id.properties.setProperty('Ice.ACM.Heartbeat', '3');
+      id.properties.setProperty('Ice.ACM.Timeout', '5');
       communicator = Ice.initialize(process.argv, id);
 
       const proxy = communicator.stringToProxy(iceUrl);
@@ -92,33 +95,32 @@ export default function createIceBroker(iceUrl, fundID) {
       const adapter = await communicator.createObjectAdapter('');
       const r = adapter.addWithUUID(new CallbackReceiverI());
       proxy.ice_getCachedConnection().setAdapter(adapter);
-      setCallbackReturn = await server.setCallBack(r.ice_getIdentity());
-      debug(`Successfully setCallBack ${setCallbackReturn}`);
 
-      const heartbeat = async () => {
-        try {
-          debug('heartbeat');
-          server.heartBeat();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          heartbeat();
-        } catch (error) {
-          debug('heartbeat() Error: %o', error);
+      proxy.ice_getCachedConnection().setCallback({
+        closed() {
+          debug('closed() server ACM closed the connection after timeout inactivity');
           setCallbackReturn = -1;
-          debug('call createSession() from heartbeat()');
-          createSession();
-        }
-      };
-      heartbeat();
+        },
+        heartbeat() {
+          debug('heartbeat() server sent heartbeat');
+        },
+      });
+
+      [setCallbackReturn] = await Promise.all([
+        server.setCallBack(r.ice_getIdentity()),
+        server.subscribe('nodejs', fundID),
+      ]);
+      debug('Successfully setCallBack %o', setCallbackReturn);
 
       event.emit('createSession:success', 'iceClient');
     } catch (error) {
       debug(`createSession() Error: ${error}`);
       event.emit('createSession:error', error);
-      setTimeout(() => createSession(), 3000);
     }
   };
 
   function ensureConnection() {
+    debug('ensureConnection() setCallbackReturn %o', setCallbackReturn);
     if (setCallbackReturn === 0) return;
     createSession();
     return new Promise((resolve, reject) => {
@@ -132,36 +134,36 @@ export default function createIceBroker(iceUrl, fundID) {
 
   const queryAccount = async () => {
     await ensureConnection();
-    return server.queryAccount();
+    return await server.queryAccount();
   };
   const queryPosition = async (fundid) => {
     await ensureConnection();
-    server.queryPosition(fundid);
+    return await server.queryPosition(fundid);
   };
   const queryOrder = async (fundid) => {
     await ensureConnection();
-    server.queryOrder(fundid);
+    return await server.queryOrder(fundid);
   };
   const queryDone = async (fundid) => {
     await ensureConnection();
-    server.queryDone(fundid);
+    return await server.queryDone(fundid);
   };
 
   const queryRawAccount = async (from = 0) => {
     await ensureConnection();
-    server.jsonQueryAccount(from);
+    return await server.jsonQueryAccount(from);
   };
   const queryRawPosition = async (fundid, from = 0) => {
     await ensureConnection();
-    server.jsonQueryPosition(fundid, from);
+    return await server.jsonQueryPosition(fundid, from);
   };
   const queryRawOrder = async (fundid, from = 0) => {
     await ensureConnection();
-    server.jsonQueryOrder(fundid, from);
+    return await server.jsonQueryOrder(fundid, from);
   };
   const queryRawDone = async (fundid, from = 0) => {
     await ensureConnection();
-    server.jsonQueryDone(fundid, from);
+    return await server.jsonQueryDone(fundid, from);
   };
 
   const order = async (orderObj) => {
@@ -180,7 +182,7 @@ export default function createIceBroker(iceUrl, fundID) {
     } = orderObj;
     await ensureConnection();
     debug('order %o', orderObj);
-    server.doOrder(new CM.DoOrder(
+    const result = await server.doOrder(new CM.DoOrder(
       fundid,
       exchangeid,
       brokerid,
@@ -193,23 +195,25 @@ export default function createIceBroker(iceUrl, fundID) {
       volume,
       donetype,
     ));
+    debug('doOrder() result %o', result);
+    return result;
   };
 
   const cancelOrder = async (fundid, instrumentid, privateno, orderno) => {
     await ensureConnection();
     debug('cancelOrder %o', orderno);
-    server.cancleOrder(fundid, instrumentid, privateno, orderno);
+    const result = await server.cancleOrder(fundid, instrumentid, privateno, orderno);
+    debug('cancleOrder() result %o', result);
+    return result;
   };
 
   const subscribe = async (moduleName, fundid) => {
     await ensureConnection();
-    debug('subscribe');
-    return server.subscribe(moduleName, fundid);
+    return await server.subscribe(moduleName, fundid);
   };
   const unsubscribe = async (moduleName, fundid) => {
     await ensureConnection();
-    debug('unsubscribe');
-    return server.unSubscribe(moduleName, fundid);
+    return await server.unSubscribe(moduleName, fundid);
   };
   const connect = createSession;
 

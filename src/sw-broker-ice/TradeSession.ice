@@ -51,7 +51,7 @@ module Trade
 		/*
 		*	heartBeat	: 心跳 维持长连接
 		*/
-		void   heartBeat();	//客户端调用心跳
+		int   heartBeat();	//客户端调用心跳
 
 
 		/*

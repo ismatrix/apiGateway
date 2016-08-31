@@ -2166,7 +2166,7 @@ definitions:
     properties:
       symbols:
         type: array
-        example: ["c1609","c1701","c1705"]
+        example: ["c","IF"]
         items:
           type: string
   resContractdailypricespeed:
