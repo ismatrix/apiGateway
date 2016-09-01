@@ -14,6 +14,15 @@ export async function app12Callback(ctx) {
   }
 }
 
+export async function app13Callback(ctx) {
+  try {
+    if (ctx.query.echostr) return qydev.decrypt(ctx.query.echostr).message;
+  } catch (error) {
+    debug('appRegister() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function sendMessage(text, to) {
   try {
     await qydev.text(text).to(to).send();

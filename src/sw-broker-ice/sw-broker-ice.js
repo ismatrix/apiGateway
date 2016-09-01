@@ -70,18 +70,17 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const createSession = async () => {
+  const connect = async () => {
     try {
       if (setCallbackReturn === 0 || isCreateSessionPending) {
-        debug(`skip createSession() because setCallbackReturn === ${setCallbackReturn}\
+        debug(`skip connect() because setCallbackReturn === ${setCallbackReturn}\
           OR isCreateSessionPending === ${isCreateSessionPending}`);
         return;
       }
-      debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
+      debug(`run connect() because setCallbackReturn === ${setCallbackReturn}\
         and isCreateSessionPending === ${isCreateSessionPending}`);
       createSessionTimer(2000);
       await destroySession();
-
 
       const id = new Ice.InitializationData();
       id.properties = Ice.createProperties();
@@ -101,6 +100,7 @@ export default function createIceBroker(iceUrl, fundID) {
         closed() {
           debug('closed() server ACM closed the connection after timeout inactivity');
           setCallbackReturn = -1;
+          connect();
         },
         heartbeat() {
           debug('heartbeat() server sent heartbeat');
@@ -109,30 +109,27 @@ export default function createIceBroker(iceUrl, fundID) {
 
       [setCallbackReturn] = await Promise.all([
         server.setCallBack(r.ice_getIdentity()),
-        server.subscribe('nodejs', fundID),
+        server.subscribe('apiGateway', fundID),
       ]);
       debug('Successfully setCallBack %o', setCallbackReturn);
 
-      // const acmTimeout = await proxy.getACMTimeout();
-      // debug('acmTimeout: %o', acmTimeout);
-
-      event.emit('createSession:success', 'iceClient');
+      event.emit('connect:success', 'iceClient');
     } catch (error) {
-      debug(`createSession() Error: ${error}`);
-      event.emit('createSession:error', error);
+      debug(`connect() Error: ${error}`);
+      event.emit('connect:error', error);
     }
   };
 
   function ensureConnection() {
     debug('ensureConnection() setCallbackReturn %o', setCallbackReturn);
     if (setCallbackReturn === 0) return;
-    createSession();
+    connect();
     return new Promise((resolve, reject) => {
-      event.once('createSession:success', () => {
+      event.once('connect:success', () => {
         debug('connected');
         resolve();
       });
-      event.once('createSession:error', error => reject(error));
+      event.once('connect:error', error => reject(error));
     });
   }
 
@@ -219,7 +216,6 @@ export default function createIceBroker(iceUrl, fundID) {
     await ensureConnection();
     return await server.unSubscribe(moduleName, fundid);
   };
-  const connect = createSession;
 
   const iceBrokerBase = {
     connect,
@@ -243,6 +239,7 @@ export default function createIceBroker(iceUrl, fundID) {
   const iceBrokerBaseEvent = Object.assign(Object.create(onIceCallbackEvent), iceBrokerBase);
   const iceBroker = Object.create(iceBrokerBaseEvent);
 
+  connect();
   iceBrokers[iceUrl] = iceBroker;
   return iceBrokers[iceUrl];
 }

@@ -16,6 +16,9 @@ apiRouter
   .get('/public/weixin/qy/id=12/callback', async ctx => {
     ctx.body = await wechat.app12Callback(ctx);
   })
+  .get('/public/weixin/qy/id=13/callback', async ctx => {
+    ctx.body = await wechat.app13Callback(ctx);
+  })
   .get('/public/auth/wechat', async ctx => {
     try {
       const code = ctx.query.code;
