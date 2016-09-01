@@ -112,6 +112,9 @@ export default function createIceBroker(iceUrl, fundID) {
       ]);
       debug('Successfully setCallBack %o', setCallbackReturn);
 
+      // const acmTimeout = await proxy.getACMTimeout();
+      // debug('acmTimeout: %o', acmTimeout);
+
       event.emit('createSession:success', 'iceClient');
     } catch (error) {
       debug(`createSession() Error: ${error}`);

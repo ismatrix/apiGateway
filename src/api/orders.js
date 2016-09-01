@@ -45,7 +45,9 @@ export async function postOrder(order) {
     const fund = funds.find((aFund) => aFund.fundid === fundid);
     const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
     const iceBroker = createIceBroker(iceUrl, fundid);
-
+    iceBroker.on('order', orderObj => {
+      debug('there is an orderObj %o', orderObj);
+    });
     await iceBroker.order(order);
 
     return { ok: true };
