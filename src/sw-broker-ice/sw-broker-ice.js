@@ -82,6 +82,7 @@ export default function createIceBroker(iceUrl, fundID) {
       createSessionTimer(2000);
       await destroySession();
 
+
       const id = new Ice.InitializationData();
       id.properties = Ice.createProperties();
       id.properties.setProperty('Ice.Default.InvocationTimeout', '10000');
