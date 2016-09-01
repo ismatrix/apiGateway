@@ -25,7 +25,7 @@ export async function app13Callback(ctx) {
 
 export async function sendMessage(text, to) {
   try {
-    await qydev.text(text).to(to).send();
+    await qydev.text(text).toGroup(to).send();
 
     return { ok: true };
   } catch (error) {

@@ -1,10 +1,13 @@
 import createDebug from 'debug';
 import socketioJwt from 'socketio-jwt';
 import through from 'through2';
-import { jwtSecret } from './config';
+import { jwtSecret, wechatConfig, funds } from './config';
 import iceLive from './sw-datafeed-icelive';
+import createQydev from './sw-weixin-qydev';
+import createIceBroker from './sw-broker-ice';
 
 const debug = createDebug('ioRouter');
+const qydev = createQydev(wechatConfig);
 
 export default function ioRouter(io) {
   io.on('connection', (socket) => {
@@ -50,6 +53,40 @@ export default function ioRouter(io) {
         if (callback) callback({ ok: true });
       } catch (error) {
         debug('markets.on(unsubscribe) Error: %o', error);
+        if (callback) callback({ ok: false, error: error.message });
+      }
+    });
+  });
+
+  const orders = io.of('/orders');
+  orders.on('connection', socketioJwt.authorize({
+    secret: jwtSecret,
+    timeout: 15000,
+  })).on('authenticated', (socket) => {
+    debug(`Socket ${socket.id} authenticated, hello ${socket.decoded_token.userid}`);
+
+    socket.on('subscribe', async (data, callback) => {
+      try {
+        debug('ordersIO subscribed to %o with callback: %o', data, !!callback);
+        iceLive.connect();
+        await iceLive.subscribe(data.symbol, data.resolution);
+        socket.join(data.symbol, (error) => { if (error) throw error; });
+        if (callback) callback({ ok: true });
+      } catch (error) {
+        debug('orders.on(subscribe) Error: %o', error);
+        if (callback) callback({ ok: false, error: error.message });
+      }
+    });
+
+    socket.on('unsubscribe', async (data, callback) => {
+      try {
+        debug('ordersIO unsubscribed to %o with callback: %o', data, !!callback);
+        iceLive.connect();
+        await iceLive.unsubscribe(data.symbol, data.resolution);
+        socket.leave(data.symbol, (error) => { if (error) throw error; });
+        if (callback) callback({ ok: true });
+      } catch (error) {
+        debug('orders.on(unsubscribe) Error: %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });

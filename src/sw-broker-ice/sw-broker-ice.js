@@ -171,16 +171,17 @@ export default function createIceBroker(iceUrl, fundID) {
     const {
       fundid,
       exchangeid,
-      brokerid,
       instrumentid,
-      ordertype,
       direction,
       offsetflag,
-      hedgeflag,
       price,
       volume,
-      donetype,
+      brokerid = '9999',
+      ordertype = '1',
+      hedgeflag = '0',
+      donetype = '0',
     } = orderObj;
+
     await ensureConnection();
     debug('order %o', orderObj);
     const result = await server.doOrder(new CM.DoOrder(

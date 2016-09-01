@@ -39,15 +39,19 @@ export async function getOrder(orderno) {
 
 export async function postOrder(order) {
   try {
-    if (!order) throw Boom.badRequest('Missing order parameter');
+    if (!order.fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!order.exchangeid) throw Boom.badRequest('Missing exchangeid parameter');
+    if (!order.instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
+    if (!order.direction) throw Boom.badRequest('Missing direction parameter');
+    if (!order.offsetflag) throw Boom.badRequest('Missing offsetflag parameter');
+    if (!order.price) throw Boom.badRequest('Missing price parameter');
+    if (!order.volume) throw Boom.badRequest('Missing volume parameter');
 
     const fundid = order.fundid;
     const fund = funds.find((aFund) => aFund.fundid === fundid);
     const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
     const iceBroker = createIceBroker(iceUrl, fundid);
-    iceBroker.on('order', orderObj => {
-      debug('there is an orderObj %o', orderObj);
-    });
+
     await iceBroker.order(order);
 
     return { ok: true };
