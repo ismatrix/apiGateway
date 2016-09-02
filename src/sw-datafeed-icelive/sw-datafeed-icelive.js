@@ -106,7 +106,6 @@ function createSessionTimer(time) {
 const destroySession = async () => {
   try {
     debug('destroying router session');
-    debug('router %o', router);
     const sessionDestroyPromise = () => new Promise(
       resolve => {
         router.destroySession().finally(() => resolve());
@@ -114,7 +113,6 @@ const destroySession = async () => {
     );
     if (router && router.destroySession) await sessionDestroyPromise();
     debug('destroying communicator');
-    debug('communicator %o', communicator);
     const communicatorDestroyPromise = () => new Promise(
       resolve => {
         communicator.destroy().finally(() => resolve());
@@ -128,14 +126,14 @@ const destroySession = async () => {
   }
 };
 
-const createSession = async () => {
+const connect = async () => {
   try {
     if (setCallbackReturn === 0 || isCreateSessionPending) {
-      debug(`skip createSession() because setCallbackReturn === ${setCallbackReturn}\
+      debug(`skip connect() because setCallbackReturn === ${setCallbackReturn}\
         OR isCreateSessionPending === ${isCreateSessionPending}`);
       return;
     }
-    debug(`run createSession() because setCallbackReturn === ${setCallbackReturn}\
+    debug(`run connect() because setCallbackReturn === ${setCallbackReturn}\
       and isCreateSessionPending === ${isCreateSessionPending}`);
     createSessionTimer(2000);
     await destroySession();
@@ -172,6 +170,7 @@ const createSession = async () => {
       closed() {
         debug('closed() server ACM closed the connection after timeout inactivity');
         setCallbackReturn = -1;
+        connect();
       },
       heartbeat() {
         debug('heartbeat() server sent heartbeat');
@@ -184,31 +183,31 @@ const createSession = async () => {
     // Set the Md session callback.
     setCallbackReturn = await session.setCallBack(callback);
     debug('Successfully setCallBack. setCallbackReturn: %o', setCallbackReturn);
-    event.emit('createSession:success', 'iceClient');
+    event.emit('connect:success', 'iceClient');
     return;
   } catch (error) {
-    debug('Error createSession(): %o', error);
-    event.emit('createSession:error', error);
-    setTimeout(() => createSession(), 3000);
+    debug('Error connect(): %o', error);
+    event.emit('connect:error', error);
+    setTimeout(() => connect(), 3000);
   }
 };
-const connect = createSession;
 
 function ensureConnection() {
   debug('ensureConnection() setCallbackReturn %o', setCallbackReturn);
   if (setCallbackReturn === 0) return;
-  createSession();
+  connect();
   return new Promise((resolve, reject) => {
-    event.once('createSession:success', () => {
+    event.once('connect:success', () => {
       debug('connected');
       resolve();
     });
-    event.once('createSession:error', error => reject(error));
+    event.once('connect:error', error => reject(error));
   });
 }
 
 const subscribe = async (symbol, resolution) => {
   try {
+    debug('subscribe() {symbol: %o, resolution: %o}', symbol, resolution);
     await ensureConnection();
     const subscribeReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
 
@@ -222,6 +221,7 @@ const subscribe = async (symbol, resolution) => {
 
 const unsubscribe = async (symbol, resolution) => {
   try {
+    debug('unsubscribe() {symbol: %o, resolution: %o}', symbol, resolution);
     await ensureConnection();
     const unsubscribeReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
 

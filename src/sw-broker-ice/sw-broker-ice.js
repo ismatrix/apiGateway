@@ -117,7 +117,7 @@ export default function createIceBroker(iceUrl, fundID) {
     } catch (error) {
       debug(`connect() Error: ${error}`);
       event.emit('connect:error', error);
-      connect();
+      setTimeout(() => connect(), 3000);
     }
   };
 
@@ -135,90 +135,197 @@ export default function createIceBroker(iceUrl, fundID) {
   }
 
   const queryAccount = async () => {
-    await ensureConnection();
-    return await server.queryAccount();
+    try {
+      await ensureConnection();
+      const result = await server.queryAccount();
+      return result;
+    } catch (error) {
+      debug('queryAccount() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryPosition = async (fundid) => {
-    await ensureConnection();
-    return await server.queryPosition(fundid);
+    try {
+      await ensureConnection();
+      const result = await server.queryPosition(fundid);
+      return result;
+    } catch (error) {
+      debug('queryPosition() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryOrders = async (fundid) => {
-    await ensureConnection();
-    const orders = await server.queryOrder(fundid);
-    debug('orders %o', orders);
-    return orders;
+    try {
+      await ensureConnection();
+      const result = await server.queryOrder(fundid);
+      debug('orders %o', result);
+      return result;
+    } catch (error) {
+      debug('queryOrders() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryDone = async (fundid) => {
-    await ensureConnection();
-    return await server.queryDone(fundid);
+    try {
+      await ensureConnection();
+      const result = await server.queryDone(fundid);
+      return result;
+    } catch (error) {
+      debug('queryDone() Error: %o', error);
+      throw error;
+    }
   };
 
   const queryRawAccount = async (from = 0) => {
-    await ensureConnection();
-    return await server.jsonQueryAccount(from);
+    try {
+      await ensureConnection();
+      const result = await server.jsonQueryAccount(from);
+      return result;
+    } catch (error) {
+      debug('queryRawAccount() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryRawPosition = async (fundid, from = 0) => {
-    await ensureConnection();
-    return await server.jsonQueryPosition(fundid, from);
+    try {
+      await ensureConnection();
+      const result = await server.jsonQueryPosition(fundid, from);
+      return result;
+    } catch (error) {
+      debug('queryRawPosition() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryRawOrder = async (fundid, from = 0) => {
-    await ensureConnection();
-    return await server.jsonQueryOrder(fundid, from);
+    try {
+      await ensureConnection();
+      const result = await server.jsonQueryOrder(fundid, from);
+      return result;
+    } catch (error) {
+      debug('queryRawOrder() Error: %o', error);
+      throw error;
+    }
   };
+
   const queryRawDone = async (fundid, from = 0) => {
-    await ensureConnection();
-    return await server.jsonQueryDone(fundid, from);
+    try {
+      await ensureConnection();
+      const result = await server.jsonQueryDone(fundid, from);
+      return result;
+    } catch (error) {
+      debug('queryRawDone() Error: %o', error);
+      throw error;
+    }
   };
 
   const order = async (orderObj) => {
-    const {
-      fundid,
-      exchangeid,
-      instrumentid,
-      direction,
-      offsetflag,
-      price,
-      volume,
-      brokerid = '9999',
-      ordertype = '1',
-      hedgeflag = '0',
-      donetype = '0',
-    } = orderObj;
+    try {
+      const {
+        fundid,
+        exchangeid,
+        instrumentid,
+        direction,
+        offsetflag,
+        price,
+        volume,
+        brokerid = '9999',
+        ordertype = '1',
+        hedgeflag = '0',
+        donetype = '0',
+      } = orderObj;
 
-    await ensureConnection();
-    debug('order %o', orderObj);
-    const result = await server.doOrder(new CM.DoOrder(
-      fundid,
-      exchangeid,
-      brokerid,
-      instrumentid,
-      ordertype,
-      direction,
-      offsetflag,
-      hedgeflag,
-      price,
-      volume,
-      donetype,
-    ));
-    debug('doOrder() result %o', result);
-    return result;
+      await ensureConnection();
+      debug('order %o', orderObj);
+      const result = await server.doOrder(new CM.DoOrder(
+        fundid,
+        exchangeid,
+        brokerid,
+        instrumentid,
+        ordertype,
+        direction,
+        offsetflag,
+        hedgeflag,
+        price,
+        volume,
+        donetype,
+      ));
+
+      if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
+      return result;
+    } catch (error) {
+      debug('order() Error: %o', error);
+      throw error;
+    }
   };
 
   const cancelOrder = async (fundid, instrumentid, privateno, orderno) => {
-    await ensureConnection();
-    debug('cancelOrder %o', orderno);
-    const result = await server.cancleOrder(fundid, instrumentid, privateno, orderno);
-    debug('cancleOrder() result %o', result);
-    return result;
+    try {
+      debug('cancelOrder() orderno: %o', orderno);
+      await ensureConnection();
+
+      const result = await server.cancleOrder(fundid, instrumentid, privateno, orderno);
+      debug('orders %o', result);
+
+      if (result !== 0) throw new Error(`the ice method invocation returned ${result}`);
+
+      return result;
+    } catch (error) {
+      debug('cancelOrder() Error: %o', error);
+      throw error;
+    }
+  };
+
+  const updatePassword = async (oldPassword, newPassword) => {
+    try {
+      await ensureConnection();
+
+      const result = await server.updatePassword(oldPassword, newPassword);
+      debug('orders %o', result);
+
+      if (result !== 0) throw new Error(`the ice method invocation returned ${result}`);
+
+      return result;
+    } catch (error) {
+      debug('updatePassword() Error: %o', error);
+      throw error;
+    }
   };
 
   const subscribe = async (moduleName, fundid) => {
-    await ensureConnection();
-    return await server.subscribe(moduleName, fundid);
+    try {
+      await ensureConnection();
+
+      const result = await server.subscribe(moduleName, fundid);
+      debug('orders %o', result);
+
+      if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
+
+      return result;
+    } catch (error) {
+      debug('subscribe() Error: %o', error);
+      throw error;
+    }
   };
+
   const unsubscribe = async (moduleName, fundid) => {
-    await ensureConnection();
-    return await server.unSubscribe(moduleName, fundid);
+    try {
+      await ensureConnection();
+
+      const result = await server.unSubscribe(moduleName, fundid);
+      debug('orders %o', result);
+
+      if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
+
+      return result;
+    } catch (error) {
+      debug('unsubscribe() Error: %o', error);
+      throw error;
+    }
   };
 
   const iceBrokerBase = {
@@ -236,6 +343,9 @@ export default function createIceBroker(iceUrl, fundID) {
 
     order,
     cancelOrder,
+
+    updatePassword,
+
     subscribe,
     unsubscribe,
   };

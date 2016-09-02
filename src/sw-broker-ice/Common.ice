@@ -89,21 +89,17 @@ module CM
     {
         string    tradingday      ;    //交易日              ctp.TradingDay
         string    fundid          ;    //账户标识            ctp.AccountID/st.cell_id
-        string    brokerid        ;    //期货经纪公司标识    ctp.BrokerID/st.cell_id
         double    prebalance      ;    //昨日余额            ctp.PreBalance/st.dthis_bal
         double    premargin       ;    //上次占用的保证金    ctp.PreMargin/st.null
         string    requestid       ;    //接口请求标识
-        string    tradeid         ;    //成交编号  Done中的成交编号
         double    balance         ;    //期货结算准备金      ctp.Balance/st.deposite
         double    available       ;    //可用资金            ctp.Available/st.available
         double    margin          ;    //当前保证金总额      ctp.CurrMargin/st.margin
         double    incap           ;    //入金金额            ctp.Deposit/st.incap
         double    outcap          ;    //出金金额            ctp.Withdraw/st.outcap
-        double    opencommission  ;    //开仓手续费
-        double    closecommission ;    //平仓手续费
+        double    commission		;    //开仓手续费
         double    closeprofit     ;    //盯日平仓盈亏合计
         double    positionprofit  ;    //盯日持仓盈亏合计
-        double    totalprofile    ;    //累计实现盈亏
         string    updatedate      ;    //信息更新日期
     };
     //持仓信息表
@@ -140,7 +136,7 @@ module CM
     {
 		//撤单用到的 exchangeid需要转换
 		string		frontid			;	//只有ctp用到
-    string		sessionid		;	//连接id 撤单的时候用到
+        string		sessionid		;	//连接id 撤单的时候用到
 		string		privateno		;	//ctp.OrderRef / st.private_no
 		string      exchangeid		;	//市场代码	ctp.ExchangID / st.MarketCode
 		string		orderid			;	//委托流水号 ctp.OrderSysID / st.order_no

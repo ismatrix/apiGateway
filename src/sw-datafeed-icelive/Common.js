@@ -236,25 +236,21 @@
         false);
 
     CM.Account = Slice.defineStruct(
-        function(tradingday, fundid, brokerid, prebalance, premargin, requestid, tradeid, balance, available, margin, incap, outcap, opencommission, closecommission, closeprofit, positionprofit, totalprofile, updatedate)
+        function(tradingday, fundid, prebalance, premargin, requestid, balance, available, margin, incap, outcap, commission, closeprofit, positionprofit, updatedate)
         {
             this.tradingday = tradingday !== undefined ? tradingday : "";
             this.fundid = fundid !== undefined ? fundid : "";
-            this.brokerid = brokerid !== undefined ? brokerid : "";
             this.prebalance = prebalance !== undefined ? prebalance : 0.0;
             this.premargin = premargin !== undefined ? premargin : 0.0;
             this.requestid = requestid !== undefined ? requestid : "";
-            this.tradeid = tradeid !== undefined ? tradeid : "";
             this.balance = balance !== undefined ? balance : 0.0;
             this.available = available !== undefined ? available : 0.0;
             this.margin = margin !== undefined ? margin : 0.0;
             this.incap = incap !== undefined ? incap : 0.0;
             this.outcap = outcap !== undefined ? outcap : 0.0;
-            this.opencommission = opencommission !== undefined ? opencommission : 0.0;
-            this.closecommission = closecommission !== undefined ? closecommission : 0.0;
+            this.commission = commission !== undefined ? commission : 0.0;
             this.closeprofit = closeprofit !== undefined ? closeprofit : 0.0;
             this.positionprofit = positionprofit !== undefined ? positionprofit : 0.0;
-            this.totalprofile = totalprofile !== undefined ? totalprofile : 0.0;
             this.updatedate = updatedate !== undefined ? updatedate : "";
         },
         false,
@@ -262,45 +258,37 @@
         {
             __os.writeString(this.tradingday);
             __os.writeString(this.fundid);
-            __os.writeString(this.brokerid);
             __os.writeDouble(this.prebalance);
             __os.writeDouble(this.premargin);
             __os.writeString(this.requestid);
-            __os.writeString(this.tradeid);
             __os.writeDouble(this.balance);
             __os.writeDouble(this.available);
             __os.writeDouble(this.margin);
             __os.writeDouble(this.incap);
             __os.writeDouble(this.outcap);
-            __os.writeDouble(this.opencommission);
-            __os.writeDouble(this.closecommission);
+            __os.writeDouble(this.commission);
             __os.writeDouble(this.closeprofit);
             __os.writeDouble(this.positionprofit);
-            __os.writeDouble(this.totalprofile);
             __os.writeString(this.updatedate);
         },
         function(__is)
         {
             this.tradingday = __is.readString();
             this.fundid = __is.readString();
-            this.brokerid = __is.readString();
             this.prebalance = __is.readDouble();
             this.premargin = __is.readDouble();
             this.requestid = __is.readString();
-            this.tradeid = __is.readString();
             this.balance = __is.readDouble();
             this.available = __is.readDouble();
             this.margin = __is.readDouble();
             this.incap = __is.readDouble();
             this.outcap = __is.readDouble();
-            this.opencommission = __is.readDouble();
-            this.closecommission = __is.readDouble();
+            this.commission = __is.readDouble();
             this.closeprofit = __is.readDouble();
             this.positionprofit = __is.readDouble();
-            this.totalprofile = __is.readDouble();
             this.updatedate = __is.readString();
         },
-        102,
+        84,
         false);
 
     CM.Position = Slice.defineStruct(
