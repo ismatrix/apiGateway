@@ -25,7 +25,7 @@ const koa = new Koa();
 const server = http.createServer(koa.callback());
 
 // ioRouter
-const io = socketio(server);
+export const io = socketio(server);
 ioRouter(io);
 
 // Koa koa REST API middleware

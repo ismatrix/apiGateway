@@ -117,6 +117,7 @@ export default function createIceBroker(iceUrl, fundID) {
     } catch (error) {
       debug(`connect() Error: ${error}`);
       event.emit('connect:error', error);
+      connect();
     }
   };
 
@@ -141,9 +142,11 @@ export default function createIceBroker(iceUrl, fundID) {
     await ensureConnection();
     return await server.queryPosition(fundid);
   };
-  const queryOrder = async (fundid) => {
+  const queryOrders = async (fundid) => {
     await ensureConnection();
-    return await server.queryOrder(fundid);
+    const orders = await server.queryOrder(fundid);
+    debug('orders %o', orders);
+    return orders;
   };
   const queryDone = async (fundid) => {
     await ensureConnection();
@@ -223,7 +226,7 @@ export default function createIceBroker(iceUrl, fundID) {
 
     queryAccount,
     queryPosition,
-    queryOrder,
+    queryOrders,
     queryDone,
 
     queryRawAccount,

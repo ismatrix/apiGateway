@@ -68,7 +68,6 @@ export default function ioRouter(io) {
     socket.on('subscribe', async (data, callback) => {
       try {
         debug('ordersIO subscribed to %o with callback: %o', data, !!callback);
-        iceLive.connect();
         await iceLive.subscribe(data.symbol, data.resolution);
         socket.join(data.symbol, (error) => { if (error) throw error; });
         if (callback) callback({ ok: true });
@@ -121,6 +120,6 @@ export default function ioRouter(io) {
       callback();
     }
   );
-  const iceLiveSream = iceLive.feed();
-  iceLiveSream.pipe(marketsSocket);
+  const iceLiveStream = iceLive.getDataFeed();
+  iceLiveStream.pipe(marketsSocket);
 }

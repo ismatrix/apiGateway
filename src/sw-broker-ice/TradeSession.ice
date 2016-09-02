@@ -67,6 +67,7 @@ module Trade
     CM::OrderList		queryOrder(string fundid);
     CM::DoneList		queryDone(string fundid);
 
+
 		/*
 		*	Description	:	直接查询交易所返回数据
 		*	In		:
@@ -76,9 +77,9 @@ module Trade
 		*		对应json
 		*/
 		string jsonQueryAccount(int from);
-    string jsonQueryPosition(string fundid, int from);
-    string jsonQueryOrder(string fundid, int from);
-    string jsonQueryDone(string fundid, int from);
+    	string jsonQueryPosition(string fundid, int from);
+    	string jsonQueryOrder(string fundid, int from);
+    	string jsonQueryDone(string fundid, int from);
 
 		/*
 		 *	doOrder	:	下单
@@ -101,6 +102,16 @@ module Trade
 		int cancleOrder(string fundid, string instrumentid, string privateno, string orderno);
 
 		/*
+		 *	updatePassword	:	修改密码
+		 *	In		:
+		 *		oldpwd	: 老密码
+		 *		newpwd	：新密码
+		 *	Out		:
+		 *		返回0成功， 否则失败
+		 */
+		int updatePassword(string oldpwd, string newpwd);
+
+		/*
 		*	subscribe	: 订阅
 		*	In	:
 		*		moduleName	: 客户端名字
@@ -118,10 +129,11 @@ module Trade
 		*		fundid		: 基金名字
 		*	Out :
 		*		0	成功
-				<0	失败
+		*		<0	失败
 		*	example	: unSubscribe('800528');
 		*/
 		int unSubscribe(string fundid);
+
 
 
 

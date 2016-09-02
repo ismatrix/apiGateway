@@ -54,9 +54,14 @@ module CM
 		double		PreSettlement;		//上次结算价
 		double		PreClose;			//昨收盘
 		double		PreoOpenInterest;	//昨持仓量
+
+		double		Price;				//当前价
+		double      UpperLimit;			//涨停价
+		double      LowerLimit;			//跌停价
 	};
+
 	////////////////////////////////////行情 end//////////////////////////////////////////////////////////////
-	
+
 
 	////////////////////////////////////交易 start//////////////////////////////////////////////////////////////
     //成交信息结构体
@@ -133,9 +138,49 @@ module CM
 
     struct Order
     {
-		//TODO convert and push
-        string	orderid;
+		//撤单用到的 exchangeid需要转换
+		string		frontid			;	//只有ctp用到
+    string		sessionid		;	//连接id 撤单的时候用到
+		string		privateno		;	//ctp.OrderRef / st.private_no
+		string      exchangeid		;	//市场代码	ctp.ExchangID / st.MarketCode
+		string		orderid			;	//委托流水号 ctp.OrderSysID / st.order_no
+
+		string		tradingday      ;	//交易日
+		string		fundid          ;	//基金id
+		string		brokerid		;	//经纪
+		string		requestid		;	//请求id
+		string		instrumentid	;	//合约ID
+		string		direction		;	//多空
+		string		offsetflag		;	//开平标志
+		string		hedgeflag		;	//套保标志
+		double		price			;	//委托价格
+		int			volume			;	//委托数量
+		string		ordertype		;	//委托类型
+		string		orderstatus		;	//报单状态
+		int			volumetraded	;	//今成交数量
+		string		insertdatetime	;	//报单时间 报给期货公司
+		string	    ordertime		;	//委托时间  期货公司给交易所
+		int			oerrno			;	//下单 或者 撤单失败 返回码 下单失败返回-1   撤单失败返回-2  0表示成功
+		string		oerrmsg			;	//错误信息
+		string		updatetime		;	//最后修改时间
+		//_STOrderInfo
     };
+
+	//ctp只能限价单  金仕达可以市价 限价。。。
+	struct DoOrder
+	{
+		string fundid;			//基金帐号
+		string exchangeid;		//交易所代码  ["SHFE", "上海期货交易所" ], [ "CZCE", "郑州商品交易所" ], [ "DCE", "大连商品交易所" ], [ "CFFEX", "中国金融期货交易所"]
+		string brokerid;		//经纪
+		string instrumentid;	//合约
+		string ordertype;		//订单类型		[ "0", "市价" ], [ "1", "限价" ], [ "2", "最优价" ], [ "3", "对手方最优" ], [ "4", "市价最优5挡" ] 只有0 1金仕达  ctp只有1  上期的只有1
+		string direction;		//多空方向		[ "L", "买入" ], [ "S", "卖出" ]
+		string offsetflag;		//买卖标志		[ "O", "开仓" ], [ "C", "平仓" ]
+		string hedgeflag;		//套保			[ "0", "投机/非备兑" ], [ "1", "保值/备兑" ], [ "2", "套利" ]   我们只用到0
+		double price;			//委托价格
+		int    volume;			//委托数量
+		string donetype;		//成交类型		[ "0", "GFD当日有效" ], [ "1", "FOK限价全成或全撤" ], [ "2", "FAK限价立即成交剩余撤销" ], [ "3", "IOC立即成交剩余自动撤销" ]  0 2 3有效。 2=3
+	};
 
     sequence<Done>           DoneList;
     sequence<Account>        AccountList;

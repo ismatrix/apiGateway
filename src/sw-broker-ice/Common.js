@@ -70,7 +70,7 @@
             this.BidVolume1 = __is.readInt();
             this.AskVolume1 = __is.readInt();
         },
-        76, 
+        76,
         true);
 
     CM.Bar = Slice.defineStruct(
@@ -108,7 +108,7 @@
             this.Turnover = __is.readDouble();
             this.OpenInterest = __is.readDouble();
         },
-        60, 
+        60,
         true);
 
     CM.DayBar = Slice.defineStruct(
@@ -170,7 +170,7 @@
             this.UpperLimit = __is.readDouble();
             this.LowerLimit = __is.readDouble();
         },
-        124, 
+        124,
         true);
 
     CM.Done = Slice.defineStruct(
@@ -232,7 +232,7 @@
             this.tradetime = __is.readString();
             this.updatedate = __is.readString();
         },
-        26, 
+        26,
         false);
 
     CM.Account = Slice.defineStruct(
@@ -300,7 +300,7 @@
             this.totalprofile = __is.readDouble();
             this.updatedate = __is.readString();
         },
-        102, 
+        102,
         false);
 
     CM.Position = Slice.defineStruct(
@@ -389,11 +389,11 @@
             this.totalprofile = __is.readDouble();
             this.updatedate = __is.readString();
         },
-        117, 
+        117,
         false);
 
     CM.Order = Slice.defineStruct(
-        function(frontid, sessionid, privateno, exchangeid, orderid, tradingday, fundid, brokerid, requestid, instrumentid, direction, offsetflag, hedgeflag, price, volume, ordertype, orderstatus, volumetraded, insertdatetime, ordertime, updatetime)
+        function(frontid, sessionid, privateno, exchangeid, orderid, tradingday, fundid, brokerid, requestid, instrumentid, direction, offsetflag, hedgeflag, price, volume, ordertype, orderstatus, volumetraded, insertdatetime, ordertime, oerrno, oerrmsg, updatetime)
         {
             this.frontid = frontid !== undefined ? frontid : "";
             this.sessionid = sessionid !== undefined ? sessionid : "";
@@ -415,6 +415,8 @@
             this.volumetraded = volumetraded !== undefined ? volumetraded : 0;
             this.insertdatetime = insertdatetime !== undefined ? insertdatetime : "";
             this.ordertime = ordertime !== undefined ? ordertime : "";
+            this.oerrno = oerrno !== undefined ? oerrno : 0;
+            this.oerrmsg = oerrmsg !== undefined ? oerrmsg : "";
             this.updatetime = updatetime !== undefined ? updatetime : "";
         },
         false,
@@ -440,6 +442,8 @@
             __os.writeInt(this.volumetraded);
             __os.writeString(this.insertdatetime);
             __os.writeString(this.ordertime);
+            __os.writeInt(this.oerrno);
+            __os.writeString(this.oerrmsg);
             __os.writeString(this.updatetime);
         },
         function(__is)
@@ -464,9 +468,11 @@
             this.volumetraded = __is.readInt();
             this.insertdatetime = __is.readString();
             this.ordertime = __is.readString();
+            this.oerrno = __is.readInt();
+            this.oerrmsg = __is.readString();
             this.updatetime = __is.readString();
         },
-        34, 
+        39,
         false);
 
     CM.DoOrder = Slice.defineStruct(
@@ -513,12 +519,12 @@
             this.volume = __is.readInt();
             this.donetype = __is.readString();
         },
-        21, 
+        21,
         false);
-    Slice.defineSequence(CM, "DoneListHelper", "CM.Done", false);
-    Slice.defineSequence(CM, "AccountListHelper", "CM.Account", false);
-    Slice.defineSequence(CM, "PositionListHelper", "CM.Position", false);
-    Slice.defineSequence(CM, "OrderListHelper", "CM.Order", false);
+    // Slice.defineSequence(CM, "DoneListHelper", "CM.Done", false);
+    // Slice.defineSequence(CM, "AccountListHelper", "CM.Account", false);
+    // Slice.defineSequence(CM, "PositionListHelper", "CM.Position", false);
+    // Slice.defineSequence(CM, "OrderListHelper", "CM.Order", false);
     exports.CM = CM;
 }
 (typeof(global) !== "undefined" && typeof(global.process) !== "undefined" ? module : undefined,

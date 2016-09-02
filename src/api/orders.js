@@ -11,11 +11,10 @@ export async function getOrders(fundid) {
 
     const fund = funds.find((aFund) => aFund.fundid === fundid);
     const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
+    debug('iceUrl %o', iceUrl);
     const iceBroker = createIceBroker(iceUrl, fundid);
 
-    const orders = await iceBroker.queryOrder(fundid);
-
-    debug('orders %o', orders);
+    const orders = await iceBroker.queryOrders(fundid);
 
     return { ok: true, orders };
   } catch (error) {
