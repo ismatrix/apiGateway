@@ -1,9 +1,9 @@
 import createDebug from 'debug';
 import { wechatConfig as wxConf } from '../config';
-import makeQydev from '../sw-weixin-qydev';
+import createQydev from '../sw-weixin-qydev';
 
 const debug = createDebug('api:wechat');
-const qydev = makeQydev(wxConf);
+const qydev = createQydev(wxConf);
 
 export async function app12Callback(ctx) {
   try {

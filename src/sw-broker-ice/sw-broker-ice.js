@@ -87,7 +87,7 @@ export default function createIceBroker(iceUrl, fundID) {
       id.properties.setProperty('Ice.Default.InvocationTimeout', '10000');
       id.properties.setProperty('Ice.ACM.Close', '4');
       id.properties.setProperty('Ice.ACM.Heartbeat', '3');
-      id.properties.setProperty('Ice.ACM.Timeout', '5');
+      id.properties.setProperty('Ice.ACM.Timeout', '15');
       communicator = Ice.initialize(process.argv, id);
 
       const proxy = communicator.stringToProxy(iceUrl);
@@ -95,6 +95,21 @@ export default function createIceBroker(iceUrl, fundID) {
       const adapter = await communicator.createObjectAdapter('');
       const r = adapter.addWithUUID(new CallbackReceiverI());
       proxy.ice_getCachedConnection().setAdapter(adapter);
+
+      const heartbeat = async () => {
+        try {
+          debug('heartbeat');
+          server.heartBeat();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          heartbeat();
+        } catch (error) {
+          debug('heartbeat() Error: %o', error);
+          setCallbackReturn = -1;
+          debug('call createSession() from heartbeat()');
+          connect();
+        }
+      };
+      heartbeat();
 
       proxy.ice_getCachedConnection().setCallback({
         closed() {

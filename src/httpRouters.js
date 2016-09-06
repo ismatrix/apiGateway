@@ -188,7 +188,6 @@ apiRouter
     const resolution = ctx.request.body.resolution;
     const startDate = ctx.request.body.startDate;
     const endDate = ctx.request.body.endDate;
-    ctx.type = 'application/json';
     ctx.body = await markets.getFuturesQuotes(symbol, resolution, startDate, endDate);
   })
   .post('/markets/futures/indicators/bullBearTrend', async ctx => {

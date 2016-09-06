@@ -40,9 +40,9 @@ const allSymbols = [
   'T1609',
   'TF1609',
   'SF706',
-  'IC1607',
-  'IF1607',
-  'IH1607',
+  'IC1610',
+  'IF1610',
+  'IH1610',
 ];
 
 markets.emit('authenticate', myToken);
@@ -192,7 +192,7 @@ const StockTable = React.createClass({
               </tr>
             </thead>
             <tbody>
-              {items}
+              {/* {items} */}
             </tbody>
           </table>
         </div>

@@ -10,7 +10,6 @@ import {
 } from '../sw-mongodb-crud';
 
 const debug = createDebug('api:auth');
-
 const qydev = makeQydev(wechatConfig);
 
 export async function createUserToken(userObj) {
