@@ -96,21 +96,6 @@ export default function createIceBroker(iceUrl, fundID) {
       const r = adapter.addWithUUID(new CallbackReceiverI());
       proxy.ice_getCachedConnection().setAdapter(adapter);
 
-      const heartbeat = async () => {
-        try {
-          debug('heartbeat');
-          server.heartBeat();
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          heartbeat();
-        } catch (error) {
-          debug('heartbeat() Error: %o', error);
-          setCallbackReturn = -1;
-          debug('call createSession() from heartbeat()');
-          connect();
-        }
-      };
-      heartbeat();
-
       proxy.ice_getCachedConnection().setCallback({
         closed() {
           debug('closed() server ACM closed the connection after timeout inactivity');
@@ -127,6 +112,21 @@ export default function createIceBroker(iceUrl, fundID) {
         server.subscribe('apiGateway', fundID),
       ]);
       debug('Successfully setCallBack %o', setCallbackReturn);
+
+      const heartbeat = async () => {
+        try {
+          debug('heartbeat');
+          server.heartBeat();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          heartbeat();
+        } catch (error) {
+          debug('heartbeat() Error: %o', error);
+          setCallbackReturn = -1;
+          debug('call createSession() from heartbeat()');
+          connect();
+        }
+      };
+      heartbeat();
 
       event.emit('connect:success', 'iceClient');
     } catch (error) {
