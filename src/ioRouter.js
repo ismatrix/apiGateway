@@ -47,9 +47,20 @@ export default function ioRouter(io) {
     socket.on('unsubscribe', async (data, callback) => {
       try {
         debug('marketsIO unsubscribed to %o with callback: %o', data, !!callback);
-
-        await iceLive.unsubscribe(data.symbol, data.resolution);
-        socket.leave(data.symbol, (error) => { if (error) throw error; });
+        const namespaces = Object.keys(io.nsps);
+        debug('namespaces %o', namespaces);
+        // await iceLive.unsubscribe(data.symbol, data.resolution);
+        if (data.symbol === 'all') {
+          const rooms = Object.keys(socket.rooms);
+          for (const room of rooms) {
+            if (!room.includes('/')) {
+              debug('leaving room %o', room);
+              socket.leave(room, (error) => { if (error) throw error; });
+            }
+          }
+        } else {
+          socket.leave(data.symbol, (error) => { if (error) throw error; });
+        }
         if (callback) callback({ ok: true });
       } catch (error) {
         debug('markets.on(unsubscribe) Error: %o', error);
@@ -80,9 +91,17 @@ export default function ioRouter(io) {
     socket.on('unsubscribe', async (data, callback) => {
       try {
         debug('ordersIO unsubscribed to %o with callback: %o', data, !!callback);
-        iceLive.connect();
-        await iceLive.unsubscribe(data.symbol, data.resolution);
-        socket.leave(data.symbol, (error) => { if (error) throw error; });
+        // iceLive.connect();
+        // await iceLive.unsubscribe(data.symbol, data.resolution);
+        if (data.symbol === 'all') {
+          const rooms = Object.keys(socket.rooms);
+          for (const room of rooms) {
+            debug('room %o', room);
+            // socket.leave()
+          }
+        } else {
+          socket.leave(data.symbol, (error) => { if (error) throw error; });
+        }
         if (callback) callback({ ok: true });
       } catch (error) {
         debug('orders.on(unsubscribe) Error: %o', error);
@@ -91,31 +110,8 @@ export default function ioRouter(io) {
     });
   });
 
-  // let i = 0;
-  // setInterval(() => {
-  //   i++;
-  //   const tick = {
-  //     symbol: 'IF1608',
-  //     resolution: 'tick',
-  //     tradingDay: '20160712',
-  //     timestamp: Date.now(),
-  //     price: i,
-  //     volume: i,
-  //     turnover: i,
-  //     openInterest: i,
-  //     totalVolume: i,
-  //     totalTurnover: i,
-  //     bidPrice1: i,
-  //     askPrice1: i,
-  //     bidVolume1: i,
-  //     askVolume1: i,
-  //   };
-  //   markets.to('IF1608').emit('tick', tick);
-  // }, 1000);
-
   const marketsSocket = through.obj(
     (chunk, enc, callback) => {
-      // if (chunk.symbol === 'IF1608') debug('chunk, %o', chunk);
       markets.to(chunk.symbol).emit(chunk.resolution, chunk);
       callback();
     }

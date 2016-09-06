@@ -22,15 +22,15 @@ export const funds = [
   {
     fundid: '068074',
     service: {
-      ip: 'code.invesmart.net',
-      port: '20011',
+      ip: '120.76.98.94',
+      port: '20029',
     },
   },
   {
     fundid: '1248',
     service: {
-      ip: '121.40.36.116',
-      port: '20029',
+      ip: '120.76.98.94',
+      port: '20028',
     },
   },
 ];
