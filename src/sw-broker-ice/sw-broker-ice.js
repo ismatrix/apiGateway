@@ -4,38 +4,37 @@ import events from 'events';
 import { Trade } from './TradeSession';
 import { CM } from './Common';
 
-const debugG = createDebug('sw-broker-ice');
-const event = new events.EventEmitter();
 const iceBrokers = {};
-
-const onIceCallback = {
-  onDone(fundid, done, account, position) {
-    debugG('fundid: %o', fundid);
-    debugG('done: %o', done);
-    debugG('account: %o', account);
-    debugG('position: %o', position);
-    // Object.assign(order, { fundid });
-    this.emit('done', fundid);
-  },
-  onOrder(fundid, order) {
-    debugG('fundid: %o', fundid);
-    debugG('order: %o', order);
-    Object.assign(order, { fundid });
-    this.emit('order', order);
-  },
-};
-const onIceCallbackEvent = Object.assign(Object.create(event), onIceCallback);
-
-const CallbackReceiverI = new Ice.Class(Trade.TdSessionCallBack, onIceCallbackEvent);
 
 export default function createIceBroker(iceUrl, fundID) {
   if (iceUrl in iceBrokers) return iceBrokers[iceUrl];
 
   const debug = createDebug(`sw-broker-ice:${fundID}`);
+  const event = new events.EventEmitter();
   let setCallbackReturn = -1;
   let isCreateSessionPending = false;
   let communicator;
   let server;
+
+  const onIceCallback = {
+    onDone(fundid, done, account, position) {
+      debug('fundid: %o', fundid);
+      debug('done: %o', done);
+      debug('account: %o', account);
+      debug('position: %o', position);
+      // Object.assign(order, { fundid });
+      this.emit('done', fundid);
+    },
+    onOrder(fundid, order) {
+      debug('fundid: %o', fundid);
+      debug('order: %o', order);
+      Object.assign(order, { fundid });
+      this.emit('order', order);
+    },
+  };
+  const onIceCallbackEvent = Object.assign(Object.create(event), onIceCallback);
+
+  const CallbackReceiverI = new Ice.Class(Trade.TdSessionCallBack, onIceCallbackEvent);
 
   // Destroy communicator on SIGINT so application exit cleanly.
   process.once('SIGINT', () => {
@@ -67,6 +66,7 @@ export default function createIceBroker(iceUrl, fundID) {
       return;
     } catch (error) {
       debug('Error destroySession(): %o', error);
+      throw error;
     }
   };
 

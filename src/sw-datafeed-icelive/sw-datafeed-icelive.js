@@ -10,8 +10,8 @@ const event = new events.EventEmitter();
 const debug = createDebug('sw-datafeed-icelive');
 const Readable = stream.Readable;
 
-// const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h 121.40.36.116';
 const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h 120.76.98.94';
+// const glacierRouterUrl = 'DemoGlacier2/router:tcp -p 4502 -h 121.40.36.116';
 let communicator;
 let router;
 let session;
@@ -37,7 +37,7 @@ const iceLiveReadable = {
   _read() {
   },
   onTick(tradingDay, symbol, ticker) {
-    debug('ticker %o', ticker);
+    // debug('ticker %o', ticker);
     const data = Object.assign(
       {},
       toLowerFirst(ticker),
@@ -49,7 +49,7 @@ const iceLiveReadable = {
       tradingDay.slice(4, 6), '-',
       tradingDay.slice(6, 8),
     );
-    debug('data %o', data);
+    // debug('data %o', data);
     this.push(data);
   },
   onBar(tradingDay, symbol, bar) {
@@ -123,6 +123,7 @@ const destroySession = async () => {
     return;
   } catch (error) {
     debug('Error destroySession(): %o', error);
+    throw error;
   }
 };
 
@@ -137,10 +138,9 @@ const connect = async () => {
       and isCreateSessionPending === ${isCreateSessionPending}`);
     createSessionTimer(2000);
     await destroySession();
-    debug('1');
     const id = new Ice.InitializationData();
     id.properties = Ice.createProperties();
-    id.properties.setProperty('Ice.Default.InvocationTimeout', '30000');
+    id.properties.setProperty('Ice.Default.InvocationTimeout', '10000');
     id.properties.setProperty('Ice.ACM.Close', '4');
     id.properties.setProperty('Ice.ACM.Heartbeat', '3');
     id.properties.setProperty('Ice.ACM.Timeout', '15');
@@ -167,6 +167,23 @@ const connect = async () => {
       adapter.add(new OnMdServerCallback(), new Ice.Identity('callback', category))
     );
 
+    // call refreshSession() every x seconds to keep session active
+    const refreshSession = () => {
+      debug('refreshSession');
+      router.refreshSession()
+      .delay(timeout.toNumber() * 100)
+      .then(() => {
+        refreshSession();
+      }, async error => {
+        debug('Error refreshSession(): %o', error);
+        setCallbackReturn = -1;
+        debug('call createSession() from refreshSession()');
+        connect();
+      })
+      ;
+    };
+    refreshSession();
+
     router.ice_getCachedConnection().setCallback({
       closed() {
         debug('closed() server ACM closed the connection after timeout inactivity');
@@ -184,25 +201,6 @@ const connect = async () => {
     // Set the Md session callback.
     setCallbackReturn = await session.setCallBack(callback);
     debug('Successfully setCallBack. setCallbackReturn: %o', setCallbackReturn);
-
-    // call refreshSession() every x seconds to keep session active
-    const refreshSession = () => {
-      debug('refreshSession');
-      router.refreshSession()
-      .delay(timeout.toNumber() * 100)
-      .then(() => {
-        refreshSession();
-      }, async error => {
-        debug('Error refreshSession(): %o', error);
-        setCallbackReturn = -1;
-        debug('router: %o', router);
-        debug('call createSession() from refreshSession()');
-        connect();
-      })
-      ;
-    };
-    refreshSession();
-
     event.emit('connect:success', 'iceClient');
     return;
   } catch (error) {
@@ -255,11 +253,7 @@ const unsubscribe = async (symbol, resolution) => {
 
 function filterFeed(symbol, resolution) {
   return through.obj((data, enc, callback) => {
-    if (symbol === 'all' && data.resolution === resolution) {
-      callback(null, data);
-    } else if (data.symbol === symbol && resolution === 'all') {
-      callback(null, data);
-    } else if (data.symbol === symbol && data.resolution === resolution) {
+    if (data.symbol === symbol && data.resolution === resolution) {
       callback(null, data);
     } else {
       callback();
@@ -267,10 +261,8 @@ function filterFeed(symbol, resolution) {
   });
 }
 
-const getDataFeed = (symbol = 'all', resolution = 'all') => {
-  if (symbol === 'all' && resolution === 'all') return iceLiveReadableCallback;
+const getDataFeed = (symbol, resolution) =>
   iceLiveReadableCallback.pipe(filterFeed(symbol, resolution));
-};
 
 
 const iceLive = {
