@@ -84,10 +84,10 @@ export default function createIceBroker(iceUrl, fundID) {
 
       const id = new Ice.InitializationData();
       id.properties = Ice.createProperties();
-      id.properties.setProperty('Ice.Default.InvocationTimeout', '10000');
+      id.properties.setProperty('Ice.Default.InvocationTimeout', '15000');
       id.properties.setProperty('Ice.ACM.Close', '4');
       id.properties.setProperty('Ice.ACM.Heartbeat', '3');
-      id.properties.setProperty('Ice.ACM.Timeout', '15');
+      id.properties.setProperty('Ice.ACM.Timeout', '3');
       communicator = Ice.initialize(process.argv, id);
 
       const proxy = communicator.stringToProxy(iceUrl);
@@ -115,8 +115,8 @@ export default function createIceBroker(iceUrl, fundID) {
 
       const heartbeat = async () => {
         try {
-          debug('heartbeat');
-          server.heartBeat();
+          const hb = await server.heartBeat();
+          debug('heartbeat %o', hb);
           await new Promise(resolve => setTimeout(resolve, 2000));
           heartbeat();
         } catch (error) {
