@@ -8,7 +8,7 @@ npm install
 
 ## Dev
 ```
-DEBUG=*,-babel,-engine*,-socket.io-parser,-socket.io:client DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --name apiGateway
+DEBUG=*,-babel,-koa-router,-koa-mount,-engine*,-socket.io-parser,-socket.io:client DEBUG_COLORS=true pm2 start src/index.js --watch --no-autorestart --name apiGateway
 pm2 logs apiGateway --raw
 ```
 

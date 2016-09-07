@@ -50,6 +50,19 @@ export async function postFund(fundid, fund) {
   }
 }
 
+export async function deleteFund(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    await fundDB.remove(fundid);
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteFund() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getTotal(fundid, tradingday) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');

@@ -208,6 +208,34 @@ paths:
               ok:
                 type: boolean
                 default: true
+    delete:
+      summary: Delete a fund
+      tags:
+        - Funds
+      parameters:
+        - name: body
+          in: body
+          description: The fund to delete
+          required: true
+          schema:
+            type: object
+            required:
+              - fundid
+            properties:
+              fundid:
+                type: string
+                example: "12345"
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}:
     get:
       summary: Get a fund by its id
@@ -990,13 +1018,11 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /authenticate:
+  /setToken:
     post:
       tags:
-        - Markets.IO
-      summary: Authenticate websocket connection
-      description: >
-        provide the token through socket.io, the token will then be saved by the server into the session
+        - Socket.IO
+      summary: Set the user token to the socket connection
       parameters:
         - name: body
           in: body
@@ -1016,39 +1042,69 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
-  /unauthorized:
-    get:
+  orders/subscribe:
+    post:
       tags:
-        - Markets.IO
-      summary: Receive errors on JWT token auth problem
+        - Orders.IO
+      summary: Subscribe orders placement and execution of a fund
+      parameters:
+        - name: body
+          in: body
+          description: This is the orders subscribe request
+          required: true
+          schema:
+            $ref: '#/definitions/SubscribeFundOrders'
       responses:
         '200':
-          description: The futures contracts data
+          description: Response sent through callback function
           schema:
             type: object
             properties:
-              error:
-                type: string
-                example: 'UnauthorizedError'
-  /authenticated:
-    get:
+              ok:
+                type: boolean
+                default: true
+  orders/unsubscribe:
+    post:
       tags:
-        - Markets.IO
-      summary: Receive authenticated event if JWT token auth succeeded
-      responses:
-        '200':
-          description: JWT token auth succeeded
-  /tick:
-    get:
-      tags:
-        - Markets.IO
-      summary: Receive ticker object
-      responses:
-        '200':
-          description: The ticker
+        - Orders.IO
+      summary: Unsubscribe orders placement and execution of a fund
+      parameters:
+        - name: body
+          in: body
+          description: This is the orders unsubscribe request
+          required: true
           schema:
-            $ref: '#/definitions/tick'
-  /subscribe:
+            $ref: '#/definitions/SubscribeFundOrders'
+      responses:
+        '200':
+          description: Response sent through callback function
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+                default: true
+  orders/placement:
+    get:
+      tags:
+        - Orders.IO
+      summary: Receive an order placement object
+      responses:
+        '200':
+          description: The order placement
+          schema:
+            $ref: '#/definitions/Order'
+  orders/execution:
+    get:
+      tags:
+        - Orders.IO
+      summary: Receive an order execution object
+      responses:
+        '200':
+          description: The order execution
+          schema:
+            $ref: '#/definitions/Order'
+  markets/subscribe:
     post:
       tags:
         - Markets.IO
@@ -1059,7 +1115,7 @@ paths:
           description: This is the ticker subscribe request
           required: true
           schema:
-            $ref: '#/definitions/reqLiveTick'
+            $ref: '#/definitions/SubscribeTicker'
       responses:
         '200':
           description: Response sent through callback function
@@ -1073,7 +1129,7 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
-  /unsubscribe:
+  markets/unsubscribe:
     post:
       tags:
         - Markets.IO
@@ -1084,7 +1140,7 @@ paths:
           description: This is the ticker unsubscribe request
           required: true
           schema:
-            $ref: '#/definitions/reqLiveTick'
+            $ref: '#/definitions/UnsubscribeTicker'
       responses:
         '200':
           description: Response sent through callback function
@@ -1098,6 +1154,16 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
+  markets/tick:
+    get:
+      tags:
+        - Markets.IO
+      summary: Receive ticker object
+      responses:
+        '200':
+          description: The ticker
+          schema:
+            $ref: '#/definitions/tick'
   /errors:
     get:
       summary: Error examples
@@ -1288,8 +1354,13 @@ definitions:
         type: string
         example: "private number"
   Token:
-    type: string
-    example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
   Users:
     type: array
     items:
@@ -1357,12 +1428,8 @@ definitions:
         type: string
         example: 慧网趋势1号
       issuedate:
-        string: string
+        type: string
         example: "2014-09-16T16:00:00.000Z"
-  Funds:
-    type: array
-    items:
-      $ref: '#/definitions/Fund'
   Fund:
     type: object
     properties:
@@ -1418,9 +1485,6 @@ definitions:
       state:
         type: string
         example: clearout
-      updatedate:
-        type: string
-        example: "2016-01-05T06:13:38.000Z"
       buysell:
         type: object
         properties:
@@ -2029,7 +2093,7 @@ definitions:
       endDate:
         type: string
         example: "20160401"
-  reqLiveTick:
+  SubscribeTicker:
     type: object
     required:
       - type
@@ -2045,6 +2109,31 @@ definitions:
       resolution:
         type: string
         example: "tick"
+  UnsubscribeTicker:
+    type: object
+    required:
+      - type
+      - symbol
+      - resolution
+    properties:
+      type:
+        type: string
+        example: "futures"
+      symbol:
+        type: string
+        example: "all"
+        description: if "all", will ignore the resolution and unsubscribe from all resolutions of all symbols previously subscribed to
+      resolution:
+        type: string
+        example: "tick"
+  SubscribeFundOrders:
+    type: object
+    required:
+      - fundid
+    properties:
+      fundid:
+        type: string
+        example: "123456"
   bar:
     type: object
     required:
@@ -2150,10 +2239,6 @@ definitions:
         example: [1, 1, 0, 0,-1, -1]
         items:
           type: number
-  Catalogs:
-    type: array
-    items:
-      $ref: '#/definitions/Catalog'
   Catalog:
     type: object
     required:
