@@ -41,11 +41,11 @@ export async function postFund(fundid, fund) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!fund) throw Boom.badRequest('Missing fund parameter');
 
-    await fundDB.set(fund);
+    await fundDB.set(fundid, fund);
 
     return { ok: true };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('postFund() Error: %o', error);
     throw error;
   }
 }
@@ -58,7 +58,7 @@ export async function getTotal(fundid, tradingday) {
 
     return { ok: true, total };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getTotal() Error: %o', error);
     throw error;
   }
 }
@@ -72,7 +72,7 @@ export async function getNetValue(fundid, tradingday) {
 
     return { ok: true, netValues };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getNetValue() Error: %o', error);
     throw error;
   }
 }
@@ -85,7 +85,7 @@ export async function getNetValues(fundid) {
 
     return { ok: true, netLines };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getNetValues() Error: %o', error);
     throw error;
   }
 }
@@ -98,7 +98,7 @@ export async function getFixedIncomes(fundid) {
 
     return { ok: true, fixedIncomes };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getFixedIncomes() Error: %o', error);
     throw error;
   }
 }
@@ -111,7 +111,7 @@ export async function getAppends(fundid) {
 
     return { ok: true, appends };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getAppends() Error: %o', error);
     throw error;
   }
 }
@@ -124,7 +124,7 @@ export async function getRedemptions(fundid) {
 
     return { ok: true, redemptions };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getRedemptions() Error: %o', error);
     throw error;
   }
 }
@@ -150,7 +150,7 @@ export async function getCostOuts(fundid) {
 
     return { ok: true, costOuts };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    debug('getCostOuts() Error: %o', error);
     throw error;
   }
 }
