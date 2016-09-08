@@ -24,7 +24,7 @@ export default function ioRouter(io) {
           debug('decodedToken %o', decodedToken);
 
           const nspsNames = Object.keys(socket.server.nsps);
-          // debug('nspsNames %o', nspsNames);
+          debug('nspsNames %o', nspsNames);
           debug('socket.id %o', socket.id);
 
           for (const nspsName of nspsNames) {
@@ -145,11 +145,11 @@ export default function ioRouter(io) {
         debug('oldFundsRooms %o', oldFundsRooms);
 
         socket.join(
-          data.fundid.concat(':', 'placement'),
+          data.fundid.concat(':', 'order'),
           (error) => {
             if (error) throw error;
             socket.join(
-              data.fundid.concat(':', 'execution'),
+              data.fundid.concat(':', 'trade'),
               (err) => {
                 if (err) throw err;
                 const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
@@ -158,9 +158,13 @@ export default function ioRouter(io) {
                 const createdFundsRooms = difference(oldFundsRooms, newFundsRooms);
                 debug('createdFundsRooms %o', createdFundsRooms);
 
-                createdFundsRooms.map(fundid => {
+                for (const fundsRoom of createdFundsRooms) {
+
                   const iceBroker = createIceBroker(fundid);
-                });
+                  iceBroker.on('order', order => {
+                    fundsIO.to(order.fundid.concat(':', 'order')).emit('order', order);
+                  });
+                }
                 if (callback) callback({ ok: true });
               }
             );

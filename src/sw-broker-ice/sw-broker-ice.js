@@ -27,13 +27,13 @@ export default function createIceBroker(fundid) {
       debug('account: %o', account);
       debug('position: %o', position);
       // Object.assign(order, { fundid });
-      this.emit('execution', fundID);
+      this.emit('trade', fundID);
     },
     onOrder(fundID, order) {
       debug('fundid: %o', fundID);
       debug('order: %o', order);
       Object.assign(order, { fundid: fundID });
-      this.emit('placement', order);
+      this.emit('order', order);
     },
   };
   const onIceCallbackEvent = Object.assign(Object.create(event), onIceCallback);

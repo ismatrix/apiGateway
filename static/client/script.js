@@ -1,7 +1,7 @@
 // // TIP: io() with no args does auto-discovery
 const socket = io();
-const markets = io.connect('/markets');
-let orders = io.connect('/funds')
+// const markets = io.connect('/markets');
+// let orders = io.connect('/funds')
 
 const myToken = { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' };
 const sub = { type: 'futures', symbol: 'IF1607', resolution: 'tick'};

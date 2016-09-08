@@ -1116,7 +1116,7 @@ paths:
           description: The order placement
           schema:
             $ref: '#/definitions/Order'
-  funds/done:
+  funds/trade:
     get:
       tags:
         - Funds.IO
