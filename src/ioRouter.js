@@ -157,9 +157,22 @@ export default function ioRouter(io) {
             for (const fundid of createdFundsRooms) {
               debug('fundid from room name %o', fundid);
               const iceBroker = createIceBroker(fundid);
-              iceBroker.on('order', order => {
-                fundsIO.to(fundid).emit('order', order);
-              });
+
+              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+
+              const eventNames = ['order', 'trade', 'account', 'positions'];
+              const hasListenerEventNames = iceBroker.eventNames();
+
+              const needRegisterEvents = difference(eventNames, hasListenerEventNames);
+              debug('needRegisterEvents %o', needRegisterEvents);
+
+              for (const eventName of needRegisterEvents) {
+                iceBroker.on(eventName, eventData => {
+                  fundsIO.to(fundid).emit(eventName, eventData);
+                });
+              }
+
+              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
             }
             if (callback) callback({ ok: true });
           }
@@ -174,6 +187,9 @@ export default function ioRouter(io) {
       try {
         debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
+
+        const oldFundsRooms = Object.keys(fundsIO.adapter.rooms);
+        debug('oldFundsRooms %o', oldFundsRooms);
 
         if (data.fundid === 'all') {
           const rooms = Object.keys(socket.rooms);
@@ -201,6 +217,16 @@ export default function ioRouter(io) {
               if (callback) callback({ ok: true });
             }
           );
+        }
+
+        const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
+        debug('newFundsRooms %o', newFundsRooms);
+
+        const removedFundsRooms = difference(oldFundsRooms, newFundsRooms);
+        debug('removedFundsRooms %o', removedFundsRooms);
+
+        for (const fundid of removedFundsRooms) {
+          debug('nobody in room %o', fundid);
         }
       } catch (error) {
         debug('fundsIO.on(unsubscribe) Error: %o', error);

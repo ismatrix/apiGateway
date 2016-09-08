@@ -21,13 +21,20 @@ export default function createIceBroker(fundid) {
   let server;
 
   const onIceCallback = {
-    onDone(fundID, done, account, position) {
+    onDone(fundID, trade, account, positions) {
       debug('fundid: %o', fundID);
-      debug('done: %o', done);
+      debug('done: %o', trade);
       debug('account: %o', account);
-      debug('position: %o', position);
-      // Object.assign(order, { fundid });
-      this.emit('trade', fundID);
+      debug('positions: %o', positions);
+
+      Object.assign(trade, { fundid: fundID });
+      this.emit('trade', trade);
+
+      Object.assign(account, { fundid: fundID });
+      this.emit('account', account);
+
+      Object.assign(positions, { fundid: fundID });
+      this.emit('positions', positions);
     },
     onOrder(fundID, order) {
       debug('fundid: %o', fundID);

@@ -1120,12 +1120,34 @@ paths:
     get:
       tags:
         - Funds.IO
-      summary: Receive an order execution object
+      summary: Receive the trade informations
       responses:
         '200':
-          description: The order execution
+          description: The trade
           schema:
             $ref: '#/definitions/Order'
+  funds/account:
+    get:
+      tags:
+        - Funds.IO
+      summary: Receive the account on a trade
+      responses:
+        '200':
+          description: The account
+          schema:
+            $ref: '#/definitions/Order'
+  funds/positions:
+    get:
+      tags:
+        - Funds.IO
+      summary: Receive the positions on a trade
+      responses:
+        '200':
+          description: The positions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
   markets/subscribe:
     post:
       tags:
