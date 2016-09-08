@@ -253,6 +253,10 @@ async function init() {
         items: [
           { key: 'online', zh: '正在运行' },
           { key: 'offline', zh: '已下线' },
+          { key: 'test', zh: '测试基金' },
+          { key: 'clearout', zh: '清盘' },
+          { key: 'manual', zh: '未接入' },
+          { key: 'pause', zh: '暂停交易' },
         ],
       },
       {
@@ -260,22 +264,55 @@ async function init() {
         name: '交易下单方向',
         description: '交易下单方向',
         items: [
-          { key: 'long', zh: '多', ctp: 1, sungard: 0 },
-          { key: 'short', zh: '空', ctp: 2, sungard: 1 },
+        { key: 'buy', zh: '买', ctp: 0, sungard: 0 },
+        { key: 'sell', zh: '卖', ctp: 1, sungard: 1 },
         ],
       },
       {
-        catalog: 'trade.action',
-        name: '交易指令',
-        description: '交易指令开平标志',
+        catalog: 'position.direction',
+        name: '持仓方向',
+        description: '持仓方向',
         items: [
-          { key: 'open', zh: '开仓', ctp: 1, sungard: 1 },
-          { key: 'close', zh: '平仓', ctp: 2, sungard: 2 },
-          { key: 'closetoday', zh: '平今', ctp: 3, sungard: 3 },
-          { key: 'closeyesterday', zh: '平昨', ctp: 4, sungard: 4 },
+        { key: 'long', zh: '多', ctp: 2, sungard: 0 },
+        { key: 'short', zh: '空', ctp: 3, sungard: 1 },
+        { key: 'net', zh: '净', ctp: 1, sungard: -1 },
         ],
       },
-    ];
+      {
+        catalog: 'trade.hedge',
+        name: '投机套保标志',
+        description: '投机套保标志',
+        items: [
+        { key: 'speculation', zh: '投机', ctp: 1, sungard: 0 },
+        { key: 'arbitrage', zh: '套利', ctp: 2, sungard: 2 },
+        { key: 'hedge', zh: '套保', ctp: 3, sungard: 1 },
+        ],
+      },
+      {
+        catalog: 'trade.offset',
+        name: '交易开平指令',
+        description: '交易指令开平标志',
+        items: [
+        { key: 'open', zh: '开仓', ctp: 0, sungard: 0 },
+        { key: 'close', zh: '平仓', ctp: 1, sungard: 1 },
+        { key: 'force', zh: '强平', ctp: 2, sungard: -1 },
+        { key: 'closetoday', zh: '平今', ctp: 3, sungard: 2 },
+        { key: 'closeyesterday', zh: '平昨', ctp: 4, sungard: -1 },
+        { key: 'forceoff', zh: '强减', ctp: 5, sungard: -1 },
+        { key: 'localforceclose', zh: '本地强平', ctp: 6, sungard: -1 },
+        ],
+      },
+      {
+        catalog: 'trade.price',
+        name: '报单价格类型',
+        description: '报单价格条件类型',
+        items: [
+        { key: 'any', zh: '任意价', ctp: 1, sungard: 1 },
+        { key: 'limit', zh: '限价', ctp: 2, sungard: 0 },
+        { key: 'best', zh: '最优价', ctp: 3, sungard: 2 },
+        { key: 'last', zh: '最新价', ctp: 4, sungard: -1 },
+        ],
+      }];
     const ret = await add(docs);
     return ret;
   } catch (error) {
