@@ -147,34 +147,39 @@ export default function ioRouter(io) {
         socket.join(
           data.fundid,
           (error) => {
-            if (error) throw error;
-            const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
-            debug('newFundsRooms %o', newFundsRooms);
+            try {
+              if (error) throw error;
+              const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
+              debug('newFundsRooms %o', newFundsRooms);
 
-            const createdFundsRooms = difference(newFundsRooms, oldFundsRooms);
-            debug('createdFundsRooms %o', createdFundsRooms);
+              const createdFundsRooms = difference(newFundsRooms, oldFundsRooms);
+              debug('createdFundsRooms %o', createdFundsRooms);
 
-            for (const fundid of createdFundsRooms) {
-              debug('fundid from room name %o', fundid);
-              const iceBroker = createIceBroker(fundid);
+              for (const fundid of createdFundsRooms) {
+                debug('fundid from room name %o', fundid);
+                const iceBroker = createIceBroker(fundid);
 
-              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+                debug('iceBroker.eventNames() %o', iceBroker.eventNames());
 
-              const eventNames = ['order', 'trade', 'account', 'positions'];
-              const hasListenerEventNames = iceBroker.eventNames();
+                const eventNames = ['order', 'trade', 'account', 'positions'];
+                const hasListenerEventNames = iceBroker.eventNames();
 
-              const needRegisterEvents = difference(eventNames, hasListenerEventNames);
-              debug('needRegisterEvents %o', needRegisterEvents);
+                const needRegisterEvents = difference(eventNames, hasListenerEventNames);
+                debug('needRegisterEvents %o', needRegisterEvents);
 
-              for (const eventName of needRegisterEvents) {
-                iceBroker.on(eventName, eventData => {
-                  fundsIO.to(fundid).emit(eventName, eventData);
-                });
+                for (const eventName of needRegisterEvents) {
+                  iceBroker.on(eventName, eventData => {
+                    fundsIO.to(fundid).emit(eventName, eventData);
+                  });
+                }
+
+                debug('iceBroker.eventNames() %o', iceBroker.eventNames());
               }
-
-              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+              if (callback) callback({ ok: true });
+            } catch (error1) {
+              debug('fundsIO.on(subscribe) Error: %o', error1);
+              if (callback) callback({ ok: false, error: error1.message });
             }
-            if (callback) callback({ ok: true });
           }
         );
       } catch (error) {
