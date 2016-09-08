@@ -228,6 +228,8 @@ const subscribe = async (symbol, resolution) => {
     debug('subscribe() {symbol: %o, resolution: %o}', symbol, resolution);
     await ensureConnection();
     const subscribeReturn = await session.subscribeMd(symbol, resolutionMap[resolution]);
+    debug('subscribe() {symbol: %o, resolution: %o} subscribeReturn %o',
+      symbol, resolution, subscribeReturn);
 
     if (subscribeReturn === 0) return subscribeReturn;
     throw new Error();
@@ -242,6 +244,8 @@ const unsubscribe = async (symbol, resolution) => {
     debug('unsubscribe() {symbol: %o, resolution: %o}', symbol, resolution);
     await ensureConnection();
     const unsubscribeReturn = await session.unSubscribeMd(symbol, resolutionMap[resolution]);
+    debug('unsubscribe() {symbol: %o, resolution: %o} subscribeReturn %o',
+      symbol, resolution, unsubscribeReturn);
 
     if (unsubscribeReturn === 0) return unsubscribeReturn;
     throw new Error();
@@ -253,7 +257,11 @@ const unsubscribe = async (symbol, resolution) => {
 
 function filterFeed(symbol, resolution) {
   return through.obj((data, enc, callback) => {
-    if (data.symbol === symbol && data.resolution === resolution) {
+    if (symbol === 'all' && data.resolution === resolution) {
+      callback(null, data);
+    } else if (data.symbol === symbol && resolution === 'all') {
+      callback(null, data);
+    } else if (data.symbol === symbol && data.resolution === resolution) {
       callback(null, data);
     } else {
       callback();
@@ -261,8 +269,10 @@ function filterFeed(symbol, resolution) {
   });
 }
 
-const getDataFeed = (symbol, resolution) =>
-  iceLiveReadableCallback.pipe(filterFeed(symbol, resolution));
+const getDataFeed = (symbol = 'all', resolution = 'all') => {
+  if (symbol === 'all' && resolution === 'all') return iceLiveReadableCallback;
+  return iceLiveReadableCallback.pipe(filterFeed(symbol, resolution));
+};
 
 
 const iceLive = {

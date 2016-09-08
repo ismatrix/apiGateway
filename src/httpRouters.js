@@ -68,6 +68,10 @@ apiRouter
     const fundid = fund.fundid;
     ctx.body = await funds.postFund(fundid, fund);
   })
+  .delete('/fund', async ctx => {
+    const fundid = ctx.request.body.fundid;
+    ctx.body = await funds.deleteFund(fundid);
+  })
   .get('/funds/:fundid/total', async ctx => {
     const fundid = ctx.params.fundid;
     const tradingday = ctx.query.tradingday;
