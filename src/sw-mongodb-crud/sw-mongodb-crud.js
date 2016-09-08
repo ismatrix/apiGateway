@@ -14,3 +14,4 @@ export * as equity from './equity';
 export * as codemap from './codemap';
 export * as indicators from './indicators';
 export * as user from './user';
+export * as account from './account';
