@@ -1,27 +1,27 @@
 // // TIP: io() with no args does auto-discovery
 const socket = io();
-// const markets = io.connect('/markets');
-// let orders = io.connect('/funds')
+const markets = io.connect('/markets');
+const funds = io.connect('/funds')
 
 const myToken = { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' };
 const sub = { type: 'futures', symbol: 'IF1607', resolution: 'tick'};
 
 // setTimeout(() => socket.emit('setToken', 'bad token'), 3000);
 // setTimeout(() => socket.emit('seeToken'), 4000);
-// // setTimeout(() => orders.emit('seeToken'), 5000);
+// // setTimeout(() => funds.emit('seeToken'), 5000);
 // setTimeout(() => socket.emit('setToken', myToken), 2000);
 // setTimeout(() => {
-//   console.log('call io.connect(orders)');
-//   orders = io.connect('/orders');
-//   orders.on('error', function(err){
+//   console.log('call io.connect(funds)');
+//   funds = io.connect('/funds');
+//   funds.on('error', function(err){
 //     // do something with err
-//     console.log('orders.on ERROR %s', err.message);
+//     console.log('funds.on ERROR %s', err.message);
 //   });
 // }, 5000);
-// setTimeout(() => orders.emit('seeToken'), 6000);
-// setTimeout(() => orders.emit('secretOrder'), 3000);
+
+// setTimeout(() => funds.emit('secretOrder'), 3000);
 // setTimeout(() => socket.emit('secretOrder'), 3000);
-// setTimeout(() => orders.emit('secretOrder'), 3000);
+// setTimeout(() => funds.emit('secretOrder'), 3000);
 
 const allSymbols =  [
     {
@@ -553,6 +553,10 @@ socket.on('connect', function() {
   socket.emit('setToken', myToken, function(response) { console.log(response) });
 });
 
+// setTimeout(() => funds.emit('subscribe', { fundid: '068074' }), 2000);
+setTimeout(() => funds.on('order', function(order) {
+  console.log(order);
+}), 500);
 
 const WatchList = React.createClass({
   unsubscribe(symbol) {
@@ -626,6 +630,72 @@ const Unsubscribe = React.createClass({
           <div className="form-group">
             <div className="input-group">
               <div className="input-group-addon">symbols</div>
+              <input type="text" className="form-control" placeholder="ex: all or IF1608,ag1609" value={this.state.symbol} onChange={this.handleChange} />
+            </div>
+          </div>
+          <button type="button" className="btn btn-primary" onClick={this.unsubscribe}>
+            <span>unsubscribe</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+});
+
+const SubscribeFund = React.createClass({
+  getInitialState: function() {
+    return { symbol: '' };
+  },
+  subscribe() {
+    this.props.subscribeFund(this.state.symbol);
+    const newState = Object.assign({}, this.state);
+    newState.symbol = '';
+    this.setState(newState);
+    console.log('unsubscribed');
+  },
+  handleChange(event) {
+    this.setState({ symbol: event.target.value });
+  },
+  render() {
+    return (
+      <div className="child">
+        <div className="form-inline">
+          <div className="form-group">
+            <div className="input-group">
+              <div className="input-group-addon">fund</div>
+              <input type="text" className="form-control" placeholder="ex: 068074,1248" value={this.state.symbol} onChange={this.handleChange} />
+            </div>
+          </div>
+          <button type="button" className="btn btn-primary" onClick={this.subscribe}>
+            <span>subscribe</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+});
+
+const UnsubscribeFund = React.createClass({
+  getInitialState: function() {
+    return { symbol: '' };
+  },
+  unsubscribe() {
+    this.props.unsubscribeFund(this.state.symbol);
+    const newState = Object.assign({}, this.state);
+    newState.symbol = '';
+    this.setState(newState);
+    console.log('unsubscribed');
+  },
+  handleChange(event) {
+    this.setState({ symbol: event.target.value });
+  },
+  render() {
+    return (
+      <div className="child">
+        <div className="form-inline">
+          <div className="form-group">
+            <div className="input-group">
+              <div className="input-group-addon">Fund</div>
               <input type="text" className="form-control" placeholder="ex: all or IF1608,ag1609" value={this.state.symbol} onChange={this.handleChange} />
             </div>
           </div>
@@ -786,14 +856,31 @@ const HomePage = React.createClass({
       }
     );
   },
+  subscribeFund(symbols) {
+    const symbolsArr = symbols.split(',');
+
+    for (const symbol of symbolsArr) {
+      funds.emit('subscribe', { fundid: symbol });
+    }
+  },
+  unsubscribeFund(symbols) {
+    const symbolsArr = symbols.split(',');
+
+    for (const symbol of symbolsArr) {
+      funds.emit('unsubscribe', { fundid: symbol });
+    }
+  },
   render() {
     return (
       <div className="container-fluid">
         <div className="row">
-          <div className="child"><h2> Trading board </h2></div>
+          <div className="child"><h2> Markets board </h2></div>
           <Subscribe subscribeIns={ this.subscribe }/>
           <Unsubscribe unsubscribeIns={ this.unsubscribe }/>
           <WatchList unsubscribeIns={ this.unsubscribe } watchingList={ this.state.watchingList } />
+          <div className="child"><h2> Funds board </h2></div>
+          <SubscribeFund subscribeFund={ this.subscribeFund }/>
+          <UnsubscribeFund unsubscribeFund={ this.unsubscribeFund }/>
         </div>
         <StockTable unsubscribeIns={ this.unsubscribe } tickers={ this.state.tickers } lastTickers={this.state.lastTickers} />
       </div>

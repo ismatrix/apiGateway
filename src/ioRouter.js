@@ -145,29 +145,23 @@ export default function ioRouter(io) {
         debug('oldFundsRooms %o', oldFundsRooms);
 
         socket.join(
-          data.fundid.concat(':', 'order'),
+          data.fundid,
           (error) => {
             if (error) throw error;
-            socket.join(
-              data.fundid.concat(':', 'trade'),
-              (err) => {
-                if (err) throw err;
-                const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
-                debug('newFundsRooms %o', newFundsRooms);
+            const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
+            debug('newFundsRooms %o', newFundsRooms);
 
-                const createdFundsRooms = difference(oldFundsRooms, newFundsRooms);
-                debug('createdFundsRooms %o', createdFundsRooms);
+            const createdFundsRooms = difference(newFundsRooms, oldFundsRooms);
+            debug('createdFundsRooms %o', createdFundsRooms);
 
-                for (const fundsRoom of createdFundsRooms) {
-
-                  const iceBroker = createIceBroker(fundid);
-                  iceBroker.on('order', order => {
-                    fundsIO.to(order.fundid.concat(':', 'order')).emit('order', order);
-                  });
-                }
-                if (callback) callback({ ok: true });
-              }
-            );
+            for (const fundid of createdFundsRooms) {
+              debug('fundid from room name %o', fundid);
+              const iceBroker = createIceBroker(fundid);
+              iceBroker.on('order', order => {
+                fundsIO.to(fundid).emit('order', order);
+              });
+            }
+            if (callback) callback({ ok: true });
           }
         );
       } catch (error) {
@@ -201,16 +195,10 @@ export default function ioRouter(io) {
           if (callback) callback({ ok: true });
         } else {
           socket.leave(
-            data.fundid.concat(':', 'placement'),
+            data.fundid,
             (error) => {
               if (error) throw error;
-              socket.leave(
-                data.fundid.concat(':', 'execution'),
-                (err) => {
-                  if (err) throw err;
-                  if (callback) callback({ ok: true });
-                }
-              );
+              if (callback) callback({ ok: true });
             }
           );
         }
