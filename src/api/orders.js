@@ -27,7 +27,7 @@ export async function getOrder(orderno) {
 
     return { ok: true, order };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('getOrder() Error: %o', error);
     throw error;
   }
 }
@@ -50,7 +50,7 @@ export async function postOrder(order) {
 
     return { ok: true };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('postOrder() Error: %o', error);
     throw error;
   }
 }
@@ -73,7 +73,7 @@ export async function deleteOrder({
 
     return { ok: true };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('deleteOrder() Error: %o', error);
     throw error;
   }
 }

@@ -372,6 +372,6 @@ export default function createIceBroker(fundid) {
   const iceBroker = Object.create(iceBrokerBaseEvent);
 
   connect();
-  iceBrokers[iceUrl] = iceBroker;
-  return iceBrokers[iceUrl];
+  iceBrokers[fundid] = iceBroker;
+  return iceBrokers[fundid];
 }
