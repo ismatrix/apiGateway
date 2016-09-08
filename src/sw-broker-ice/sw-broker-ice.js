@@ -3,13 +3,17 @@ import createDebug from 'debug';
 import events from 'events';
 import { Trade } from './TradeSession';
 import { CM } from './Common';
+import { funds as fundsDB } from '../config';
 
 const iceBrokers = {};
 
-export default function createIceBroker(iceUrl, fundID) {
-  if (iceUrl in iceBrokers) return iceBrokers[iceUrl];
+export default function createIceBroker(fundid) {
+  if (fundid in iceBrokers) return iceBrokers[fundid];
 
-  const debug = createDebug(`sw-broker-ice:${fundID}`);
+  const dbFund = fundsDB.find((fund) => fund.fundid === fundid);
+  const iceUrl = `sender:tcp -p ${dbFund.service.port} -h ${dbFund.service.ip}`;
+
+  const debug = createDebug(`sw-broker-ice:${fundid}`);
   const event = new events.EventEmitter();
   let setCallbackReturn = -1;
   let isCreateSessionPending = false;
@@ -17,19 +21,19 @@ export default function createIceBroker(iceUrl, fundID) {
   let server;
 
   const onIceCallback = {
-    onDone(fundid, done, account, position) {
-      debug('fundid: %o', fundid);
+    onDone(fundID, done, account, position) {
+      debug('fundid: %o', fundID);
       debug('done: %o', done);
       debug('account: %o', account);
       debug('position: %o', position);
       // Object.assign(order, { fundid });
-      this.emit('done', fundid);
+      this.emit('execution', fundID);
     },
-    onOrder(fundid, order) {
-      debug('fundid: %o', fundid);
+    onOrder(fundID, order) {
+      debug('fundid: %o', fundID);
       debug('order: %o', order);
-      Object.assign(order, { fundid });
-      this.emit('order', order);
+      Object.assign(order, { fundid: fundID });
+      this.emit('placement', order);
     },
   };
   const onIceCallbackEvent = Object.assign(Object.create(event), onIceCallback);
@@ -109,7 +113,7 @@ export default function createIceBroker(iceUrl, fundID) {
 
       [setCallbackReturn] = await Promise.all([
         server.setCallBack(r.ice_getIdentity()),
-        server.subscribe('apiGateway', fundID),
+        server.subscribe('apiGateway', fundid),
       ]);
       debug('Successfully setCallBack %o', setCallbackReturn);
 
@@ -160,7 +164,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryPosition = async (fundid) => {
+  const queryPosition = async () => {
     try {
       await ensureConnection();
       const result = await server.queryPosition(fundid);
@@ -171,7 +175,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryOrders = async (fundid) => {
+  const queryOrders = async () => {
     try {
       await ensureConnection();
       const result = await server.queryOrder(fundid);
@@ -183,7 +187,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryDone = async (fundid) => {
+  const queryDone = async () => {
     try {
       await ensureConnection();
       const result = await server.queryDone(fundid);
@@ -205,7 +209,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryRawPosition = async (fundid, from = 0) => {
+  const queryRawPosition = async (from = 0) => {
     try {
       await ensureConnection();
       const result = await server.jsonQueryPosition(fundid, from);
@@ -216,7 +220,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryRawOrder = async (fundid, from = 0) => {
+  const queryRawOrder = async (from = 0) => {
     try {
       await ensureConnection();
       const result = await server.jsonQueryOrder(fundid, from);
@@ -227,7 +231,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const queryRawDone = async (fundid, from = 0) => {
+  const queryRawDone = async (from = 0) => {
     try {
       await ensureConnection();
       const result = await server.jsonQueryDone(fundid, from);
@@ -241,7 +245,6 @@ export default function createIceBroker(iceUrl, fundID) {
   const order = async (orderObj) => {
     try {
       const {
-        fundid,
         exchangeid,
         instrumentid,
         direction,
@@ -278,7 +281,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const cancelOrder = async (fundid, instrumentid, privateno, orderno) => {
+  const cancelOrder = async (instrumentid, privateno, orderno) => {
     try {
       debug('cancelOrder() orderno: %o', orderno);
       await ensureConnection();
@@ -311,7 +314,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const subscribe = async (moduleName, fundid) => {
+  const subscribe = async (moduleName) => {
     try {
       await ensureConnection();
 
@@ -327,7 +330,7 @@ export default function createIceBroker(iceUrl, fundID) {
     }
   };
 
-  const unsubscribe = async (moduleName, fundid) => {
+  const unsubscribe = async (moduleName) => {
     try {
       await ensureConnection();
 

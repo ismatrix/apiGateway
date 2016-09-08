@@ -1018,6 +1018,26 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /token:
+    get:
+      tags:
+        - Socket.IO
+      summary: Get the user token on wechat scan
+      responses:
+        '200':
+          description: Token generated on wechat scan
+          schema:
+            type: object
+            required:
+              - ok
+              - token
+            properties:
+              ok:
+                type: boolean
+                default: true
+              token:
+                type: string
+                example: 'eyJ0eXAiOiJKV1QiCCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJpYXQiOjE0NjY1ODE5NTh9.dwkwBdAb7bdbW8ey4PhZ6Zodhyo_4SMbkoMub1N4eCY'
   /setToken:
     post:
       tags:
@@ -1034,6 +1054,8 @@ paths:
           description: Quotes for a contract
           schema:
             type: object
+            required:
+              - ok
             properties:
               ok:
                 type: boolean
@@ -1063,10 +1085,10 @@ paths:
               ok:
                 type: boolean
                 default: true
-  orders/unsubscribe:
+  funds/unsubscribe:
     post:
       tags:
-        - Orders.IO
+        - Funds.IO
       summary: Unsubscribe orders placement and execution of a fund
       parameters:
         - name: body
@@ -1084,20 +1106,20 @@ paths:
               ok:
                 type: boolean
                 default: true
-  orders/placement:
+  funds/order:
     get:
       tags:
-        - Orders.IO
-      summary: Receive an order placement object
+        - Funds.IO
+      summary: Receive an event for any order change
       responses:
         '200':
           description: The order placement
           schema:
             $ref: '#/definitions/Order'
-  orders/execution:
+  funds/done:
     get:
       tags:
-        - Orders.IO
+        - Funds.IO
       summary: Receive an order execution object
       responses:
         '200':

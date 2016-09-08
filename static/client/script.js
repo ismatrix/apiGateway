@@ -1,8 +1,27 @@
 // // TIP: io() with no args does auto-discovery
 const socket = io();
 const markets = io.connect('/markets');
+let orders = io.connect('/funds')
+
 const myToken = { token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0' };
 const sub = { type: 'futures', symbol: 'IF1607', resolution: 'tick'};
+
+// setTimeout(() => socket.emit('setToken', 'bad token'), 3000);
+// setTimeout(() => socket.emit('seeToken'), 4000);
+// // setTimeout(() => orders.emit('seeToken'), 5000);
+// setTimeout(() => socket.emit('setToken', myToken), 2000);
+// setTimeout(() => {
+//   console.log('call io.connect(orders)');
+//   orders = io.connect('/orders');
+//   orders.on('error', function(err){
+//     // do something with err
+//     console.log('orders.on ERROR %s', err.message);
+//   });
+// }, 5000);
+// setTimeout(() => orders.emit('seeToken'), 6000);
+// setTimeout(() => orders.emit('secretOrder'), 3000);
+// setTimeout(() => socket.emit('secretOrder'), 3000);
+// setTimeout(() => orders.emit('secretOrder'), 3000);
 
 const allSymbols =  [
     {
@@ -517,18 +536,23 @@ const allSymbols =  [
     }
   ];
 
-markets.emit('authenticate', myToken);
-markets.on('unauthorized', function(error) {
-  if (error.data.type === 'UnauthorizedError' || error.data.code === 'invalid_token') {
-    console.log('token EXPIRED');
-  }
+// markets.emit('authenticate', myToken);
+// markets.on('unauthorized', function(error) {
+//   if (error.data.type === 'UnauthorizedError' || error.data.code === 'invalid_token') {
+//     console.log('token EXPIRED');
+//   }
+// });
+// markets.on('authenticated', function() {
+//   console.log('User authenticated');
+//   // markets.on('tick', (data) => console.log(data));
+//   markets.on('minute', (data) => console.log(data));
+//   // markets.emit('subscribe', { type: 'futures', symbol: 'IF1608', resolution: 'tick' });
+// });
+
+socket.on('connect', function() {
+  socket.emit('setToken', myToken, function(response) { console.log(response) });
 });
-markets.on('authenticated', function() {
-  console.log('User authenticated');
-  // markets.on('tick', (data) => console.log(data));
-  markets.on('minute', (data) => console.log(data));
-  // markets.emit('subscribe', { type: 'futures', symbol: 'IF1608', resolution: 'tick' });
-});
+
 
 const WatchList = React.createClass({
   unsubscribe(symbol) {
