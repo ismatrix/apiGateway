@@ -1064,10 +1064,10 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
-  orders/subscribe:
+  funds/subscribe:
     post:
       tags:
-        - Orders.IO
+        - Funds.IO
       summary: Subscribe orders placement and execution of a fund
       parameters:
         - name: body
