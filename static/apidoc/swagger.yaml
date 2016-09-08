@@ -1125,7 +1125,7 @@ paths:
         '200':
           description: The trade
           schema:
-            $ref: '#/definitions/Order'
+            $ref: '#/definitions/Trade'
   funds/account:
     get:
       tags:
@@ -1135,7 +1135,7 @@ paths:
         '200':
           description: The account
           schema:
-            $ref: '#/definitions/Order'
+            $ref: '#/definitions/Account'
   funds/positions:
     get:
       tags:
@@ -1147,7 +1147,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Order'
+              $ref: '#/definitions/Position'
   markets/subscribe:
     post:
       tags:
@@ -1318,6 +1318,182 @@ definitions:
       updatetime:
         type: string
         example: 最后修改时间
+  Trade:
+    type: object
+    required:
+      - tradingday
+    properties:
+      tradingday:
+        type: string
+        description: 交易日 ctp.TradingDay/系统维护
+      fundid:
+        type: string
+        description: 基金标识，ctp.InvestorID/st.cell_id
+      requestid:
+        type: string
+        description: 接口请求标识
+      brokerid:
+        type: string
+        description: 期货经纪公司标识 ctp.BrokerID/st.cell_id
+      orderid:
+        type: string
+        description: 委托报单编号 ctp.OrderSysID/st.order_no
+      tradeid:
+        type: string
+        description: 成交编号 ctp.TradeID/st.trade_id
+      exchangeid:
+        type: string
+        description: 交易所代码 ctp.ExchangeID/st.-1
+      direction:
+        type: string
+        description: 买卖方向 ctp.Direction/st.bs ('L'买入 'S'卖出)
+      offsetflag:
+        type: string
+        description: 开平标志 ctp.OffsetFlag/st.offset_flag ('O'开仓 'C'平仓)
+      hedgeflag:
+        type: string
+        description: 投机套保标志 ctp.HedgeFlag/st.hedge_flag '0' 投机/非备兑 '1' 保值/备兑   '2' 套利
+      price:
+        type: number
+        description: 成交价格 ctp.Price/st.done_price
+      volume:
+        type: number
+        description: 成交数量 ctp.Volume/st.done_vol
+      tradedate:
+        type: string
+        description: 成交时期yyyymmdd ctp.TradeDate/st.done_date
+      tradetime:
+        type: string
+        description: 成交时间hh24miss ctp.TradeTime/st.done_time
+      updatedate:
+        type: string
+        description: 纪录最新更新时间 time(NULL)
+      instrumentid:
+        type: string
+        description: 合约代码 ctp.InstrumentID/st.sec_code
+  Account:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        description: 交易日 ctp.TradingDay
+      fundid:
+        type: string
+        description: 账户标识 ctp.AccountID/st.cell_id
+      prebalance:
+        type: number
+        description: 昨日余额 ctp.PreBalance/st.dthis_bal
+      premargin:
+        type: number
+        description: 上次占用的保证金 ctp.PreMargin/st.null
+      requestid:
+        type: string
+        description: 接口请求标识
+      balance:
+        type: number
+        description: 期货结算准备金 ctp.Balance/st.deposite
+      available:
+        type: number
+        description: 可用资金  ctp.Available/st.available
+      margin:
+        type: number
+        description: 当前保证金总额 ctp.CurrMargin/st.margin
+      incap:
+        type: number
+        description: 入金金额 ctp.Deposit/st.incap
+      outcap:
+        type: number
+        description: 出金金额 ctp.Withdraw/st.outcap
+      commission:
+        type: number
+        description: 开仓手续费
+      closeprofit:
+        type: number
+        description: 盯日平仓盈亏合计
+      positionprofit:
+        type: number
+        description: 盯日持仓盈亏合计
+      updatedate:
+        type: string
+        description: 信息更新日期
+  Position:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        description: 交易日 ctp.TradingDay
+      fundid:
+        type: string
+        description: 账户标识 ctp.InvestorID/st.cell_id
+      brokerid:
+        type: string
+        description: 期货经纪公司标识 ctp.BrokerID/st.cell_id
+      requestid:
+        type: string
+        description: ctp接口请求标识
+      tradeid:
+        type: string
+        description: 成交编号 Done中的成交编号
+      instrumentid:
+        type: string
+        description: 合约代码 ctp.InstrumentID/st.sec_code
+      direction:
+        type: string
+        description: 多空方向 ctp.PosiDirection/st.bs
+      hedgeflag:
+        type: string
+        description: 投机套保标志 ctp.HedgeFlag/st.hedge_flag
+      preposition:
+        type: number
+        description: 昨日总持仓 ctp.YdPosition/st.pre_total_vol
+      preholdposition:
+        type: number
+        description: 昨日余仓
+      position:
+        type: number
+        description: 今日总持仓 ctp.Position/st.avail_vol
+      openvolume:
+        type: number
+        description: 今开仓量 ctp.OpenVolume/st.buy_vol
+      closevolume:
+        type: number
+        description: 今平仓量 ctp.CloseVolume/st.sell_vol
+      openamount:
+        type: number
+        description: 今开仓金额 ctp.OpenAmount/st.buy_done_amt
+      closeamount:
+        type: number
+        description: 今平仓金额 ctp.CloseAmount/st.sell_done_amt
+      opencost:
+        type: number
+        description: 今开仓均价 (ctp.OpenAmount/ctp.OpenVolume) /
+      positioncost:
+        type: number
+        description: 持仓成本 ctp.PositionCost/st.total_cost
+      premargin:
+        type: number
+        description: 昨天占用的保证金 ctp.PreMargin/st.yd_usemargin
+      margin:
+        type: number
+        description: 当前占用的保证金 ctp.UseMargin/st.total_margin
+      opencommission:
+        type: number
+        description: 开仓手续费-TThostFtdcMoneyType-double
+      closecommission:
+        type: number
+        description: 平仓手续费-TThostFtdcMoneyType-double
+      closeprofit:
+        type: number
+        description: 盯日平仓盈亏
+      positionprofit:
+        type: number
+        description: 盯日持仓盈亏
+      totalprofile:
+        type: number
+        description: 累计实现盈亏
+      updatedate:
+        type: string
+        description: 最新更新时间
   OrderPost:
     type: object
     required:
