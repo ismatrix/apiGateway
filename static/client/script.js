@@ -860,14 +860,23 @@ const HomePage = React.createClass({
     const symbolsArr = symbols.split(',');
 
     for (const symbol of symbolsArr) {
-      funds.emit('subscribe', { fundid: symbol });
+      funds.emit('subscribe', { fundid: symbol },
+      (order) => {
+        console.log(order);
+      });
     }
   },
   unsubscribeFund(symbols) {
     const symbolsArr = symbols.split(',');
 
     for (const symbol of symbolsArr) {
-      funds.emit('unsubscribe', { fundid: symbol });
+      funds.emit(
+        'unsubscribe',
+        { fundid: symbol },
+        (order) => {
+          console.log(order);
+        }
+      );
     }
   },
   render() {

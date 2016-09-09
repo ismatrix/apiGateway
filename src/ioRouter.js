@@ -7,6 +7,7 @@ import iceLive from './sw-datafeed-icelive';
 import createIceBroker from './sw-broker-ice';
 
 const debug = createDebug('ioRouter');
+const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
   io.use((socket, next) => {
@@ -141,44 +142,38 @@ export default function ioRouter(io) {
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
-        const oldFundsRooms = Object.keys(fundsIO.adapter.rooms);
-        debug('oldFundsRooms %o', oldFundsRooms);
+        const iceBroker = createIceBroker(data.fundid);
+        const eventNames = ['order', 'trade', 'account', 'positions'];
 
         socket.join(
           data.fundid,
           (error) => {
             try {
               if (error) throw error;
-              const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
-              debug('newFundsRooms %o', newFundsRooms);
 
-              const createdFundsRooms = difference(newFundsRooms, oldFundsRooms);
-              debug('createdFundsRooms %o', createdFundsRooms);
-
-              for (const fundid of createdFundsRooms) {
-                debug('fundid from room name %o', fundid);
-                const iceBroker = createIceBroker(fundid);
-
-                debug('iceBroker.eventNames() %o', iceBroker.eventNames());
-
-                const eventNames = ['order', 'trade', 'account', 'positions'];
-                const hasListenerEventNames = iceBroker.eventNames();
-
-                const needRegisterEvents = difference(eventNames, hasListenerEventNames);
-                debug('needRegisterEvents %o', needRegisterEvents);
-
-                for (const eventName of needRegisterEvents) {
-                  iceBroker.on(eventName, eventData => {
-                    fundsIO.to(fundid).emit(eventName, eventData);
-                  });
-                }
-
-                debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+              let needRegisterEvents;
+              if (data.fundid in fundsRegisteredEvents) {
+                needRegisterEvents = difference(
+                  eventNames, fundsRegisteredEvents[data.fundid]);
+              } else {
+                fundsRegisteredEvents[data.fundid] = [];
+                needRegisterEvents = eventNames;
               }
+
+              debug('needRegisterEvents %o', needRegisterEvents);
+              for (const eventName of needRegisterEvents) {
+                iceBroker.on(eventName, eventData => {
+                  fundsIO.to(data.fundid).emit(eventName, eventData);
+                });
+                fundsRegisteredEvents[data.fundid].push(eventName);
+              }
+
+              debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
+              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
               if (callback) callback({ ok: true });
-            } catch (error1) {
-              debug('fundsIO.on(subscribe) Error: %o', error1);
-              if (callback) callback({ ok: false, error: error1.message });
+            } catch (err) {
+              debug('fundsIO.on(subscribe) Error: %o', err);
+              if (callback) callback({ ok: false, error: err.message });
             }
           }
         );
