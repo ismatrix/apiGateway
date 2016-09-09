@@ -1320,67 +1320,95 @@ definitions:
     properties:
       fundid:
         type: string
-        example: "1296"
+        example: "068074"
+        description: "1296"
       frontid:
         type: string
-        example: 只有ctp用到
+        example: "1"
+        description: 只有ctp用到
       sessionid:
         type: string
-        example: 连接id 撤单的时候用到
+        example: "1066350050"
+        description: 连接id 撤单的时候用到
       privateno:
         type: string
-        example: ctp.OrderRef / st.private_no
+        example: "1094822442"
+        description: ctp.OrderRef / st.private_no
       exchangeid:
         type: string
-        example: 市场代码	ctp.ExchangID / st.MarketCode
+        example: "CZCE"
+        description: 市场代码	ctp.ExchangID / st.MarketCode
       orderid:
         type: string
-        example:	ctp.OrderSysID / st.order_no
+        example: ""
+        description:	ctp.OrderSysID / st.order_no
       tradingday:
         type: string
-        example: "20160801"
+        example: "20160909"
+        description: the trading day
       brokerid:
         type: string
-        example: 经纪
+        example: "9999"
+        description: 经纪
       requestid:
         type: string
-        example: 请求id
+        example: "1094822442"
+        description: 请求id
       instrumentid:
         type: string
-        example: "IF1609"
+        example: "MA612"
+        description: "IF1609"
       direction:
         type: string
-        example: 多空
+        example: "L"
+        description: 多空
       offsetflag:
         type: string
-        example: 开平标志
+        example: "O"
+        description: 开平标志
       hedgeflag:
         type: string
-        example: 套保标志
+        example: "1"
+        description: 套保标志
       price:
         type: string
-        example: 委托价格
+        example: 2048
+        description: 委托价格
       volume:
-        type: string
-        example: 委托数量
+        type: number
+        example: 1
+        description: 委托数量
       ordertype:
         type: string
-        example: 委托类型
+        example: "0"
+        description: 委托类型
       orderstatus:
         type: string
-        example: 报单状态
+        example: "a"
+        description: 报单状态
       volumetraded:
-        type: string
-        example: 报单状态
+        type: number
+        example: 0
+        description: 报单状态
       insertdatetime:
         type: string
-        example: example
+        example: "20160909"
+        description: description
       ordertime:
         type: string
-        example: 委托时间  期货公司给交易所
+        example: ""
+        description: 委托时间  期货公司给交易所
+      oerrno:
+        type: number
+        example: 0
+        description: 下单 或者 撤单失败 返回码 下单失败返回-1   撤单失败返回-2  0表示成功
+      oerrmsg:
+        type: string
+        example: "报单已提交"
+        description: 错误信息
       updatetime:
         type: string
-        example: 最后修改时间
+        description: 最后修改时间
   Trade:
     type: object
     required:
