@@ -478,6 +478,12 @@ paths:
       summary: Get a fund account
       tags:
         - Accounts
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
       responses:
         '200':
           description: The account data
@@ -606,6 +612,12 @@ paths:
       summary: Get the trades of the current tradingday
       tags:
         - Trades
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
       responses:
         '200':
           description: The trades data
@@ -627,6 +639,12 @@ paths:
       summary: Get the current positions
       tags:
         - Positions
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
       responses:
         '200':
           description: The positions data
