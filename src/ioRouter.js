@@ -2,11 +2,13 @@ import createDebug from 'debug';
 import through from 'through2';
 import jwt from 'jsonwebtoken';
 import { difference } from 'lodash';
-import { jwtSecret, wechatConfig } from './config';
+import { jwtSecret, wechatGZHConfig, wechatConfig } from './config';
 import iceLive from './sw-datafeed-icelive';
 import createIceBroker from './sw-broker-ice';
+import createGzh from './sw-weixin-gzh';
 
 const debug = createDebug('ioRouter');
+const gzh = createGzh(wechatGZHConfig);
 const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
@@ -17,6 +19,26 @@ export default function ioRouter(io) {
   });
   io.on('connection', (socket) => {
     debug('%o connected to SOCKET', socket.id);
+
+    socket.on('getQRCodeURL', async (data, callback) => {
+      try {
+        const redirectURI = `https://api.invesmart.net/api/public/auth/wechat\
+&response_type=code\
+&scope=snsapi_base\
+&state=${socket.id}`;
+
+        const longURL = `https://open.weixin.qq.com/connect/oauth2/authorize?\
+appid=${wechatConfig.corpId}\
+&redirect_uri=${redirectURI}#wechat_redirect`;
+
+        const qrCodeURL = await gzh.getShortURL(longURL);
+
+        if (callback) callback({ ok: true, qrCodeURL });
+      } catch (error) {
+        debug('getQRCodeURL Error: %o', error);
+        if (callback) callback({ ok: false, error: error.message });
+      }
+    });
 
     socket.on('setToken', async (data, callback) => {
       try {

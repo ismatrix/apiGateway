@@ -550,6 +550,7 @@ const allSymbols =  [
 // });
 
 socket.on('connect', function() {
+  socket.emit('getQRCodeURL', {}, function(response) { console.log(response) });
   socket.emit('setToken', myToken, function(response) { console.log(response) });
 });
 

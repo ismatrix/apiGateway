@@ -169,6 +169,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.queryAccount();
+        // debug('queryAccounts result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryAccounts() Error: %o', error);
@@ -180,6 +182,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.queryPosition(fundid);
+        // debug('queryPositions result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryPositions() Error: %o', error);
@@ -191,7 +195,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.queryOrder(fundid);
-        debug('orders %o', result);
+        // debug('queryOrders result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryOrders() Error: %o', error);
@@ -203,6 +208,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.queryDone(fundid);
+        // debug('queryTrades result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryTrades() Error: %o', error);
@@ -214,6 +221,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.jsonQueryAccount(from);
+        // debug('queryRawAccount result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryRawAccount() Error: %o', error);
@@ -225,6 +234,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.jsonQueryPosition(fundid, from);
+        // debug('queryRawPosition result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryRawPosition() Error: %o', error);
@@ -236,6 +247,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.jsonQueryOrder(fundid, from);
+        // debug('queryRawOrder result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryRawOrder() Error: %o', error);
@@ -247,6 +260,8 @@ export default function createIceBroker(fundid) {
       try {
         await ensureConnection();
         const result = await server.jsonQueryDone(fundid, from);
+        // debug('queryRawDone result: %o', result);
+
         return result;
       } catch (error) {
         debug('queryRawDone() Error: %o', error);
@@ -270,7 +285,7 @@ export default function createIceBroker(fundid) {
         } = orderObj;
 
         await ensureConnection();
-        debug('order %o', orderObj);
+        debug('order result: %o', orderObj);
         const result = await server.doOrder(new CM.DoOrder(
           fundid,
           exchangeid,
@@ -299,7 +314,7 @@ export default function createIceBroker(fundid) {
         await ensureConnection();
 
         const result = await server.cancleOrder(fundid, instrumentid, privateno, orderno);
-        debug('orders %o', result);
+        debug('cancelOrder result: %o', result);
 
         if (result !== 0) throw new Error(`the ice method invocation returned ${result}`);
 
@@ -315,7 +330,7 @@ export default function createIceBroker(fundid) {
         await ensureConnection();
 
         const result = await server.updatePassword(oldPassword, newPassword);
-        debug('orders %o', result);
+        debug('updatePassword result: %o', result);
 
         if (result !== 0) throw new Error(`the ice method invocation returned ${result}`);
 
@@ -331,7 +346,7 @@ export default function createIceBroker(fundid) {
         await ensureConnection();
 
         const result = await server.subscribe(moduleName, fundid);
-        debug('orders %o', result);
+        debug('subscribe result: %o', result);
 
         if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
 
@@ -347,7 +362,7 @@ export default function createIceBroker(fundid) {
         await ensureConnection();
 
         const result = await server.unSubscribe(moduleName, fundid);
-        debug('orders %o', result);
+        debug('unsubscribe result: %o', result);
 
         if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
 

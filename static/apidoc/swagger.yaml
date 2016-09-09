@@ -1145,6 +1145,35 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
+  /getQRCodeURL:
+    post:
+      tags:
+        - Socket.IO
+      summary: Get a short URL QR code for wechat scan
+      parameters:
+        - name: body
+          in: body
+          description: Send an empty object
+          required: true
+          schema:
+            type: object
+            example: {}
+      responses:
+        '200':
+          description: QR Code
+          schema:
+            type: object
+            required:
+              - ok
+              - qrCodeURL
+            properties:
+              ok:
+                type: boolean
+                default: true
+              qrCodeURL:
+                type: string
+                example: http://w.url.cn/s/AsDdGZ5
+      security: []
   funds/subscribe:
     post:
       tags:
