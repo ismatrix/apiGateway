@@ -165,24 +165,24 @@ export default function createIceBroker(fundid) {
       });
     }
 
-    const queryAccount = async () => {
+    const queryAccounts = async () => {
       try {
         await ensureConnection();
         const result = await server.queryAccount();
         return result;
       } catch (error) {
-        debug('queryAccount() Error: %o', error);
+        debug('queryAccounts() Error: %o', error);
         throw error;
       }
     };
 
-    const queryPosition = async () => {
+    const queryPositions = async () => {
       try {
         await ensureConnection();
         const result = await server.queryPosition(fundid);
         return result;
       } catch (error) {
-        debug('queryPosition() Error: %o', error);
+        debug('queryPositions() Error: %o', error);
         throw error;
       }
     };
@@ -199,13 +199,13 @@ export default function createIceBroker(fundid) {
       }
     };
 
-    const queryDone = async () => {
+    const queryTrades = async () => {
       try {
         await ensureConnection();
         const result = await server.queryDone(fundid);
         return result;
       } catch (error) {
-        debug('queryDone() Error: %o', error);
+        debug('queryTrades() Error: %o', error);
         throw error;
       }
     };
@@ -361,10 +361,10 @@ export default function createIceBroker(fundid) {
     const iceBrokerBase = {
       connect,
 
-      queryAccount,
-      queryPosition,
+      queryAccounts,
+      queryPositions,
       queryOrders,
-      queryDone,
+      queryTrades,
 
       queryRawAccount,
       queryRawPosition,
