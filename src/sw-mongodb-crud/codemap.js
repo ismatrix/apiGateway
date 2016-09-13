@@ -312,7 +312,50 @@ async function init() {
         { key: 'best', zh: '最优价', ctp: 3, sungard: 2 },
         { key: 'last', zh: '最新价', ctp: 4, sungard: -1 },
         ],
-      }];
+      },
+      {
+        catalog: 'signalin.name',
+        name: '信号进场名称',
+        description: '委托单信号进场标识名称',
+        items: [
+        { key: 'first', zh: '首次进场' },
+        { key: 'add', zh: '加仓' },
+        ],
+      },
+      {
+        catalog: 'signalout.name',
+        name: '信号出场名称',
+        description: '委托单信号出场名称',
+        items: [
+        { key: 'stoploss', zh: '止损' },
+        { key: 'stopwin', zh: '止盈' },
+        { key: 'left', zh: '仓位离场（裸奔仓）' },
+        ],
+      },
+      {
+        catalog: 'riskcontrol.name',
+        name: '风控出场出名称',
+        description: '委托单风控出场出名称',
+        items: [
+        { key: 'drawdowninday', zh: '日内回撤触发' },
+        { key: 'drawdowntotal', zh: '累积回撤触发' },
+        { key: 'netting', zh: '轧差触发' },
+        { key: 'margin', zh: '保证金仓位触发' },
+        { key: 'lever', zh: '杠杆触发' },
+        { key: 'positionlimit', zh: '大户持仓触发' },
+        ],
+      },
+      {
+        catalog: 'monetary.state',
+        name: '货币基金状态',
+        description: '货币基金状态',
+        items: [
+        { key: 'valid', zh: '有效' },
+        { key: 'invalid', zh: '无效' },
+        { key: 'expired', zh: '过期' },
+        ],
+      },
+    ];
     const ret = await add(docs);
     return ret;
   } catch (error) {
