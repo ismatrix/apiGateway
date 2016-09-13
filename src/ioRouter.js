@@ -2,11 +2,14 @@ import createDebug from 'debug';
 import through from 'through2';
 import jwt from 'jsonwebtoken';
 import { difference } from 'lodash';
-import { jwtSecret, wechatConfig } from './config';
+import { jwtSecret, wechatGZHConfig, wechatConfig } from './config';
 import iceLive from './sw-datafeed-icelive';
 import createIceBroker from './sw-broker-ice';
+import createGzh from './sw-weixin-gzh';
 
 const debug = createDebug('ioRouter');
+const gzh = createGzh(wechatGZHConfig);
+const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
   io.use((socket, next) => {
@@ -16,6 +19,26 @@ export default function ioRouter(io) {
   });
   io.on('connection', (socket) => {
     debug('%o connected to SOCKET', socket.id);
+
+    socket.on('getQRCodeURL', async (data, callback) => {
+      try {
+        const redirectURI = `https://api.invesmart.net/api/public/auth/wechat\
+&response_type=code\
+&scope=snsapi_base\
+&state=${socket.id}`;
+
+        const longURL = `https://open.weixin.qq.com/connect/oauth2/authorize?\
+appid=${wechatConfig.corpId}\
+&redirect_uri=${redirectURI}#wechat_redirect`;
+
+        const qrCodeURL = await gzh.getShortURL(longURL);
+
+        if (callback) callback({ ok: true, qrCodeURL });
+      } catch (error) {
+        debug('getQRCodeURL Error: %o', error);
+        if (callback) callback({ ok: false, error: error.message });
+      }
+    });
 
     socket.on('setToken', async (data, callback) => {
       try {
@@ -141,33 +164,39 @@ export default function ioRouter(io) {
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
-        const oldFundsRooms = Object.keys(fundsIO.adapter.rooms);
-        debug('oldFundsRooms %o', oldFundsRooms);
+        const iceBroker = createIceBroker(data.fundid);
+        const eventNames = ['order', 'trade', 'account', 'positions'];
 
         socket.join(
-          data.fundid.concat(':', 'order'),
+          data.fundid,
           (error) => {
-            if (error) throw error;
-            socket.join(
-              data.fundid.concat(':', 'trade'),
-              (err) => {
-                if (err) throw err;
-                const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
-                debug('newFundsRooms %o', newFundsRooms);
+            try {
+              if (error) throw error;
 
-                const createdFundsRooms = difference(oldFundsRooms, newFundsRooms);
-                debug('createdFundsRooms %o', createdFundsRooms);
-
-                for (const fundsRoom of createdFundsRooms) {
-
-                  const iceBroker = createIceBroker(fundid);
-                  iceBroker.on('order', order => {
-                    fundsIO.to(order.fundid.concat(':', 'order')).emit('order', order);
-                  });
-                }
-                if (callback) callback({ ok: true });
+              let needRegisterEvents;
+              if (data.fundid in fundsRegisteredEvents) {
+                needRegisterEvents = difference(
+                  eventNames, fundsRegisteredEvents[data.fundid]);
+              } else {
+                fundsRegisteredEvents[data.fundid] = [];
+                needRegisterEvents = eventNames;
               }
-            );
+
+              debug('needRegisterEvents %o', needRegisterEvents);
+              for (const eventName of needRegisterEvents) {
+                iceBroker.on(eventName, eventData => {
+                  fundsIO.to(data.fundid).emit(eventName, eventData);
+                });
+                fundsRegisteredEvents[data.fundid].push(eventName);
+              }
+
+              debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
+              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+              if (callback) callback({ ok: true });
+            } catch (err) {
+              debug('fundsIO.on(subscribe) Error: %o', err);
+              if (callback) callback({ ok: false, error: err.message });
+            }
           }
         );
       } catch (error) {
@@ -180,6 +209,9 @@ export default function ioRouter(io) {
       try {
         debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
+
+        const oldFundsRooms = Object.keys(fundsIO.adapter.rooms);
+        debug('oldFundsRooms %o', oldFundsRooms);
 
         if (data.fundid === 'all') {
           const rooms = Object.keys(socket.rooms);
@@ -201,18 +233,22 @@ export default function ioRouter(io) {
           if (callback) callback({ ok: true });
         } else {
           socket.leave(
-            data.fundid.concat(':', 'placement'),
+            data.fundid,
             (error) => {
               if (error) throw error;
-              socket.leave(
-                data.fundid.concat(':', 'execution'),
-                (err) => {
-                  if (err) throw err;
-                  if (callback) callback({ ok: true });
-                }
-              );
+              if (callback) callback({ ok: true });
             }
           );
+        }
+
+        const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
+        debug('newFundsRooms %o', newFundsRooms);
+
+        const removedFundsRooms = difference(oldFundsRooms, newFundsRooms);
+        debug('removedFundsRooms %o', removedFundsRooms);
+
+        for (const fundid of removedFundsRooms) {
+          debug('nobody in room %o', fundid);
         }
       } catch (error) {
         debug('fundsIO.on(unsubscribe) Error: %o', error);

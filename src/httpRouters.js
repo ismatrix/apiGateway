@@ -3,7 +3,10 @@ import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
 import * as funds from './api/funds';
+import * as accounts from './api/accounts';
 import * as orders from './api/orders';
+import * as trades from './api/trades';
+import * as positions from './api/positions';
 import * as markets from './api/markets';
 import * as codemap from './api/codemap';
 import { canKoa } from './acl';
@@ -109,6 +112,13 @@ apiRouter
   ;
 
 apiRouter
+  .get('/accounts', async ctx => {
+    const fundid = ctx.query.fundid;
+    ctx.body = await accounts.getAccounts(fundid);
+  })
+  ;
+
+apiRouter
   .get('/orders', async ctx => {
     const fundid = ctx.query.fundid;
     ctx.body = await orders.getOrders(fundid);
@@ -124,6 +134,20 @@ apiRouter
   .delete('/order', async ctx => {
     const orderToDelete = ctx.request.body;
     ctx.body = await orders.deleteOrder(orderToDelete);
+  })
+  ;
+
+apiRouter
+  .get('/trades', async ctx => {
+    const fundid = ctx.query.fundid;
+    ctx.body = await trades.getTrades(fundid);
+  })
+  ;
+
+apiRouter
+  .get('/positions', async ctx => {
+    const fundid = ctx.query.fundid;
+    ctx.body = await positions.getPositions(fundid);
   })
   ;
 

@@ -1,0 +1,16 @@
+{
+  "name": "sw-weixin-qydev",
+  "version": "1.0.0",
+  "description": "Smartwin implementation of wechat corp (威信企业号) API",
+  "main": "sw-weixin-gzh.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-fetch": "^1.6.0",
+    "boom": "^3.2.2",
+    "debug": "^2.2.0"
+  }
+}

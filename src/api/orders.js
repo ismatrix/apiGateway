@@ -1,7 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import createIceBroker from '../sw-broker-ice';
-import { funds } from '../config';
 
 const debug = createDebug('api:orders');
 
@@ -9,12 +8,9 @@ export async function getOrders(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fund = funds.find((aFund) => aFund.fundid === fundid);
-    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
-    debug('iceUrl %o', iceUrl);
-    const iceBroker = createIceBroker(iceUrl, fundid);
+    const iceBroker = createIceBroker(fundid);
 
-    const orders = await iceBroker.queryOrders(fundid);
+    const orders = await iceBroker.queryOrders();
 
     return { ok: true, orders };
   } catch (error) {
@@ -31,7 +27,7 @@ export async function getOrder(orderno) {
 
     return { ok: true, order };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('getOrder() Error: %o', error);
     throw error;
   }
 }
@@ -47,15 +43,14 @@ export async function postOrder(order) {
     if (!order.volume) throw Boom.badRequest('Missing volume parameter');
 
     const fundid = order.fundid;
-    const fund = funds.find((aFund) => aFund.fundid === fundid);
-    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
-    const iceBroker = createIceBroker(iceUrl, fundid);
+
+    const iceBroker = createIceBroker(fundid);
 
     await iceBroker.order(order);
 
     return { ok: true };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('postOrder() Error: %o', error);
     throw error;
   }
 }
@@ -72,15 +67,13 @@ export async function deleteOrder({
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
 
-    const fund = funds.find((aFund) => aFund.fundid === fundid);
-    const iceUrl = `sender:tcp -p ${fund.service.port} -h ${fund.service.ip}`;
-    const iceBroker = createIceBroker(iceUrl, fundid);
+    const iceBroker = createIceBroker(fundid);
 
-    await iceBroker.cancelOrder(fundid, instrumentid, privateno, orderno);
+    await iceBroker.cancelOrder(instrumentid, privateno, orderno);
 
     return { ok: true };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    debug('deleteOrder() Error: %o', error);
     throw error;
   }
 }

@@ -473,6 +473,33 @@ paths:
                 default: true
               costOuts:
                 $ref: '#/definitions/CostOuts'
+  /accounts:
+    get:
+      summary: Get a fund account
+      tags:
+        - Accounts
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The account data
+          schema:
+            type: object
+            required:
+              - ok
+              - accounts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              accounts:
+                type: array
+                items:
+                  $ref: '#/definitions/Account'
   /orders:
     get:
       summary: Get all orders
@@ -580,6 +607,60 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /trades:
+    get:
+      summary: Get the trades of the current tradingday
+      tags:
+        - Trades
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The trades data
+          schema:
+            type: object
+            required:
+              - ok
+              - trades
+            properties:
+              ok:
+                type: boolean
+                default: true
+              trades:
+                type: array
+                items:
+                  $ref: '#/definitions/Trade'
+  /positions:
+    get:
+      summary: Get the current positions
+      tags:
+        - Positions
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The positions data
+          schema:
+            type: object
+            required:
+              - ok
+              - positions
+            properties:
+              ok:
+                type: boolean
+                default: true
+              positions:
+                type: array
+                items:
+                  $ref: '#/definitions/Position'
   /markets/futures/contracts:
     post:
       tags:
@@ -1064,6 +1145,35 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
+  /getQRCodeURL:
+    post:
+      tags:
+        - Socket.IO
+      summary: Get a short URL QR code for wechat scan
+      parameters:
+        - name: body
+          in: body
+          description: Send an empty object
+          required: true
+          schema:
+            type: object
+            example: {}
+      responses:
+        '200':
+          description: QR Code
+          schema:
+            type: object
+            required:
+              - ok
+              - qrCodeURL
+            properties:
+              ok:
+                type: boolean
+                default: true
+              qrCodeURL:
+                type: string
+                example: http://w.url.cn/s/AsDdGZ5
+      security: []
   funds/subscribe:
     post:
       tags:
@@ -1120,12 +1230,34 @@ paths:
     get:
       tags:
         - Funds.IO
-      summary: Receive an order execution object
+      summary: Receive the trade informations
       responses:
         '200':
-          description: The order execution
+          description: The trade
           schema:
-            $ref: '#/definitions/Order'
+            $ref: '#/definitions/Trade'
+  funds/account:
+    get:
+      tags:
+        - Funds.IO
+      summary: Receive the account on a trade
+      responses:
+        '200':
+          description: The account
+          schema:
+            $ref: '#/definitions/Account'
+  funds/positions:
+    get:
+      tags:
+        - Funds.IO
+      summary: Receive the positions on a trade
+      responses:
+        '200':
+          description: The positions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Position'
   markets/subscribe:
     post:
       tags:
@@ -1235,67 +1367,326 @@ definitions:
     properties:
       fundid:
         type: string
-        example: "1296"
+        example: "068074"
+        description: "1296"
       frontid:
         type: string
-        example: 只有ctp用到
+        example: "1"
+        description: 只有ctp用到
       sessionid:
         type: string
-        example: 连接id 撤单的时候用到
+        example: "1066350050"
+        description: 连接id 撤单的时候用到
       privateno:
         type: string
-        example: ctp.OrderRef / st.private_no
+        example: "1094822442"
+        description: ctp.OrderRef / st.private_no
       exchangeid:
         type: string
-        example: 市场代码	ctp.ExchangID / st.MarketCode
+        example: "CZCE"
+        description: 市场代码	ctp.ExchangID / st.MarketCode
       orderid:
         type: string
-        example:	ctp.OrderSysID / st.order_no
+        example: ""
+        description:	ctp.OrderSysID / st.order_no
       tradingday:
         type: string
-        example: "20160801"
+        example: "20160909"
+        description: the trading day
       brokerid:
         type: string
-        example: 经纪
+        example: "9999"
+        description: 经纪
       requestid:
         type: string
-        example: 请求id
+        example: "1094822442"
+        description: 请求id
       instrumentid:
         type: string
-        example: "IF1609"
+        example: "MA612"
+        description: "IF1609"
       direction:
         type: string
-        example: 多空
+        example: "L"
+        description: 多空
       offsetflag:
         type: string
-        example: 开平标志
+        example: "O"
+        description: 开平标志
       hedgeflag:
         type: string
-        example: 套保标志
+        example: "1"
+        description: 套保标志
       price:
         type: string
-        example: 委托价格
+        example: 2048
+        description: 委托价格
       volume:
-        type: string
-        example: 委托数量
+        type: number
+        example: 1
+        description: 委托数量
       ordertype:
         type: string
-        example: 委托类型
+        example: "0"
+        description: 委托类型
       orderstatus:
         type: string
-        example: 报单状态
+        example: "a"
+        description: 报单状态
       volumetraded:
-        type: string
-        example: 报单状态
+        type: number
+        example: 0
+        description: 报单状态
       insertdatetime:
         type: string
-        example: example
+        example: "20160909"
+        description: description
       ordertime:
         type: string
-        example: 委托时间  期货公司给交易所
+        example: ""
+        description: 委托时间  期货公司给交易所
+      oerrno:
+        type: number
+        example: 0
+        description: 下单 或者 撤单失败 返回码 下单失败返回-1   撤单失败返回-2  0表示成功
+      oerrmsg:
+        type: string
+        example: "报单已提交"
+        description: 错误信息
       updatetime:
         type: string
-        example: 最后修改时间
+        description: 最后修改时间
+  Trade:
+    type: object
+    required:
+      - tradingday
+    properties:
+      tradingday:
+        type: string
+        example: "20160909"
+        description: 交易日 ctp.TradingDay/系统维护
+      fundid:
+        type: string
+        example: "068074"
+        description: 基金标识，ctp.InvestorID/st.cell_id
+      requestid:
+        type: string
+        example: ""
+        description: 接口请求标识
+      brokerid:
+        type: string
+        example: "9999"
+        description: 期货经纪公司标识 ctp.BrokerID/st.cell_id
+      orderid:
+        type: string
+        example: "55332"
+        description: 委托报单编号 ctp.OrderSysID/st.order_no
+      tradeid:
+        type: string
+        example: "29454"
+        description: 成交编号 ctp.TradeID/st.trade_id
+      exchangeid:
+        type: string
+        example: "SHFE"
+        description: 交易所代码 ctp.ExchangeID/st.-1
+      instrumentid:
+        type: string
+        example: "al1610"
+        description: 合约代码 ctp.InstrumentID/st.sec_code
+      direction:
+        type: string
+        example: "S"
+        description: 买卖方向 ctp.Direction/st.bs ('L'买入 'S'卖出)
+      offsetflag:
+        type: string
+        example: "O"
+        description: 开平标志 ctp.OffsetFlag/st.offset_flag ('O'开仓 'C'平仓)
+      hedgeflag:
+        type: string
+        example: "0"
+        description: 投机套保标志 ctp.HedgeFlag/st.hedge_flag '0' 投机/非备兑 '1' 保值/备兑   '2' 套利
+      price:
+        type: number
+        example: 12220
+        description: 成交价格 ctp.Price/st.done_price
+      volume:
+        type: number
+        example: 1
+        description: 成交数量 ctp.Volume/st.done_vol
+      tradedate:
+        type: string
+        example: "20160909"
+        description: 成交时期yyyymmdd ctp.TradeDate/st.done_date
+      tradetime:
+        type: string
+        example: "09:04:15"
+        description: 成交时间hh24miss ctp.TradeTime/st.done_time
+      updatedate:
+        type: string
+        example: "2016-09-09 09:03:29"
+        description: 纪录最新更新时间 time(NULL)
+  Account:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20160909"
+        description: 交易日 ctp.TradingDay
+      fundid:
+        type: string
+        example: "068074"
+        description: 账户标识 ctp.AccountID/st.cell_id
+      prebalance:
+        type: number
+        example: 948248.27
+        description: 昨日余额 ctp.PreBalance/st.dthis_bal
+      premargin:
+        type: number
+        example: 287418.1
+        description: 上次占用的保证金 ctp.PreMargin/st.null
+      requestid:
+        type: string
+        example: "1184011430"
+        description: 接口请求标识
+      balance:
+        type: number
+        example: 948248.27
+        description: 期货结算准备金 ctp.Balance/st.deposite
+      available:
+        type: number
+        example: 660830.17
+        description: 可用资金  ctp.Available/st.available
+      margin:
+        type: number
+        example: 287418.1
+        description: 当前保证金总额 ctp.CurrMargin/st.margin
+      incap:
+        type: number
+        example: 0
+        description: 入金金额 ctp.Deposit/st.incap
+      outcap:
+        type: number
+        example: 0
+        description: 出金金额 ctp.Withdraw/st.outcap
+      commission:
+        type: number
+        example: 0
+        description: 开仓手续费
+      closeprofit:
+        type: number
+        example: 0
+        description: 盯日平仓盈亏合计
+      positionprofit:
+        type: number
+        example: 0
+        description: 盯日持仓盈亏合计
+      updatedate:
+        type: string
+        example: "2016-09-08 18:40:11"
+        description: 信息更新日期
+  Position:
+    type: object
+    properties:
+      tradingday:
+        type: string
+        example: "20160909"
+        description: 交易日 ctp.TradingDay
+      fundid:
+        type: string
+        example: "068074"
+        description: 账户标识 ctp.InvestorID/st.cell_id
+      brokerid:
+        type: string
+        example: "9999"
+        description: 期货经纪公司标识 ctp.BrokerID/st.cell_id
+      requestid:
+        type: string
+        example: "1090330438"
+        description: ctp接口请求标识
+      tradeid:
+        type: string
+        example: ""
+        description: 成交编号 Done中的成交编号
+      instrumentid:
+        type: string
+        example: "IH1609"
+        description: 合约代码 ctp.InstrumentID/st.sec_code
+      direction:
+        type: string
+        example: ""
+        description: 多空方向 ctp.PosiDirection/st.bs
+      hedgeflag:
+        type: string
+        example: "0"
+        description: 投机套保标志 ctp.HedgeFlag/st.hedge_flag
+      preposition:
+        type: number
+        example: 1
+        description: 昨日总持仓 ctp.YdPosition/st.pre_total_vol
+      preholdposition:
+        type: number
+        example: 0
+        description: 昨日余仓
+      position:
+        type: number
+        example: 1
+        description: 今日总持仓 ctp.Position/st.avail_vol
+      openvolume:
+        type: number
+        example: 0
+        description: 今开仓量 ctp.OpenVolume/st.buy_vol
+      closevolume:
+        type: number
+        example: 0
+        description: 今平仓量 ctp.CloseVolume/st.sell_vol
+      openamount:
+        type: number
+        example: 0
+        description: 今开仓金额 ctp.OpenAmount/st.buy_done_amt
+      closeamount:
+        type: number
+        example: 0
+        description: 今平仓金额 ctp.CloseAmount/st.sell_done_amt
+      opencost:
+        type: number
+        example: 0
+        description: 今开仓均价 (ctp.OpenAmount/ctp.OpenVolume) /
+      positioncost:
+        type: number
+        example: 669060
+        description: 持仓成本 ctp.PositionCost/st.total_cost
+      premargin:
+        type: number
+        example: 0
+        description: 昨天占用的保证金 ctp.PreMargin/st.yd_usemargin
+      margin:
+        type: number
+        example: 267624
+        description: 当前占用的保证金 ctp.UseMargin/st.total_margin
+      opencommission:
+        type: number
+        example: 0
+        description: 开仓手续费-TThostFtdcMoneyType-double
+      closecommission:
+        type: number
+        example: 0
+        description: 平仓手续费-TThostFtdcMoneyType-double
+      closeprofit:
+        type: number
+        example: 0
+        description: 盯日平仓盈亏
+      positionprofit:
+        type: number
+        example: 0
+        description: 盯日持仓盈亏
+      totalprofile:
+        type: number
+        example: 0
+        description: 累计实现盈亏
+      updatedate:
+        type: string
+        example: "2016-09-09 09:03:30"
+        description: 最新更新时间
   OrderPost:
     type: object
     required:
