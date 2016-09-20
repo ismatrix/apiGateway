@@ -24,7 +24,7 @@ export async function connect(url) {
 
 export function getdb() {
   if (connectionInstance) {
-    debug('existing connection');
+    // debug('existing connection');
     return connectionInstance;
   }
   return new Promise((resolve, reject) => {
