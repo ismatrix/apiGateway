@@ -95,6 +95,27 @@ export async function getName(catalog, key, f = 'zh') {
   }
 }
 /**
+ * 获取catalog.key的key的名称.
+ * @function
+ * @param {string} catalog
+ * example : 'trade.action'
+ * @param {string} col
+ * example : 'ctp'
+ * @return {string} value - 1.
+ * example : '开仓'
+ */
+export async function getKey(catalog, col, value) {
+  try {
+    await getDb();
+    const items = await getItemList(catalog);
+    const result = items.filter(v => v[col] === value);
+    return (result[0] && 'key' in result[0]) ? result[0].key : `${catalog}.${col}.${value}`;
+  } catch (error) {
+    debug('codemap.getKey() Error: %o', error);
+    throw error;
+  }
+}
+/**
  * 新增一个catalog类别.
  * @function
  * @param {Array.} catalogDocs - [{catalog, name, description}].
@@ -390,10 +411,15 @@ export async function runTest() {
     //   debug('codemap.getName', await getName('fund.status', 'online'));
     // }
     {
-      // codemap.init
-      const retinit = await init();
-      debug('codemap.init', retinit);
+      // codemap.getKey
+      debug('codemap.getName', await getKey('trade.price', 'ctp', 2));
+      debug('codemap.getName', await getKey('trade.offset', 'sungard', 2));
     }
+    // {
+    //   // codemap.init
+    //   const retinit = await init();
+    //   debug('codemap.init', retinit);
+    // }
     // {
     //   // codemap.add
     //   const catalogs = [
