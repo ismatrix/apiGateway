@@ -19,19 +19,6 @@ export async function getOrders(fundid) {
   }
 }
 
-export async function getOrder(orderno) {
-  try {
-    if (!orderno) throw Boom.badRequest('Missing orderno parameter');
-
-    const order = 0;
-
-    return { ok: true, order };
-  } catch (error) {
-    debug('getOrder() Error: %o', error);
-    throw error;
-  }
-}
-
 export async function postOrder(order) {
   try {
     if (!order.fundid) throw Boom.badRequest('Missing fundid parameter');
@@ -57,19 +44,19 @@ export async function postOrder(order) {
 
 export async function deleteOrder({
   fundid,
-  orderno,
+  orderid,
   instrumentid,
   privateno,
 }) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
-    if (!orderno) throw Boom.badRequest('Missing orderno parameter');
+    if (!orderid) throw Boom.badRequest('Missing orderid parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
 
     const iceBroker = createIceBroker(fundid);
 
-    await iceBroker.cancelOrder(instrumentid, privateno, orderno);
+    await iceBroker.cancelOrder(instrumentid, privateno, orderid);
 
     return { ok: true };
   } catch (error) {

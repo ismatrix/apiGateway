@@ -540,29 +540,6 @@ paths:
                 items:
                   $ref: '#/definitions/Order'
   /order:
-    get:
-      summary: Get all details about a particular order
-      tags:
-        - Orders
-      parameters:
-        - name: orderno
-          in: query
-          description: The order id
-          required: true
-          type: string
-      responses:
-        '200':
-          description: The Order
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
-              order:
-                $ref: '#/definitions/Order'
     post:
       summary: Send an Order
       tags:
@@ -1387,7 +1364,7 @@ definitions:
         description: 市场代码	ctp.ExchangID / st.MarketCode
       orderid:
         type: string
-        example: ""
+        example: "55332"
         description:	ctp.OrderSysID / st.order_no
       tradingday:
         type: string
@@ -1756,16 +1733,16 @@ definitions:
     properties:
       fundid:
         type: string
-        example: "hello"
-      orderno:
+        example: "068074"
+      orderid:
         type: string
-        example: "02910"
+        example: "260343"
       instrumentid:
         type: string
         example: "IF1609"
       privateno:
         type: string
-        example: "private number"
+        example: "3"
   Token:
     type: object
     required:

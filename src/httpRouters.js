@@ -123,10 +123,6 @@ apiRouter
     const fundid = ctx.query.fundid;
     ctx.body = await orders.getOrders(fundid);
   })
-  .get('/order', async ctx => {
-    const orderno = ctx.query.orderno;
-    ctx.body = await orders.getOrder(orderno);
-  })
   .post('/order', async ctx => {
     const order = ctx.request.body;
     ctx.body = await orders.postOrder(order);

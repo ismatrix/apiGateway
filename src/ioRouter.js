@@ -22,7 +22,6 @@ export default function ioRouter(io) {
 
     socket.on('getQRCodeURL', async (data, callback) => {
       try {
-        debug('socketid %o', socket.id.substring(2, socket.id.length));
         const redirectURI = `https://api.invesmart.net/api/public/auth/wechat\
 &response_type=code\
 &scope=snsapi_base\
