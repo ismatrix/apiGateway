@@ -2399,21 +2399,20 @@ definitions:
         example: 826
   reqFuturesContracts:
     type: object
-    required:
-      - symbols
-      - exchanges
-      - ranks
-      - productClasses
-      - isTrading
     properties:
       symbols:
         type: array
-        example: ["all"]
+        example: ["IH1609", "IF1610"]
+        items:
+          type: string
+      products:
+        type: array
+        example: ["cu"]
         items:
           type: string
       exchanges:
         type: array
-        example: ["all"]
+        example: ["SHFE"]
         items:
           type: string
       ranks:

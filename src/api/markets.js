@@ -187,19 +187,9 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
   }
 }
 
-export async function getFuturesContracts(ranks, exchanges, symbols, productClasses, isTrading) {
+export async function getFuturesContracts(options = {}) {
   try {
-    if (!ranks || !exchanges || !symbols || !productClasses || !isTrading) {
-      throw Boom.badRequest('Missing parameter');
-    }
-
-    const options = {};
-
-    if (!ranks.includes('all')) options.rank = ranks;
-    if (!exchanges.includes('all')) options.exchange = exchanges;
-    if (!symbols.includes('all')) options.product = symbols;
-    if (!productClasses.includes('all')) options.productclass = productClasses;
-    if (!isTrading.includes('all')) options.istrading = isTrading;
+    if ('symbols' in options) options.instruments = options.symbols;
 
     const contracts = await instrumentDB.getList(options);
 
