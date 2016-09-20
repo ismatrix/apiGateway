@@ -622,6 +622,12 @@ paths:
           description: The fund unique ID
           required: true
           type: string
+        - name: tradingday
+          in: query
+          description: The tradingday
+          type: string
+          default: 'current tradingday'
+          example: '20160907'
       responses:
         '200':
           description: The positions data
@@ -634,6 +640,9 @@ paths:
               ok:
                 type: boolean
                 default: true
+              tradingday:
+                type: string
+                example: '20160907'
               positions:
                 type: array
                 items:

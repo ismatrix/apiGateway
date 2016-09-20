@@ -143,7 +143,8 @@ apiRouter
 apiRouter
   .get('/positions', async ctx => {
     const fundid = ctx.query.fundid;
-    ctx.body = await positions.getPositions(fundid);
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await positions.getPositions(fundid, tradingday);
   })
   ;
 
