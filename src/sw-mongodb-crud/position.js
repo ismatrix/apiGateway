@@ -85,7 +85,7 @@ export async function ctp2position(filter = {}) {
 
     for (let i = 0; i < ctppositions.length; i++) {
       const positionItem = {};
-      if (i % 10000 === 0) {
+      if (i % 5000 === 0) {
         debug('it has been %o lines', i);
       }
       if (ctppositions[i].investorid === preInvestorId
@@ -262,7 +262,7 @@ export async function st2Position(filter = {}) {
 
     for (let i = 0; i < stpositions.length; i++) {
       const positionItem = {};
-      if (i % 10000 === 0) {
+      if (i % 5000 === 0) {
         debug('it has been %o lines', i);
       }
       if (stpositions[i].cell_id === preCellId
@@ -602,13 +602,13 @@ export async function runTest() {
     //   const retadd = await add(positions);
     //   debug('position.ctp2Position.add:', retadd);
     // }
-    {
-      // covert all ctp
-      const positions = await ctp2position();
-      // debug('new positions %o', positions);
-      const retadd = await add(positions);
-      debug('position.ctp2Position.add:', retadd);
-    }
+    // {
+    //   // covert all ctp
+    //   const positions = await ctp2position();
+    //   // debug('new positions %o', positions);
+    //   const retadd = await add(positions);
+    //   debug('position.ctp2Position.add:', retadd);
+    // }
     // {
     //   // db.STPOSITION.createIndex( { cell_id: 1, tradingday: 1 ,updatedate: 1 } )
     //   // position.getSTList
@@ -637,8 +637,9 @@ export async function runTest() {
     // }
     // {
     //   // position.getLast
-    //   const position = await getLast('0292', '20160822');
-    //   debug('position.getLast', position.tradingday, position.positionslist.position.map(p =>
+    //   const position = await getLast('068074');
+    //   debug('position.getLast', position.positionslist.position.length,
+    //    position.tradingday, position.positionslist.position.map(p =>
     //     `${p.instrumentid},${p.direction},${p.hedgeflag},${p.position},
     //     ${p.openvolume},${p.closevolume}`));
     // }
