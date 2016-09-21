@@ -190,6 +190,10 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
 export async function getFuturesContracts(options = {}) {
   try {
     if ('symbols' in options) options.instruments = options.symbols;
+    if ('exchanges' in options) options.exchange = options.exchanges;
+    if ('ranks' in options) options.rank = options.ranks;
+    if ('productClasses' in options) options.productclass = options.productClasses;
+    if ('isTrading' in options) options.istrading = options.isTrading;
 
     const contracts = await instrumentDB.getList(options);
 
