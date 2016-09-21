@@ -60,12 +60,12 @@ export default function createIceBroker(fundid) {
       }
     });
 
-    function createSessionTimer(time) {
+    const createSessionTimer = time => {
       isCreateSessionPending = true;
       setTimeout(() => {
         isCreateSessionPending = false;
       }, time);
-    }
+    };
 
     const destroySession = async () => {
       try {
@@ -152,7 +152,7 @@ export default function createIceBroker(fundid) {
       }
     };
 
-    function ensureConnection() {
+    const ensureConnection = () => {
       debug('ensureConnection() setCallbackReturn %o', setCallbackReturn);
       if (setCallbackReturn === 0) return;
       connect();
@@ -163,7 +163,7 @@ export default function createIceBroker(fundid) {
         });
         event.once('connect:error', error => reject(error));
       });
-    }
+    };
 
     const queryAccounts = async () => {
       // get an array with one account object inside
@@ -317,7 +317,7 @@ export default function createIceBroker(fundid) {
         const result = await server.cancleOrder(fundid, instrumentid, privateno, orderno);
         debug('cancelOrder result: %o', result);
 
-        if (result !== 0) throw new Error(`the ice method invocation returned ${result}`);
+        if (result < 0) throw new Error(`the ice method invocation returned ${result}`);
 
         return result;
       } catch (error) {
