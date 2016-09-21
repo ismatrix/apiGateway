@@ -540,29 +540,6 @@ paths:
                 items:
                   $ref: '#/definitions/Order'
   /order:
-    get:
-      summary: Get all details about a particular order
-      tags:
-        - Orders
-      parameters:
-        - name: orderno
-          in: query
-          description: The order id
-          required: true
-          type: string
-      responses:
-        '200':
-          description: The Order
-          schema:
-            type: object
-            required:
-              - ok
-            properties:
-              ok:
-                type: boolean
-                default: true
-              order:
-                $ref: '#/definitions/Order'
     post:
       summary: Send an Order
       tags:
@@ -645,6 +622,12 @@ paths:
           description: The fund unique ID
           required: true
           type: string
+        - name: tradingday
+          in: query
+          description: The tradingday
+          type: string
+          default: 'current tradingday'
+          example: '20160907'
       responses:
         '200':
           description: The positions data
@@ -657,6 +640,9 @@ paths:
               ok:
                 type: boolean
                 default: true
+              tradingday:
+                type: string
+                example: '20160907'
               positions:
                 type: array
                 items:
@@ -1387,7 +1373,7 @@ definitions:
         description: 市场代码	ctp.ExchangID / st.MarketCode
       orderid:
         type: string
-        example: ""
+        example: "55332"
         description:	ctp.OrderSysID / st.order_no
       tradingday:
         type: string
@@ -1756,16 +1742,16 @@ definitions:
     properties:
       fundid:
         type: string
-        example: "hello"
-      orderno:
+        example: "068074"
+      orderid:
         type: string
-        example: "02910"
+        example: "260343"
       instrumentid:
         type: string
         example: "IF1609"
       privateno:
         type: string
-        example: "private number"
+        example: "3"
   Token:
     type: object
     required:
@@ -2422,21 +2408,20 @@ definitions:
         example: 826
   reqFuturesContracts:
     type: object
-    required:
-      - symbols
-      - exchanges
-      - ranks
-      - productClasses
-      - isTrading
     properties:
       symbols:
         type: array
-        example: ["all"]
+        example: ["IH1609", "IF1610"]
+        items:
+          type: string
+      products:
+        type: array
+        example: ["cu"]
         items:
           type: string
       exchanges:
         type: array
-        example: ["all"]
+        example: ["SHFE"]
         items:
           type: string
       ranks:

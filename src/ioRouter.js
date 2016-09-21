@@ -25,7 +25,7 @@ export default function ioRouter(io) {
         const redirectURI = `https://api.invesmart.net/api/public/auth/wechat\
 &response_type=code\
 &scope=snsapi_base\
-&state=${socket.id}`;
+&state=${socket.id.substring(2, socket.id.length)}`;
 
         const longURL = `https://open.weixin.qq.com/connect/oauth2/authorize?\
 appid=${wechatConfig.corpId}\

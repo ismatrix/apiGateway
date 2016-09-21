@@ -123,10 +123,6 @@ apiRouter
     const fundid = ctx.query.fundid;
     ctx.body = await orders.getOrders(fundid);
   })
-  .get('/order', async ctx => {
-    const orderno = ctx.query.orderno;
-    ctx.body = await orders.getOrder(orderno);
-  })
   .post('/order', async ctx => {
     const order = ctx.request.body;
     ctx.body = await orders.postOrder(order);
@@ -147,7 +143,8 @@ apiRouter
 apiRouter
   .get('/positions', async ctx => {
     const fundid = ctx.query.fundid;
-    ctx.body = await positions.getPositions(fundid);
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await positions.getPositions(fundid, tradingday);
   })
   ;
 
@@ -197,13 +194,7 @@ apiRouter
 
 apiRouter
   .post('/markets/futures/contracts', async ctx => {
-    const ranks = ctx.request.body.ranks;
-    const exchanges = ctx.request.body.exchanges;
-    const symbols = ctx.request.body.symbols;
-    const productClasses = ctx.request.body.productClasses;
-    const isTrading = ctx.request.body.isTrading;
-    ctx.body = await markets.getFuturesContracts(ranks, exchanges, symbols,
-      productClasses, isTrading);
+    ctx.body = await markets.getFuturesContracts(ctx.request.body);
   })
   .get('/markets/futures/products', async ctx => {
     ctx.body = await markets.getFuturesProducts();

@@ -166,6 +166,7 @@ export default function createIceBroker(fundid) {
     }
 
     const queryAccounts = async () => {
+      // get an array with one account object inside
       try {
         await ensureConnection();
         const result = await server.queryAccount();
