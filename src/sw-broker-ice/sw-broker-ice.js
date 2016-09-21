@@ -281,7 +281,7 @@ export default function createIceBroker(fundid) {
           volume,
           brokerid = '9999',
           ordertype = '1',
-          hedgeflag = '0',
+          hedgeflag = 'speculation',
           donetype = '0',
         } = orderObj;
 
