@@ -8,4 +8,6 @@ const crud = require('./sw-mongodb-crud');
 // crud.fund.runTest();
 // crud.equity.runTest();
 // crud.account.runTest();
-crud.position.runTest();
+// crud.position.runTest();
+// crud.order.runTest();
+crud.done.runTest();
