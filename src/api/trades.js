@@ -1,18 +1,22 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import createIceBroker from '../sw-broker-ice';
+import { done as tradeDB } from '../sw-mongodb-crud';
 
 const debug = createDebug('api:trades');
 
-export async function getTrades(fundid) {
+export async function getTrades(fundid, tradingDay) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingDay) throw Boom.badRequest('Missing tradingDay parameter');
 
-    const iceBroker = createIceBroker(fundid);
+    const dbTrades = await tradeDB.getLast(fundid, tradingDay);
 
-    const trades = await iceBroker.queryTrades();
+    if (dbTrades && dbTrades.done) {
+      const trades = dbTrades.done;
+      return { ok: true, trades };
+    }
 
-    return { ok: true, trades };
+    return { ok: true, trades: [] };
   } catch (error) {
     debug('getTrades() Error: %o', error);
     throw error;

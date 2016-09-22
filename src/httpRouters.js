@@ -121,7 +121,8 @@ apiRouter
 apiRouter
   .get('/orders', async ctx => {
     const fundid = ctx.query.fundid;
-    ctx.body = await orders.getOrders(fundid);
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await orders.getOrders(fundid, tradingday);
   })
   .post('/order', async ctx => {
     const order = ctx.request.body;
@@ -136,7 +137,8 @@ apiRouter
 apiRouter
   .get('/trades', async ctx => {
     const fundid = ctx.query.fundid;
-    ctx.body = await trades.getTrades(fundid);
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await trades.getTrades(fundid, tradingday);
   })
   ;
 

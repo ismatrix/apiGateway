@@ -511,18 +511,11 @@ paths:
           description: The fund unique ID
           required: true
           type: string
-        - name: startTime
+        - name: tradingday
           in: query
-          description: The start time filter
-          required: false
+          description: The trading day
+          required: true
           type: string
-          format: date-time
-        - name: endTime
-          in: query
-          description: The end time filter
-          required: false
-          type: string
-          format: date-time
       responses:
         '200':
           description: The orders array
@@ -595,6 +588,13 @@ paths:
           description: The fund unique ID
           required: true
           type: string
+          example: "068074"
+        - name: tradingday
+          in: query
+          description: The trading day
+          required: true
+          type: string
+          example: "20160922"
       responses:
         '200':
           description: The trades data
