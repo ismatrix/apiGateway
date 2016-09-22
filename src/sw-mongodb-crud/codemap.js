@@ -324,7 +324,7 @@ async function init() {
         ],
       },
       {
-        catalog: 'trade.price',
+        catalog: 'order.price',
         name: '报单价格类型',
         description: '报单价格条件类型',
         items: [
@@ -332,6 +332,43 @@ async function init() {
         { key: 'limit', zh: '限价', ctp: 2, sungard: 0 },
         { key: 'best', zh: '最优价', ctp: 3, sungard: 2 },
         { key: 'last', zh: '最新价', ctp: 4, sungard: -1 },
+        ],
+      },
+      {
+        catalog: 'order.type',
+        name: '报单类型',
+        description: '报单类型',
+        items: [
+        { key: 'normal', zh: '普通委托', ctp: '0', sungard: 'A' },
+        { key: 'combination', zh: '组合报单', ctp: '3', sungard: 'J' },
+        { key: 'conditional', zh: '条件单', ctp: '4', sungard: 'D' },
+        ],
+      },
+      {
+        catalog: 'order.donetype',
+        name: '报单成交有效期类型',
+        description: '报单成交有效期类型',
+        items: [
+        { key: 'GFD', zh: '当日有效', ctp: '3', sungard: '0' },
+        { key: 'IOC', zh: '即时成交剩余自动撤销', ctp: '1', sungard: '3' },
+        { key: 'GFS', zh: '本节有效', ctp: '2', sungard: '-1' },
+        ],
+      },
+      {
+        catalog: 'order.status',
+        name: '委托状态',
+        description: '委托状态',
+        items: [
+        { key: 'AllTraded', zh: '全部成交', ctp: '0', sungard: '8' },
+        { key: 'PartTradedQueueing', zh: '部分成交还在队列中［部成］', ctp: '1', sungard: '7' },
+        { key: 'PartTradedNotQueueing', zh: '部分成交不在队列中［部撤］', ctp: '2', sungard: '5' },
+        { key: 'NoTradeQueueing', zh: '未成交还在队列中［已报待撤］', ctp: '3', sungard: '3' },
+        { key: 'NoTradeNotQueueing', zh: '未成交不在队列中［未报］', ctp: '4', sungard: '0' },
+        { key: 'Canceled', zh: '撤单［场外撤单］', ctp: '5', sungard: '6' },
+        { key: 'Unknown', zh: '未知', ctp: 'a', sungard: '-1' },
+        { key: 'NotTouched', zh: '尚未触发［未报］', ctp: 'b', sungard: '0' },
+        { key: 'Touched', zh: '已触发［已报］', ctp: 'c', sungard: '2' },
+        { key: 'Invalid', zh: '［废单］', ctp: '-1', sungard: '9' },
         ],
       },
       {
@@ -410,11 +447,11 @@ export async function runTest() {
     //   debug('codemap.getName', await getName('trade.action', 'closetoday'));
     //   debug('codemap.getName', await getName('fund.status', 'online'));
     // }
-    {
-      // codemap.getKey
-      debug('codemap.getName', await getKey('trade.price', 'ctp', 2));
-      debug('codemap.getName', await getKey('trade.offset', 'sungard', 2));
-    }
+    // {
+    //   // codemap.getKey
+    //   debug('codemap.getName', await getKey('trade.price', 'ctp', 2));
+    //   debug('codemap.getName', await getKey('trade.offset', 'sungard', 2));
+    // }
     // {
     //   // codemap.init
     //   const retinit = await init();
