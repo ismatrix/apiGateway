@@ -190,6 +190,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
 export async function getFuturesContracts(options = {}) {
   try {
     if ('symbols' in options && !options.symbols.includes('all')) options.instruments = options.symbols;
+    if ('products' in options && !options.products.includes('all')) options.product = options.products;
     if ('exchanges' in options && !options.exchanges.includes('all')) options.exchange = options.exchanges;
     if ('ranks' in options && !options.ranks.includes('all')) options.rank = options.ranks;
     if ('productClasses' in options && !options.productClasses.includes('all')) options.productclass = options.productClasses;
