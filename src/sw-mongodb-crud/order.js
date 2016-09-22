@@ -310,13 +310,13 @@ export async function runTest() {
     //   const order = await get('3000767');
     //   debug('order.get', order.fundname);
     // }
-    // {
-    //   // order.getLast
-    //   const order = await getLast('3000380');
-    //   debug('order.getLast', order.fundid, order.tradingday,
-    //   order.order.map(o =>
-    //   `${o.privateno},${o.instrumentid},${o.direction},${o.offsetflag},${o.orderstatus},${o.volume},${o.volumetraded}`));
-    // }
+    {
+      // order.getLast
+      const order = await getLast('1339');
+      debug('order.getLast', order.fundid, order.tradingday,
+      order.order.map(o =>
+      `${o.privateno},${o.instrumentid},${o.direction},${o.offsetflag},${o.orderstatus},${o.volume},${o.volumetraded}`));
+    }
     // {
     //   // order.add
     //   const retadd = await add([{ fundid: 'aaa', key1: 1, key2: 'fuck' },
