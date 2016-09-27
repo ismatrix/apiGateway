@@ -183,17 +183,17 @@ export async function getListByProduct(products, isTrading = 1) {
  * Obtain one instrument document object by Specified id.
  * @function
  * @param {string} instrumentid - unique id for instrument collection
- * example : 'IF1609'
+ * @param {string} key - field name
  * @return {Array} instruments - instrument document content.
  * example : { instrumentDoc }
  */
-export async function get(id) {
+export async function get(id, key = null) {
   try {
     await getDb();
     const query = { instrumentid: id };
     const instrument = await INSTRUMENT.findOne(query);
 
-    return instrument;
+    return key ? instrument[key] : instrument;
   } catch (error) {
     debug('instrument.get() Error: %o', error);
     throw error;

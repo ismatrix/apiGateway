@@ -290,6 +290,22 @@ export async function getTotalRedemption(fundid, tradingday) {
   }
 }
 /**
+ * 获取指定基金截止到tradingay的“赎回的份额合计”
+ * @function
+ * @param {string} fundid - unique id for equity collection
+ * @param {string} tradingday - unique tradingday for equity collection
+ * @return {Number} total
+ */
+export async function getTotalRedemptionShare(fundid, tradingday) {
+  try {
+    const total = await getTotalByField(fundid, tradingday, 'redemption.share');
+    return Math.round(total * 100) / 100;
+  } catch (error) {
+    debug('equity.getTotalRedemptionShare() Error: %o', error);
+    throw error;
+  }
+}
+/**
  * 获取指定基金截止到tradingay的“分红金额合计”
  * @function
  * @param {string} fundid - unique id for equity collection
@@ -432,6 +448,7 @@ export async function getTotal(fundid, tradingday = '99999999') {
     const totalAppend = await getTotalAppend(fundid, tradingday);
     const totalAppendShare = await getTotalAppendShare(fundid, tradingday);
     const totalRedemption = await getTotalRedemption(fundid, tradingday);
+    const totalRedemptionShare = await getTotalRedemptionShare(fundid, tradingday);
     const totalDividend = await getTotalDividend(fundid, tradingday);
     const totalDividendNetValue = await getTotalDividendNetValue(fundid, tradingday);
     const totalCost = await getTotalCost(fundid, tradingday);
@@ -446,6 +463,7 @@ export async function getTotal(fundid, tradingday = '99999999') {
       append: totalAppend,
       appendshare: totalAppendShare,
       redemption: totalRedemption,
+      redemptionshare: totalRedemptionShare,
       dividend: totalDividend,
       dividendnetvalue: totalDividendNetValue,
       cost: totalCost,
@@ -527,8 +545,8 @@ export async function getNetValues(fundid, iTradingday) {
     const equityBeginning = fundinfo.equitybeginning;
     // 申购追加的份额
     const totalAppendShare = await getTotalAppendShare(fundid, tradingday);
-    // 历史赎回的金额
-    const totalRedemption = await getTotalRedemption(fundid, tradingday);
+    // 历史赎回的份额
+    const totalRedemptionShare = await getTotalRedemptionShare(fundid, tradingday);
 
     // 固定收益金额
     const totalFixedIncome = await getTotalFixedIncome(fundid, tradingday);
@@ -564,7 +582,7 @@ export async function getNetValues(fundid, iTradingday) {
         + totalAppend) /
         (equityBeginning
         + totalAppendShare
-        - totalRedemption);
+        - totalRedemptionShare);
       return Math.round(netvalue * 10000) / 10000;
     };
 
@@ -592,7 +610,8 @@ export async function getNetValues(fundid, iTradingday) {
         close: calcNetvalue(equity.close),
         settle: calcNetvalue(equity.settle),
         dividend: totalDividendNetValue,
-        inferior: calcInferiorNetValue(calcNetvalue(equity.equity), structRatio),
+        inferior: calcInferiorNetValue(
+          calcNetvalue(equity.equity) + totalDividendNetValue, structRatio),
       },
       updatedate: equity.updatedate,
     };
@@ -627,8 +646,8 @@ export async function getNetLines(fundid) {
 
       // 申购追加的份额
       const totalAppendShare = await getTotalAppendShare(fundid, tradingday);
-      // 历史赎回的金额
-      const totalRedemption = await getTotalRedemption(fundid, tradingday);
+      // 历史赎回的份额
+      const totalRedemptionShare = await getTotalRedemptionShare(fundid, tradingday);
 
       // 固定收益金额
       const totalFixedIncome = await getTotalFixedIncome(fundid, tradingday);
@@ -654,7 +673,7 @@ export async function getNetLines(fundid) {
           + totalAppend) /
           (equityBeginning
           + totalAppendShare
-          - totalRedemption);
+          - totalRedemptionShare);
         return Math.round(netvalue * 10000) / 10000;
       };
 
@@ -682,7 +701,8 @@ export async function getNetLines(fundid) {
           close: calcNetvalue(equity.close),
           settle: calcNetvalue(equity.settle),
           dividend: totalDividendNetValue,
-          inferior: calcInferiorNetValue(calcNetvalue(equity.equity), structRatio),
+          inferior: calcInferiorNetValue(
+            calcNetvalue(equity.equity) + totalDividendNetValue, structRatio),
         },
         updatedate: equity.updatedate,
       };

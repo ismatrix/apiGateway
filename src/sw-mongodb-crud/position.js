@@ -98,7 +98,8 @@ export async function ctp2position(filter = {}) {
           positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'ctp',
                 Math.round(ctppositions[i].hedgeflag));
           positionItem.preposition = ctppositions[i].ydposition;
-          positionItem.preholdposition = null;
+          positionItem.preholdposition = ctppositions[i].position - ctppositions[i].todayposition;
+          positionItem.todayholdposition = ctppositions[i].todayposition;
           positionItem.position = ctppositions[i].position;
           positionItem.openvolume = ctppositions[i].openvolume;
           positionItem.closevolume = ctppositions[i].closevolume;
@@ -138,7 +139,8 @@ export async function ctp2position(filter = {}) {
           positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'ctp',
                 Math.round(ctppositions[i].hedgeflag));
           positionItem.preposition = ctppositions[i].ydposition;
-          positionItem.preholdposition = null;
+          positionItem.preholdposition = ctppositions[i].position - ctppositions[i].todayposition;
+          positionItem.todayholdposition = ctppositions[i].todayposition;
           positionItem.position = ctppositions[i].position;
           positionItem.openvolume = ctppositions[i].openvolume;
           positionItem.closevolume = ctppositions[i].closevolume;
@@ -182,7 +184,8 @@ export async function ctp2position(filter = {}) {
         positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'ctp',
               Math.round(ctppositions[i].hedgeflag));
         positionItem.preposition = ctppositions[i].ydposition;
-        positionItem.preholdposition = null;
+        positionItem.preholdposition = ctppositions[i].position - ctppositions[i].todayposition;
+        positionItem.todayholdposition = ctppositions[i].todayposition;
         positionItem.position = ctppositions[i].position;
         positionItem.openvolume = ctppositions[i].openvolume;
         positionItem.closevolume = ctppositions[i].closevolume;
@@ -275,8 +278,9 @@ export async function st2Position(filter = {}) {
           positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'sungard',
                 Math.round(stpositions[i].hedgingflag));
           positionItem.preposition = stpositions[i].pre_total_vol;
-          positionItem.preholdposition = null;
-          positionItem.position = stpositions[i].avail_vol;
+          positionItem.preholdposition = stpositions[i].pre_remain_vol;
+          positionItem.todayholdposition = stpositions[i].total_vol - stpositions[i].pre_remain_vol;
+          positionItem.position = stpositions[i].total_vol;
           positionItem.openvolume = stpositions[i].buy_vol;
           positionItem.closevolume = stpositions[i].sell_vol;
           positionItem.openamount = stpositions[i].buy_done_amt;
@@ -322,8 +326,9 @@ export async function st2Position(filter = {}) {
           positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'sungard',
                 Math.round(stpositions[i].hedgingflag));
           positionItem.preposition = stpositions[i].pre_total_vol;
-          positionItem.preholdposition = null;
-          positionItem.position = stpositions[i].avail_vol;
+          positionItem.preholdposition = stpositions[i].pre_remain_vol;
+          positionItem.todayholdposition = stpositions[i].total_vol - stpositions[i].pre_remain_vol;
+          positionItem.position = stpositions[i].total_vol;
           positionItem.openvolume = stpositions[i].buy_vol;
           positionItem.closevolume = stpositions[i].sell_vol;
           positionItem.openamount = stpositions[i].buy_done_amt;
@@ -373,8 +378,9 @@ export async function st2Position(filter = {}) {
         positionItem.hedgeflag = await codemap.getKey('trade.hedge', 'sungard',
               Math.round(stpositions[i].hedgingflag));
         positionItem.preposition = stpositions[i].pre_total_vol;
-        positionItem.preholdposition = null;
-        positionItem.position = stpositions[i].avail_vol;
+        positionItem.preholdposition = stpositions[i].pre_remain_vol;
+        positionItem.todayholdposition = stpositions[i].total_vol - stpositions[i].pre_remain_vol;
+        positionItem.position = stpositions[i].total_vol;
         positionItem.openvolume = stpositions[i].buy_vol;
         positionItem.closevolume = stpositions[i].sell_vol;
         positionItem.openamount = stpositions[i].buy_done_amt;
@@ -623,13 +629,13 @@ export async function runTest() {
     //   const retadd = await add(positions);
     //   debug('position.st2Position.add:', retadd);
     // }
-    // {
-    //   // covert all sungard
-    //   const positions = await st2Position();
-    //   // debug('new positions %o', positions);
-    //   const retadd = await add(positions);
-    //   debug('position.st2position.add:', retadd);
-    // }
+    {
+      // covert all sungard
+      const positions = await st2Position();
+      // debug('new positions %o', positions);
+      const retadd = await add(positions);
+      debug('position.st2position.add:', retadd);
+    }
     // {
     //   // position.get
     //   const position = await get('3000767');
