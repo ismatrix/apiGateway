@@ -51,7 +51,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
     }
     for (const indicator of indicators) {
       delete indicator.dates;
-      const match = contracts.find((contract) => contract.instrumentid === indicator.symbol);
+      const match = contracts.find(contract => contract.instrumentid === indicator.symbol);
       if (match) indicator.name = match.instrumentname;
     }
     const lowerIndex = sortedIndex(timeline, startDate);
@@ -110,7 +110,7 @@ export async function contractDailyPriceSpeed(symbols) {
 
     for (const indicator of indicators) {
       delete indicator.dates;
-      const match = contracts.find((contract) => contract.instrumentid === indicator.symbol);
+      const match = contracts.find(contract => contract.instrumentid === indicator.symbol);
       if (match) indicator.productSymbol = match.productid;
     }
 
@@ -169,7 +169,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         endDate,
       };
       const dbQuotes = await daybarDB.getList(options);
-      const quotes = dbQuotes.map((quote) => ({
+      const quotes = dbQuotes.map(quote => ({
         timestamp: parseInt(quote.timestamp, 10),
         open: quote.open,
         high: quote.high,
@@ -222,7 +222,7 @@ export async function getFuturesProductsByExchange() {
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
     debug('exchangesid %o', exchangesid);
-    const productsByExchange = exchangesid.map(exchangeid => {
+    const productsByExchange = exchangesid.map((exchangeid) => {
       const productsPerExchange = products.filter(
         product => !!(product.exchangeid === exchangeid)
       );
