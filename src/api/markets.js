@@ -2,13 +2,13 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
-import createIcePastDataFeed from '../sw-datafeed-icepast';
+import createIcePastDataFeed from 'sw-datafeed-icepast';
 import {
   product as productDB,
   daybar as daybarDB,
   instrument as instrumentDB,
   indicators as indicatorsDB,
-} from '../sw-mongodb-crud';
+} from 'sw-mongodb-crud';
 
 const debug = createDebug('api:market');
 

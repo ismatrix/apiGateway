@@ -3,7 +3,7 @@ import Boom from 'boom';
 import argon2 from 'argon2';
 import {
   user as userDB,
-} from '../sw-mongodb-crud';
+} from 'sw-mongodb-crud';
 
 const debug = createDebug('api:users');
 

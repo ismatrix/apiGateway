@@ -1,6 +1,6 @@
 import createDebug from 'debug';
+import createQydev from 'sw-weixin-qydev';
 import { wechatConfig as wxConf } from '../config';
-import createQydev from '../sw-weixin-qydev';
 
 const debug = createDebug('api:wechat');
 const qydev = createQydev(wxConf);
@@ -25,7 +25,7 @@ export async function app13Callback(ctx) {
 
 export async function sendMessage(text, to) {
   try {
-    await qydev.text(text).toGroup(to).send();
+    await qydev.text(text).to(to).send();
 
     return { ok: true };
   } catch (error) {

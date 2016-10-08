@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import createIceBroker from '../sw-broker-ice';
+import createIceBroker from 'sw-broker-ice';
 
 const debug = createDebug('api:accounts');
 

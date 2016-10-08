@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { done as tradeDB } from '../sw-mongodb-crud';
+import { done as tradeDB } from 'sw-mongodb-crud';
 
 const debug = createDebug('api:trades');
 

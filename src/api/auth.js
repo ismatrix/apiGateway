@@ -2,12 +2,12 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
-import { jwtSecret, wechatConfig } from '../config';
-import makeQydev from '../sw-weixin-qydev';
-import { io } from '../app.js';
+import makeQydev from 'sw-weixin-qydev';
 import {
   user as userDB,
-} from '../sw-mongodb-crud';
+} from 'sw-mongodb-crud';
+import { jwtSecret, wechatConfig } from '../config';
+import { io } from '../app';
 
 const debug = createDebug('api:auth');
 const qydev = makeQydev(wechatConfig);
@@ -18,7 +18,7 @@ export async function createUserToken(userObj) {
       throw Boom.badImplementation(
         'Cannot create token because this user does not belong to any department');
     }
-    const dpt = userObj.department.map((obj) => obj.name);
+    const dpt = userObj.department.map(obj => obj.name);
     const jwtTokenData = {
       _id: userObj._id,
       userid: userObj.userid,

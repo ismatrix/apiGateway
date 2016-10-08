@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { codemap as codemapDB } from '../sw-mongodb-crud';
+import { codemap as codemapDB } from 'sw-mongodb-crud';
 
 const debug = createDebug('api:codemap');
 

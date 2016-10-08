@@ -3,7 +3,7 @@ import Boom from 'boom';
 import {
   fund as fundDB,
   equity as equityDB,
-} from '../sw-mongodb-crud';
+} from 'sw-mongodb-crud';
 
 const debug = createDebug('api:funds');
 

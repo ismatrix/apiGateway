@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { position as positionDB } from '../sw-mongodb-crud';
+import { position as positionDB } from 'sw-mongodb-crud';
 
 const debug = createDebug('api:positions');
 

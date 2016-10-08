@@ -2,10 +2,10 @@ import createDebug from 'debug';
 import through from 'through2';
 import jwt from 'jsonwebtoken';
 import { difference } from 'lodash';
+import iceLive from 'sw-datafeed-icelive';
+import createIceBroker from 'sw-broker-ice';
+import createGzh from 'sw-weixin-gzh';
 import { jwtSecret, wechatGZHConfig, wechatConfig } from './config';
-import iceLive from './sw-datafeed-icelive';
-import createIceBroker from './sw-broker-ice';
-import createGzh from './sw-weixin-gzh';
 
 const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
@@ -45,19 +45,20 @@ appid=${wechatConfig.corpId}\
         jwt.verify(data.token, jwtSecret, (error, decodedToken) => {
           if (error) throw error;
           debug('decodedToken %o', decodedToken);
-
-          const nspsNames = Object.keys(socket.server.nsps);
-          debug('nspsNames %o', nspsNames);
           debug('socket.id %o', socket.id);
 
-          for (const nspsName of nspsNames) {
-            const socketName = nspsName.concat(socket.id.slice(1, socket.id.length));
-            debug('socketName %o', socketName);
-            const namespace = socket.server.nsps[nspsName];
-            // debug('namespace %o', namespace);
+          const serverNsps = Object.keys(socket.server.nsps);
+          debug('serverNsps %o', serverNsps);
 
-            namespace.sockets[socketName].token = decodedToken;
-            namespace.emit('authenticated', namespace.sockets[socketName]);
+          const clientNsps = Object.keys(socket.client.nsps);
+          debug('clientNsps %o', clientNsps);
+
+          const clientSockets = Object.keys(socket.client.sockets);
+          debug('clientSockets %o', clientSockets);
+
+          for (const clientSocketID of clientSockets) {
+            socket.client.sockets[clientSocketID].token = decodedToken;
+            socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
           }
 
           if (callback) callback({ ok: true });
@@ -74,7 +75,7 @@ appid=${wechatConfig.corpId}\
   ;
 
   const marketsIO = io.of('/markets');
-  marketsIO.on('connection', socket => {
+  marketsIO.on('connection', (socket) => {
     debug('%o connected to Market.IO', socket.id);
   })
   .on('authenticated', (socket) => {
@@ -115,7 +116,7 @@ appid=${wechatConfig.corpId}\
 
           const leaveAllRooms = rooms
             .filter(room => !room.includes('/markets#'))
-            .map(room => {
+            .map((room) => {
               debug('leaving room %o', room);
               return new Promise((resolve, reject) => {
                 socket.leave(room, (error) => {
@@ -140,7 +141,7 @@ appid=${wechatConfig.corpId}\
         const removedMarketsRooms = difference(oldMarketsRooms, newMarketsRooms);
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
-        removedMarketsRooms.map(removedRoom => {
+        removedMarketsRooms.map((removedRoom) => {
           const instrument = removedRoom.split(':');
           return iceLive.unsubscribe(instrument[0], instrument[1]);
         });
@@ -184,7 +185,7 @@ appid=${wechatConfig.corpId}\
 
               debug('needRegisterEvents %o', needRegisterEvents);
               for (const eventName of needRegisterEvents) {
-                iceBroker.on(eventName, eventData => {
+                iceBroker.on(eventName, (eventData) => {
                   fundsIO.to(data.fundid).emit(eventName, eventData);
                 });
                 fundsRegisteredEvents[data.fundid].push(eventName);
@@ -219,7 +220,7 @@ appid=${wechatConfig.corpId}\
 
           const leaveAllRooms = rooms
             .filter(room => !room.includes('/funds#'))
-            .map(room => {
+            .map((room) => {
               debug('leaving room %o', room);
               return new Promise((resolve, reject) => {
                 socket.leave(room, (error) => {

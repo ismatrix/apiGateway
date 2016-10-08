@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import createIceBroker from '../sw-broker-ice';
-import { order as orderDB } from '../sw-mongodb-crud';
+import createIceBroker from 'sw-broker-ice';
+import { order as orderDB } from 'sw-mongodb-crud';
 
 const debug = createDebug('api:orders');
 
