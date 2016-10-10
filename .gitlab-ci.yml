@@ -12,16 +12,7 @@ stages:
 build:
   stage: build
   script:
-    - whoami
-    - pwd
-    - export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa -F /dev/null"
-    - printenv | grep GIT_SSH_COMMAND
-    - cat ~/.ssh/id_rsa
-    - git config user.name "victor"
-    - git config user.email "victor@vbonhomme.fr"
     - echo "StrictHostKeyChecking no " > /root/.ssh/config
-    - cat /root/.ssh/config
-    - git config --list
     - GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa -F /dev/null" git clone ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git
     - npm --registry=https://registry.npm.taobao.org install
     - npm run compile
