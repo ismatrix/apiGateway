@@ -17,6 +17,7 @@ build:
     - export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa -F /dev/null"
     - printenv | grep GIT_SSH_COMMAND
     - cat ~/.ssh/id_rsa
+    - git clone ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git
     - npm --registry=https://registry.npm.taobao.org install
     - npm run compile
   only:
