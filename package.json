@@ -1,7 +1,7 @@
 {
   "name": "api-gateway",
   "version": "1.1.0",
-  "description": "Provide access to backend services",
+  "description": "Provide access to backend services.",
   "main": "lib/app",
   "scripts": {
     "start": "node lib/app",
