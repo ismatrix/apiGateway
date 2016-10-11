@@ -38,6 +38,7 @@ export async function getTokenByWechatScan(code, state) {
     if (!code || !state) {
       throw Boom.badRequest('Missing parameter');
     }
+    debug('code %o, state %o', code, state);
 
     const qyUserObj = await qydev.getUserWithDepartments(code);
     debug('getTokenByWechatScan() user: %o', qyUserObj);
@@ -67,9 +68,9 @@ export async function getTokenByWechatScan(code, state) {
   } catch (error) {
     debug('getTokenByWechatScan() Error: %o', error);
     if (error.isBoom) {
-      io.to(`/#${state}`).emit('token', { ok: false, error: error.output.payload.message });
+      io.to(`${state}`).emit('token', { ok: false, error: error.output.payload.message });
     } else {
-      io.to(`/#${state}`).emit('token', { ok: false, error: error.message });
+      io.to(`${state}`).emit('token', { ok: false, error: error.message });
     }
     throw error;
   }

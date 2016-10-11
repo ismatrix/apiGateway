@@ -25,7 +25,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-import": "^2.0.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0"
+    "eslint-plugin-react": "^6.4.1"
   },
   "dependencies": {
     "acl": "^0.4.9",
@@ -51,7 +51,7 @@
     "lodash": "^4.16.1",
     "mongodb": "^2.2.10",
     "node-fetch": "^1.6.1",
-    "socket.io": "^1.4.8",
+    "socket.io": "^1.5.0",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.1",
     "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.2",
     "sw-datafeed-icepast": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icepast.git#v1.0.6",
