@@ -625,6 +625,7 @@ paths:
         - name: tradingday
           in: query
           description: The tradingday
+          required: true
           type: string
           default: 'current tradingday'
           example: '20160907'
