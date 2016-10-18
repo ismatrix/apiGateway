@@ -473,7 +473,7 @@ paths:
                 default: true
               costOuts:
                 $ref: '#/definitions/CostOuts'
-  /accounts:
+  /account:
     get:
       summary: Get a fund account
       tags:
@@ -491,15 +491,13 @@ paths:
             type: object
             required:
               - ok
-              - accounts
+              - account
             properties:
               ok:
                 type: boolean
                 default: true
-              accounts:
-                type: array
-                items:
-                  $ref: '#/definitions/Account'
+              account:
+                $ref: '#/definitions/Account'
   /orders:
     get:
       summary: Get all orders

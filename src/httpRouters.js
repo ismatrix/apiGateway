@@ -112,9 +112,9 @@ apiRouter
   ;
 
 apiRouter
-  .get('/accounts', async (ctx) => {
+  .get('/account', async (ctx) => {
     const fundid = ctx.query.fundid;
-    ctx.body = await accounts.getAccounts(fundid);
+    ctx.body = await accounts.getAccount(fundid);
   })
   ;
 

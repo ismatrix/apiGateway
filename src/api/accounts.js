@@ -1,20 +1,21 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import createIceBroker from 'sw-broker-ice';
-import { funds as fundsDB } from '../config';
+// import createIceBroker from 'sw-broker-ice';
+import {
+  // funds as fundsDB,
+  account as accountDB,
+} from 'sw-mongodb-crud';
 
 const debug = createDebug('api:accounts');
 
-export async function getAccounts(fundid) {
+export async function getAccount(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fundConf = fundsDB.find(fund => fund.fundid === fundid);
-    const iceBroker = createIceBroker(fundConf);
+    const accounts = await accountDB.getLast(fundid);
+    const account = accounts.account;
 
-    const accounts = await iceBroker.queryAccounts();
-
-    return { ok: true, accounts };
+    return { ok: true, account };
   } catch (error) {
     debug('getAccounts() Error: %o', error);
     throw error;
