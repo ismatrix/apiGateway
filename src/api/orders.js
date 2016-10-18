@@ -2,6 +2,7 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import createIceBroker from 'sw-broker-ice';
 import { order as orderDB } from 'sw-mongodb-crud';
+import { funds as fundsDB } from '../config';
 
 const debug = createDebug('api:orders');
 
@@ -36,7 +37,8 @@ export async function postOrder(order) {
 
     const fundid = order.fundid;
 
-    const iceBroker = createIceBroker(fundid);
+    const fundConf = fundsDB.find(fund => fund.fundid === fundid);
+    const iceBroker = createIceBroker(fundConf);
 
     await iceBroker.order(order);
 
@@ -59,7 +61,8 @@ export async function deleteOrder({
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
 
-    const iceBroker = createIceBroker(fundid);
+    const fundConf = fundsDB.find(fund => fund.fundid === fundid);
+    const iceBroker = createIceBroker(fundConf);
 
     await iceBroker.cancelOrder(instrumentid, privateno, orderid);
 

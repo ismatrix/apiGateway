@@ -5,7 +5,11 @@ import { difference } from 'lodash';
 import iceLive from 'sw-datafeed-icelive';
 import createIceBroker from 'sw-broker-ice';
 import createGzh from 'sw-weixin-gzh';
-import { jwtSecret, wechatGZHConfig, wechatConfig } from './config';
+import {
+  jwtSecret,
+  wechatGZHConfig,
+  wechatConfig,
+  funds as fundsDB } from './config';
 
 const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
@@ -165,7 +169,8 @@ appid=${wechatConfig.corpId}\
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
-        const iceBroker = createIceBroker(data.fundid);
+        const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
+        const iceBroker = createIceBroker(fundConf);
         const eventNames = ['order', 'trade', 'account', 'positions'];
 
         socket.join(

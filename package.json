@@ -1,6 +1,6 @@
 {
   "name": "api-gateway",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Provide access to backend services",
   "main": "lib/app",
   "scripts": {
@@ -50,9 +50,9 @@
     "mongodb": "^2.2.10",
     "node-fetch": "^1.6.1",
     "socket.io": "^1.5.0",
-    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.4",
-    "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.2",
-    "sw-datafeed-icepast": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icepast.git#v1.0.7",
+    "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.5",
+    "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.3",
+    "sw-datafeed-icepast": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icepast.git#v1.0.8",
     "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v1.0.4",
     "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
     "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.0",
