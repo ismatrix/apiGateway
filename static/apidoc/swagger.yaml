@@ -1084,6 +1084,29 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /wechat/sendMessage:
+    post:
+      tags:
+        - Wechat
+      summary: Send a wechat message to 微信企业号
+      parameters:
+        - name: body
+          in: body
+          description: The message to send
+          required: true
+          schema:
+            $ref: '#/definitions/wechatMessage'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /token:
     get:
       tags:
@@ -2679,6 +2702,21 @@ definitions:
       zh:
         type: string
         example: item value
+  wechatMessage:
+    type: object
+    required:
+      - to
+      - text
+    properties:
+      from:
+        type: integer
+        example: 14
+      to:
+        type: string
+        example: "Maggie|tristan|Amy|Will|Angel|simons|yvonne|Suri|Chris|Leilei|Judy|Stacy|Dreamy|windy|Victor|Kevin|Alice|Rita|Jacky|William"
+      text:
+        type: string
+        example: "My wechat message"
   reqContractdailypricespeed:
     type: object
     properties:

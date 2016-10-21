@@ -1,4 +1,5 @@
 import createDebug from 'debug';
+import Boom from 'boom';
 import createQydev from 'sw-weixin-qydev';
 import { wechatConfig as wxConf } from '../config';
 
@@ -23,9 +24,16 @@ export async function app13Callback(ctx) {
   }
 }
 
-export async function sendMessage(text, to) {
+export async function sendMessage({ from = 14, to, text }) {
   try {
-    await qydev.text(text).to(to).send();
+    if (!to) throw Boom.badRequest('Missing to parameter');
+    if (!text) throw Boom.badRequest('Missing text parameter');
+
+    await qydev.createMessage()
+      .from(from)
+      .to(to)
+      .text(text)
+      .send();
 
     return { ok: true };
   } catch (error) {
