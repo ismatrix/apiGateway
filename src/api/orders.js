@@ -34,6 +34,9 @@ export async function postOrder(order) {
     if (!order.offsetflag) throw Boom.badRequest('Missing offsetflag parameter');
     if (!order.price) throw Boom.badRequest('Missing price parameter');
     if (!order.volume) throw Boom.badRequest('Missing volume parameter');
+    if (!order.signalname) throw Boom.badRequest('Missing signalname parameter');
+    if (!order.strategyid) throw Boom.badRequest('Missing strategyid parameter');
+    if (!order.userid) throw Boom.badRequest('Missing userid parameter');
 
     const fundid = order.fundid;
 

@@ -126,6 +126,7 @@ apiRouter
   })
   .post('/order', async (ctx) => {
     const order = ctx.request.body;
+    order.userid = ctx.state.user.userid;
     ctx.body = await orders.postOrder(order);
   })
   .delete('/order', async (ctx) => {

@@ -1682,6 +1682,8 @@ definitions:
       - offsetflag
       - price
       - volume
+      - signalname
+      - strategyid
     properties:
       fundid:
         type: string
@@ -1736,6 +1738,16 @@ definitions:
         enum: ["0", "1", "2", "3"]
         default: "0"
         description: 成交类型 (0:GFD当日有效, 1:FOK限价全成或全撤, 2:FAK限价立即成交剩余撤销, 3:IOC立即成交剩余自动撤销)
+      signalname:
+        type: string
+        example: "atr > 1.8"
+        default: ""
+        description: 策略型号名
+      strategyid:
+        type: string
+        example: "ATR Strategy"
+        default: ""
+        description: 策略标识
   OrderDelete:
     type: object
     properties:

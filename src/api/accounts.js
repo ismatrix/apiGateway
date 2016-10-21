@@ -1,8 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-// import createIceBroker from 'sw-broker-ice';
 import {
-  // funds as fundsDB,
   account as accountDB,
 } from 'sw-mongodb-crud';
 
