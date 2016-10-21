@@ -1865,6 +1865,8 @@ definitions:
         example: "2014-09-16T16:00:00.000Z"
   Fund:
     type: object
+    required:
+      - fundid
     properties:
       fundid:
         type: string

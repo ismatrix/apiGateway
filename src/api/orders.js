@@ -21,6 +21,7 @@ export async function getOrders(fundid, tradingDay) {
     return { ok: true, orders: [] };
   } catch (error) {
     debug('getOrders() Error: %o', error);
+    if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
 }
@@ -48,6 +49,7 @@ export async function postOrder(order) {
     return { ok: true };
   } catch (error) {
     debug('postOrder() Error: %o', error);
+    if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
 }
@@ -72,6 +74,7 @@ export async function deleteOrder({
     return { ok: true };
   } catch (error) {
     debug('deleteOrder() Error: %o', error);
+    if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
 }
