@@ -116,6 +116,35 @@ export async function getFixedIncomes(fundid) {
   }
 }
 
+export async function putFixedIncome(fundid, tradingday, fixedincome) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!fixedincome) throw Boom.badRequest('Missing fixedincome parameter');
+
+    await equityDB.set(fundid, tradingday, { fixedincome });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putFixedIncome() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteFixedIncome(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { fixedincome: {} });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteFixedIncome() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getAppends(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
@@ -125,6 +154,35 @@ export async function getAppends(fundid) {
     return { ok: true, appends };
   } catch (error) {
     debug('getAppends() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function putAppend(fundid, tradingday, append) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!append) throw Boom.badRequest('Missing append parameter');
+
+    await equityDB.set(fundid, tradingday, { append });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putAppend() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteAppend(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { append: {} });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteAppend() Error: %o', error);
     throw error;
   }
 }
@@ -142,6 +200,35 @@ export async function getRedemptions(fundid) {
   }
 }
 
+export async function putRedemption(fundid, tradingday, redemption) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!redemption) throw Boom.badRequest('Missing redemption parameter');
+
+    await equityDB.set(fundid, tradingday, { redemption });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putRedemption() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteRedemption(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { redemption: {} });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteRedemption() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getDividends(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
@@ -155,6 +242,35 @@ export async function getDividends(fundid) {
   }
 }
 
+export async function putDividend(fundid, tradingday, dividend) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!dividend) throw Boom.badRequest('Missing dividend parameter');
+
+    await equityDB.set(fundid, tradingday, { dividend });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putDividend() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteDividend(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { dividend: {} });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteDividend() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getCostOuts(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
@@ -164,6 +280,35 @@ export async function getCostOuts(fundid) {
     return { ok: true, costOuts };
   } catch (error) {
     debug('getCostOuts() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function putFixedCost(fundid, tradingday, fixedcost) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!fixedcost) throw Boom.badRequest('Missing fixedcost parameter');
+
+    await equityDB.set(fundid, tradingday, { fixedcost });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putFixedCost() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteFixedCost(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { fixedcost: { actual: 0, remark: '' } });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteFixedCost() Error: %o', error);
     throw error;
   }
 }

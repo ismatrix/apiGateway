@@ -92,21 +92,76 @@ apiRouter
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getFixedIncomes(fundid);
   })
+  .put('/funds/:fundid/fixedIncome/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const fixedincome = ctx.request.body.fixedincome;
+    ctx.body = await funds.putFixedIncome(fundid, tradingday, fixedincome);
+  })
+  .delete('/funds/:fundid/fixedIncome/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await funds.deleteFixedIncome(fundid, tradingday);
+  })
   .get('/funds/:fundid/appends', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getAppends(fundid);
+  })
+  .put('/funds/:fundid/append/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const append = ctx.request.body.append;
+    ctx.body = await funds.putAppend(fundid, tradingday, append);
+  })
+  .delete('/funds/:fundid/append/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await funds.deleteAppend(fundid, tradingday);
   })
   .get('/funds/:fundid/redemptions', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getRedemptions(fundid);
   })
+  .put('/funds/:fundid/redemption/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const redemption = ctx.request.body.redemption;
+    ctx.body = await funds.putRedemption(fundid, tradingday, redemption);
+  })
+  .delete('/funds/:fundid/redemption/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await funds.deleteRedemption(fundid, tradingday);
+  })
   .get('/funds/:fundid/dividends', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getDividends(fundid);
   })
+  .put('/funds/:fundid/dividend/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const dividend = ctx.request.body.dividend;
+    ctx.body = await funds.putDividend(fundid, tradingday, dividend);
+  })
+  .delete('/funds/:fundid/dividend/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await funds.deleteDividend(fundid, tradingday);
+  })
   .get('/funds/:fundid/costOuts', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getCostOuts(fundid);
+  })
+  .put('/funds/:fundid/fixedCost/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const fixedcost = ctx.request.body.fixedcost;
+    ctx.body = await funds.putFixedCost(fundid, tradingday, fixedcost);
+  })
+  .delete('/funds/:fundid/fixedCost/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await funds.deleteFixedCost(fundid, tradingday);
   })
   ;
 

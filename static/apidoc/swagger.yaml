@@ -373,6 +373,70 @@ paths:
                 default: true
               fixedIncomes:
                 $ref: '#/definitions/FixedIncomes'
+  /funds/{fundid}/fixedIncome/{tradingday}:
+    put:
+      summary: update or add a fixed income
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated fixed income
+          required: true
+          schema:
+            type: object
+            required:
+              - fixedincome
+            properties:
+              fixedincome:
+                $ref: '#/definitions/Fixedincome'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete a fixed income
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/appends:
     get:
       summary: Get an array of Append
@@ -398,6 +462,70 @@ paths:
                 default: true
               appends:
                 $ref: '#/definitions/Appends'
+  /funds/{fundid}/append/{tradingday}:
+    put:
+      summary: update or add an append
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated append
+          required: true
+          schema:
+            type: object
+            required:
+              - append
+            properties:
+              append:
+                $ref: '#/definitions/AppendOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete an append
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/redemptions:
     get:
       summary: Get an array of Redemption
@@ -423,6 +551,70 @@ paths:
                 default: true
               redemptions:
                 $ref: '#/definitions/Redemptions'
+  /funds/{fundid}/redemption/{tradingday}:
+    put:
+      summary: update or add an redemption
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated redemption
+          required: true
+          schema:
+            type: object
+            required:
+              - redemption
+            properties:
+              redemption:
+                $ref: '#/definitions/RedemptionOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete an redemption
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/dividends:
     get:
       summary: Get an array of Dividend
@@ -448,6 +640,70 @@ paths:
                 default: true
               dividends:
                 $ref: '#/definitions/Dividends'
+  /funds/{fundid}/dividend/{tradingday}:
+    put:
+      summary: update or add an dividend
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated dividend
+          required: true
+          schema:
+            type: object
+            required:
+              - dividend
+            properties:
+              dividend:
+                $ref: '#/definitions/DividendOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete an dividend
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/costOuts:
     get:
       summary: Get an array of CostOut
@@ -473,6 +729,70 @@ paths:
                 default: true
               costOuts:
                 $ref: '#/definitions/CostOuts'
+  /funds/{fundid}/fixedCost/{tradingday}:
+    put:
+      summary: update or add a fixedCost
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated fixedCost
+          required: true
+          schema:
+            type: object
+            required:
+              - fixedCost
+            properties:
+              fixedCost:
+                $ref: '#/definitions/FixedCostOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete a fixedCost
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /account:
     get:
       summary: Get a fund account
@@ -2210,6 +2530,12 @@ definitions:
           amount:
             type: number
             example: 30000000
+  Fixedincome:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 30000000
   Appends:
     type: array
     items:
@@ -2232,6 +2558,18 @@ definitions:
           share:
             type: number
             example: 4009944.66
+  AppendOne:
+    type: object
+    properties:
+      amount:
+        type: number
+        example: 5000000
+      netvalue:
+        type: number
+        example: 1.2469
+      share:
+        type: number
+        example: 4009944.66
   Redemptions:
     type: array
     items:
@@ -2257,6 +2595,21 @@ definitions:
           actual:
             type: number
             example: 80000
+  RedemptionOne:
+    type: object
+    properties:
+      amount:
+        type: number
+        example: 80000
+      netvalue:
+        type: number
+        example: 0
+      share:
+        type: number
+        example: 0
+      actual:
+        type: number
+        example: 80000
   Dividends:
     type: array
     items:
@@ -2276,6 +2629,15 @@ definitions:
           netvalue:
             type: number
             example: 0
+  DividendOne:
+    type: object
+    properties:
+      amount:
+        type: number
+        example: 200000
+      netvalue:
+        type: number
+        example: 0
   CostOuts:
     type: array
     items:
@@ -2310,6 +2672,30 @@ definitions:
             remark:
               type: string
               example: 期货公司实际扣除明细备注
+  FixedCostOne:
+    type: object
+    properties:
+      total:
+        type: number
+        example: 259046.54
+      priority:
+        type: number
+        example: 233643.84
+      management:
+        type: number
+        example: 21168.91
+      outsource:
+        type: number
+        example: 0
+      hosting:
+        type: number
+        example: 4233.79
+      actual:
+        type: number
+        example: 79942.03
+      remark:
+        type: string
+        example: 期货公司实际扣除明细备注
   putPassword:
     type: object
     required:
