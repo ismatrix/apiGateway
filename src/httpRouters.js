@@ -100,7 +100,7 @@ apiRouter
   })
   .delete('/funds/:fundid/fixedIncome/:tradingday', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const tradingday = ctx.request.body.tradingday;
+    const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteFixedIncome(fundid, tradingday);
   })
   .get('/funds/:fundid/appends', async (ctx) => {
@@ -115,7 +115,7 @@ apiRouter
   })
   .delete('/funds/:fundid/append/:tradingday', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const tradingday = ctx.request.body.tradingday;
+    const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteAppend(fundid, tradingday);
   })
   .get('/funds/:fundid/redemptions', async (ctx) => {
@@ -130,7 +130,7 @@ apiRouter
   })
   .delete('/funds/:fundid/redemption/:tradingday', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const tradingday = ctx.request.body.tradingday;
+    const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteRedemption(fundid, tradingday);
   })
   .get('/funds/:fundid/dividends', async (ctx) => {
@@ -145,7 +145,7 @@ apiRouter
   })
   .delete('/funds/:fundid/dividend/:tradingday', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const tradingday = ctx.request.body.tradingday;
+    const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteDividend(fundid, tradingday);
   })
   .get('/funds/:fundid/costOuts', async (ctx) => {
@@ -160,7 +160,7 @@ apiRouter
   })
   .delete('/funds/:fundid/fixedCost/:tradingday', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const tradingday = ctx.request.body.tradingday;
+    const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteFixedCost(fundid, tradingday);
   })
   ;
