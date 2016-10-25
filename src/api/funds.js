@@ -124,7 +124,8 @@ export async function putFixedIncome(fundid, tradingday, fixedincome) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!fixedincome) throw Boom.badRequest('Missing fixedincome parameter');
 
-    await equityDB.set(fundid, tradingday, { fixedincome });
+    const result = await equityDB.set(fundid, tradingday, { fixedincome });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
   } catch (error) {
@@ -166,7 +167,8 @@ export async function putAppend(fundid, tradingday, append) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!append) throw Boom.badRequest('Missing append parameter');
 
-    await equityDB.set(fundid, tradingday, { append });
+    const result = await equityDB.set(fundid, tradingday, { append });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
   } catch (error) {
@@ -208,7 +210,8 @@ export async function putRedemption(fundid, tradingday, redemption) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!redemption) throw Boom.badRequest('Missing redemption parameter');
 
-    await equityDB.set(fundid, tradingday, { redemption });
+    const result = await equityDB.set(fundid, tradingday, { redemption });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
   } catch (error) {
@@ -250,7 +253,8 @@ export async function putDividend(fundid, tradingday, dividend) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!dividend) throw Boom.badRequest('Missing dividend parameter');
 
-    await equityDB.set(fundid, tradingday, { dividend });
+    const result = await equityDB.set(fundid, tradingday, { dividend });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
   } catch (error) {
@@ -292,7 +296,8 @@ export async function putFixedCost(fundid, tradingday, fixedcost) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!fixedcost) throw Boom.badRequest('Missing fixedcost parameter');
 
-    await equityDB.set(fundid, tradingday, { fixedcost });
+    const result = await equityDB.set(fundid, tradingday, { fixedcost });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
   } catch (error) {
