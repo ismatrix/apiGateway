@@ -731,7 +731,7 @@ paths:
                 $ref: '#/definitions/CostOuts'
   /funds/{fundid}/fixedCost/{tradingday}:
     put:
-      summary: update or add a fixedCost
+      summary: update or add a fixed cost
       tags:
         - Funds
       parameters:
@@ -747,14 +747,14 @@ paths:
           type: string
         - name: body
           in: body
-          description: The new or updated fixedCost
+          description: The new or updated fixed cost
           required: true
           schema:
             type: object
             required:
-              - fixedCost
+              - fixedcost
             properties:
-              fixedCost:
+              fixedcost:
                 $ref: '#/definitions/FixedCostOne'
       responses:
         '200':
