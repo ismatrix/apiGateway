@@ -10,7 +10,9 @@ const debug = createDebug('api:funds');
 
 export async function getFunds() {
   try {
-    const funds = await fundDB.getList();
+    const filter = {};
+    const projection = {};
+    const funds = await fundDB.getList(filter, projection);
 
     if (!funds.length > 0) throw Boom.notFound('Funds not found');
 
