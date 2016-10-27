@@ -2093,10 +2093,19 @@ definitions:
         description: 策略标识
   OrderDelete:
     type: object
+    required:
+      - fundid
+      - sessionid
+      - orderid
+      - instrumentid
+      - privateno
     properties:
       fundid:
         type: string
         example: "068074"
+      sessionid:
+        type: string
+        example: "129392"
       orderid:
         type: string
         example: "260343"

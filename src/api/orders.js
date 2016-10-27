@@ -56,12 +56,14 @@ export async function postOrder(order) {
 
 export async function deleteOrder({
   fundid,
+  sessionid,
   orderid,
   instrumentid,
   privateno,
 }) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!sessionid) throw Boom.badRequest('Missing sessionid parameter');
     if (!orderid) throw Boom.badRequest('Missing orderid parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
@@ -69,7 +71,7 @@ export async function deleteOrder({
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
     const iceBroker = createIceBroker(fundConf);
 
-    await iceBroker.cancelOrder(instrumentid, privateno, orderid);
+    await iceBroker.cancelOrder(sessionid, instrumentid, privateno, orderid);
 
     return { ok: true };
   } catch (error) {

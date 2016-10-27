@@ -21,16 +21,22 @@ export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
 export const funds = [
   {
     fundid: '068074',
-    server: {
-      ip: '120.76.98.94',
-      port: '20029',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '120.76.98.94',
+        port: '20029',
+      },
     },
   },
   {
     fundid: '1248',
-    server: {
-      ip: '120.76.98.94',
-      port: '20028',
+    broker: {
+      name: 'ice',
+      server: {
+        ip: '120.76.98.94',
+        port: '20028',
+      },
     },
   },
 ];
