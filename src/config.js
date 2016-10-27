@@ -25,7 +25,7 @@ export const funds = [
       name: 'ice',
       server: {
         ip: '120.76.98.94',
-        port: '20029',
+        port: '20002',
       },
     },
   },
@@ -35,7 +35,7 @@ export const funds = [
       name: 'ice',
       server: {
         ip: '120.76.98.94',
-        port: '20028',
+        port: '20001',
       },
     },
   },
