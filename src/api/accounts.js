@@ -11,6 +11,9 @@ export async function getAccount(fundid) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
     const accounts = await accountDB.getLast(fundid);
+
+    if (!accounts && !accounts.account) throw Boom.badRequest('Missing account in DB');
+
     const account = Object.assign(accounts, accounts.account);
     delete account.account;
 
