@@ -11,8 +11,8 @@ export async function getPositions(fundid, tradingday) {
 
     const dbPositions = await positionDB.get(fundid, tradingday);
 
-    if (dbPositions && dbPositions.positionslist && dbPositions.positionslist.position) {
-      const positions = dbPositions.positionslist.position;
+    if (dbPositions && dbPositions.positions) {
+      const positions = dbPositions.positions;
       return { ok: true, tradingday, positions };
     }
 
