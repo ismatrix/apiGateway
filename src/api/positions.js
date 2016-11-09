@@ -10,7 +10,7 @@ export async function getPositions(fundid, tradingday) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
     const dbPositions = await positionDB.get(fundid, tradingday);
-
+    debug('dbPositions %o', dbPositions);
     if (dbPositions && dbPositions.positions) {
       const positions = dbPositions.positions;
       return { ok: true, tradingday, positions };
