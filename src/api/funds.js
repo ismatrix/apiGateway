@@ -65,6 +65,50 @@ export async function deleteFund(fundid) {
   }
 }
 
+export async function postEquity(fundid, tradingday, equity) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!equity) throw Boom.badRequest('Missing equity parameter');
+
+    await equityDB.add(fundid, tradingday, equity);
+
+    return { ok: true };
+  } catch (error) {
+    debug('postEquity() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function putEquity(fundid, tradingday, equity) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!equity) throw Boom.badRequest('Missing equity parameter');
+
+    await equityDB.set(fundid, tradingday, { equity });
+
+    return { ok: true };
+  } catch (error) {
+    debug('putEquity() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteEquity(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.remove(fundid, tradingday);
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteEquity() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getTotal(fundid, tradingday) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');

@@ -103,6 +103,23 @@ apiRouter
     const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteFixedIncome(fundid, tradingday);
   })
+  .post('/funds/:fundid/equity/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const equity = ctx.request.body.equity;
+    ctx.body = await funds.postEquity(fundid, tradingday, equity);
+  })
+  .put('/funds/:fundid/equity/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const equity = ctx.request.body.equity;
+    ctx.body = await funds.putEquity(fundid, tradingday, equity);
+  })
+  .delete('/funds/:fundid/equity/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    ctx.body = await funds.deleteEquity(fundid, tradingday);
+  })
   .get('/funds/:fundid/appends', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getAppends(fundid);

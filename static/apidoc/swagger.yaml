@@ -373,6 +373,98 @@ paths:
                 default: true
               fixedIncomes:
                 $ref: '#/definitions/FixedIncomes'
+  /funds/{fundid}/equity/{tradingday}:
+    post:
+      summary: add an equity
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the equity amount
+          required: true
+          schema:
+            type: object
+            required:
+              - equity
+            properties:
+              equity:
+                type: number
+                example: 1000000
+    put:
+      summary: update an equity
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the equity amount
+          required: true
+          schema:
+            type: object
+            required:
+              - equity
+            properties:
+              equity:
+                type: number
+                example: 1000000
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete an equity
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/fixedIncome/{tradingday}:
     put:
       summary: update or add a fixed income
