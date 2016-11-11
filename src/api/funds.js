@@ -136,6 +136,21 @@ export async function getNetValue(fundid, tradingday) {
   }
 }
 
+export async function getReturnByDateRange(fundid, beginDate, endDate) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!beginDate) throw Boom.badRequest('Missing beginDate parameter');
+    if (!endDate) throw Boom.badRequest('Missing endDate parameter');
+
+    const returnReport = await equityDB.getReturnsByRange(fundid, beginDate, endDate);
+
+    return { ok: true, returnReport };
+  } catch (error) {
+    debug('getReturnByDateRange() Error: %o', error);
+    throw error;
+  }
+}
+
 export async function getNetValues(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');

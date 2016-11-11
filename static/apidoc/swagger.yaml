@@ -348,6 +348,47 @@ paths:
                 default: true
               netValues:
                 $ref: '#/definitions/NetValues'
+  /funds/{fundid}/returnByDateRange:
+    get:
+      summary: Get the return over a period of time
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: the date range
+          required: true
+          schema:
+            type: object
+            required:
+              - beginDate
+              - endDate
+            properties:
+              beginDate:
+                type: string
+                example: '20160901'
+              endDate:
+                type: string
+                example: '20160905'
+      responses:
+        '200':
+          description: The return over period report
+          schema:
+            type: object
+            required:
+              - ok
+              - returnReport
+            properties:
+              ok:
+                type: boolean
+                default: true
+              returnReport:
+                $ref: '#/definitions/ReturnReport'
   /funds/{fundid}/fixedIncomes:
     get:
       summary: Get an array of FixedIncome
@@ -2505,6 +2546,26 @@ definitions:
           key:
             type: string
             example: HWQS1
+  ReturnReport:
+    type: object
+    required:
+      - fundid
+      - beginvalue
+      - endvalue
+      - returns
+    properties:
+      fundid:
+        type: string
+        example: 80000528
+      beginvalue:
+        type: number
+        example: 1.2106
+      endvalue:
+        type: number
+        example: 1.2124
+      returns:
+        type: number
+        example: 0.0018
   Total:
     type: object
     required:

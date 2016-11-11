@@ -84,6 +84,12 @@ apiRouter
     const tradingday = ctx.query.tradingday;
     ctx.body = await funds.getNetValue(fundid, tradingday);
   })
+  .get('/funds/:fundid/returnByDateRange', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const beginDate = ctx.request.body.beginDate;
+    const endDate = ctx.request.body.endDate;
+    ctx.body = await funds.getNetValue(fundid, beginDate, endDate);
+  })
   .get('/funds/:fundid/netValues', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getNetValues(fundid);
