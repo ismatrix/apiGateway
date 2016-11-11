@@ -230,7 +230,7 @@ apiRouter
     const tradingday = ctx.query.tradingday;
     ctx.body = await positions.getAllFundsMergedPositions(tradingday);
   })
-  .get('/allFunds/positions.byFund', async (ctx) => {
+  .get('/allFunds/oneInstrument/positions.byFund', async (ctx) => {
     const tradingday = ctx.query.tradingday;
     const symbol = ctx.query.symbol;
     ctx.body = await positions.getInstrumentPositionsByFund(tradingday, symbol);

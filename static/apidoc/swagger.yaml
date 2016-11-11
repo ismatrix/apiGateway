@@ -1121,7 +1121,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Position'
-  /allFunds/positions.byFund:
+  /allFunds/oneInstrument/positions.byFund:
     get:
       summary: Get the positions for one instrument, by fund
       tags:
