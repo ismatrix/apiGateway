@@ -226,7 +226,7 @@ apiRouter
     const tradingday = ctx.query.tradingday;
     ctx.body = await positions.getPositions(fundid, tradingday);
   })
-  .get('/allFunds/positions', async (ctx) => {
+  .get('/allFunds/allInstruments/mergedPositions', async (ctx) => {
     const tradingday = ctx.query.tradingday;
     ctx.body = await positions.getAllFundsMergedPositions(tradingday);
   })

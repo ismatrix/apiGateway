@@ -1093,7 +1093,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Position'
-  /allFunds/positions:
+  /allFunds/allInstruments/mergedPositions:
     get:
       summary: Get the merged positions for all funds
       tags:
