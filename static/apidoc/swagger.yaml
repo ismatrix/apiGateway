@@ -359,22 +359,16 @@ paths:
           description: The fund id
           required: true
           type: string
-        - name: body
-          in: body
-          description: the date range
+        - name: beginDate
+          in: query
+          description: The starting date
           required: true
-          schema:
-            type: object
-            required:
-              - beginDate
-              - endDate
-            properties:
-              beginDate:
-                type: string
-                example: '20160901'
-              endDate:
-                type: string
-                example: '20160905'
+          type: string
+        - name: endDate
+          in: query
+          description: The ending date
+          required: true
+          type: string
       responses:
         '200':
           description: The return over period report
@@ -1099,6 +1093,67 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Position'
+  /allFunds/positions:
+    get:
+      summary: Get the merged positions for all funds
+      tags:
+        - Positions
+      parameters:
+        - name: tradingday
+          in: query
+          description: The tradingday
+          required: true
+          type: string
+          example: '20160907'
+      responses:
+        '200':
+          description: The positions data
+          schema:
+            type: object
+            required:
+              - ok
+              - positions
+            properties:
+              ok:
+                type: boolean
+                default: true
+              positions:
+                type: array
+                items:
+                  $ref: '#/definitions/Position'
+  /allFunds/positions.byFund:
+    get:
+      summary: Get the positions for one instrument, by fund
+      tags:
+        - Positions
+      parameters:
+        - name: tradingday
+          in: query
+          description: The tradingday
+          required: true
+          type: string
+          example: '20160907'
+        - name: symbol
+          in: query
+          description: The instrument symbol
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The positions by fund
+          schema:
+            type: object
+            required:
+              - ok
+              - positionsByFund
+            properties:
+              ok:
+                type: boolean
+                default: true
+              positionsByFund:
+                type: array
+                items:
+                  $ref: '#/definitions/PositionsByFund'
   /markets/futures/contracts:
     post:
       tags:
@@ -2045,6 +2100,22 @@ definitions:
         type: string
         example: "2016-09-08 18:40:11"
         description: 信息更新日期
+  PositionsByFund:
+    type: object
+    properties:
+      fundname:
+        type: string
+        example: "慧网大通2号"
+      fundid:
+        type: string
+        example: "0292"
+      tradingday:
+        type: string
+        example: "20161109"
+      positions:
+        type: array
+        items:
+          $ref: '#/definitions/Position'
   Position:
     type: object
     properties:

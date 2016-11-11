@@ -22,3 +22,30 @@ export async function getPositions(fundid, tradingday) {
     throw error;
   }
 }
+
+export async function getAllFundsMergedPositions(tradingday) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    const positions = await positionDB.getAllFundsInstrumentSum(tradingday);
+
+    return { ok: true, positions };
+  } catch (error) {
+    debug('getAllFundsMergedPositions() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getInstrumentPositionsByFund(tradingday, symbol) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!symbol) throw Boom.badRequest('Missing symbol parameter');
+
+    const positionsByFund = await positionDB.getFundsPositionsByInstrument(tradingday, symbol);
+
+    return { ok: true, positionsByFund };
+  } catch (error) {
+    debug('getInstrumentPositionsByFund() Error: %o', error);
+    throw error;
+  }
+}

@@ -86,8 +86,8 @@ apiRouter
   })
   .get('/funds/:fundid/returnByDateRange', async (ctx) => {
     const fundid = ctx.params.fundid;
-    const beginDate = ctx.request.body.beginDate;
-    const endDate = ctx.request.body.endDate;
+    const beginDate = ctx.query.beginDate;
+    const endDate = ctx.query.endDate;
     ctx.body = await funds.getNetValue(fundid, beginDate, endDate);
   })
   .get('/funds/:fundid/netValues', async (ctx) => {
@@ -225,6 +225,15 @@ apiRouter
     const fundid = ctx.query.fundid;
     const tradingday = ctx.query.tradingday;
     ctx.body = await positions.getPositions(fundid, tradingday);
+  })
+  .get('/allFunds/positions', async (ctx) => {
+    const tradingday = ctx.query.tradingday;
+    ctx.body = await positions.getAllFundsMergedPositions(tradingday);
+  })
+  .get('/allFunds/positions.byFund', async (ctx) => {
+    const tradingday = ctx.query.tradingday;
+    const symbol = ctx.query.symbol;
+    ctx.body = await positions.getInstrumentPositionsByFund(tradingday, symbol);
   })
   ;
 
