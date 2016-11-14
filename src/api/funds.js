@@ -142,7 +142,9 @@ export async function getReturnByDateRange(fundid, beginDate, endDate) {
     if (!beginDate) throw Boom.badRequest('Missing beginDate parameter');
     if (!endDate) throw Boom.badRequest('Missing endDate parameter');
 
+    debug('fundid %o  beginDate %o endDate %o', fundid, beginDate, endDate);
     const returnReport = await equityDB.getReturnsByRange(fundid, beginDate, endDate);
+    debug('returnReport %o', returnReport);
 
     return { ok: true, returnReport };
   } catch (error) {
