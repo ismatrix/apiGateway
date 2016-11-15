@@ -195,6 +195,7 @@ appid=${wechatConfig.corpId}\
         const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
 
         const smartwinFund = createGrpcClient(fundConf);
+        const allFundEvents = smartwinFund.getAllStreams();
         // const iceBroker = createIceBroker(fundConf);
 
         const eventNames = ['order', 'trade', 'account', 'positions'];
@@ -219,7 +220,7 @@ appid=${wechatConfig.corpId}\
                 // iceBroker.on(eventName, (eventData) => {
                 //   fundsIO.to(data.fundid).emit(eventName, eventData);
                 // });
-                smartwinFund.on(eventName, (eventData) => {
+                allFundEvents.on(eventName, (eventData) => {
                   fundsIO.to(data.fundid).emit(eventName, eventData);
                 });
                 fundsRegisteredEvents[data.fundid].push(eventName);
@@ -227,7 +228,7 @@ appid=${wechatConfig.corpId}\
 
               debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
               // debug('iceBroker.eventNames() %o', iceBroker.eventNames());
-              debug('smartwinFund.eventNames() %o', smartwinFund.eventNames());
+              debug('smartwinFund.eventNames() %o', allFundEvents.eventNames());
               if (callback) callback({ ok: true });
             } catch (err) {
               debug('fundsIO.on(subscribe) Error: %o', err);
