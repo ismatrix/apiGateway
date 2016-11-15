@@ -1,4 +1,5 @@
 export const jwtSecret = 'Ci23fWtahDYE3dfirAHrJhzrUEoslIxqwcDN9VNhRJCWf8Tyc1F1mqYrjGYF';
+export const jwtoken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0';
 
 export const wechatConfig = {
   encodingAESKey: 'zC5bDgdQObhGEAOSQT2T0fzBQ6iCYgxObD5DgKH4GrS',
@@ -17,6 +18,27 @@ export const wechatGZHConfig = {
 };
 
 export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
+
+export const grpcFunds = [
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '068074',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '1248',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
+];
 
 export const funds = [
   {

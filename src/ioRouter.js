@@ -1,18 +1,30 @@
 import createDebug from 'debug';
-import through from 'through2';
+// import through from 'through2';
 import jwt from 'jsonwebtoken';
+import createGrpcClient from 'sw-grpc-client';
 import { difference } from 'lodash';
-import iceLive from 'sw-datafeed-icelive';
-import createIceBroker from 'sw-broker-ice';
+// import iceLive from 'sw-datafeed-icelive';
+// import createIceBroker from 'sw-broker-ice';
 import createGzh from 'sw-weixin-gzh';
 import {
   jwtSecret,
+  jwtoken,
   wechatGZHConfig,
   wechatConfig,
-  funds as fundsDB } from './config';
+  // funds as fundsDB,
+  grpcFunds as fundsDB,
+} from './config';
 
 const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
+const smartwinMd = createGrpcClient({
+  serviceName: 'smartwinFuturesMd',
+  server: {
+    ip: 'invesmart.win',
+    port: '50052',
+  },
+  jwtoken,
+});
 const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
@@ -91,9 +103,15 @@ appid=${wechatConfig.corpId}\
         if (!data.symbol) throw new Error('Missing fundid parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
-        await iceLive.subscribe(data.symbol, data.resolution);
+        await smartwinMd.subscribeMarketData({
+          symbol: data.symbol,
+          resolution: 'snapshot',
+          dataType: 'ticker',
+        });
+        // await iceLive.subscribe(data.symbol, data.resolution);
+
         socket.join(
-          data.symbol.concat(':', data.resolution),
+          data.symbol.concat(':', 'ticker'),
           (error) => {
             if (error) throw error;
             if (callback) callback({ ok: true });
@@ -147,7 +165,12 @@ appid=${wechatConfig.corpId}\
 
         removedMarketsRooms.map((removedRoom) => {
           const instrument = removedRoom.split(':');
-          return iceLive.unsubscribe(instrument[0], instrument[1]);
+          return smartwinMd.unsubscribeMarketData({
+            symbol: instrument[0],
+            resolution: 'snapshot',
+            dataType: 'ticker',
+          });
+          // return iceLive.unsubscribe(instrument[0], instrument[1]);
         });
       } catch (error) {
         debug('marketsIO.on(unsubscribe) Error: %o', error);
@@ -170,7 +193,10 @@ appid=${wechatConfig.corpId}\
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
         const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
-        const iceBroker = createIceBroker(fundConf);
+
+        const smartwinFund = createGrpcClient(fundConf);
+        // const iceBroker = createIceBroker(fundConf);
+
         const eventNames = ['order', 'trade', 'account', 'positions'];
 
         socket.join(
@@ -190,14 +216,18 @@ appid=${wechatConfig.corpId}\
 
               debug('needRegisterEvents %o', needRegisterEvents);
               for (const eventName of needRegisterEvents) {
-                iceBroker.on(eventName, (eventData) => {
+                // iceBroker.on(eventName, (eventData) => {
+                //   fundsIO.to(data.fundid).emit(eventName, eventData);
+                // });
+                smartwinFund.on(eventName, (eventData) => {
                   fundsIO.to(data.fundid).emit(eventName, eventData);
                 });
                 fundsRegisteredEvents[data.fundid].push(eventName);
               }
 
               debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
-              debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+              // debug('iceBroker.eventNames() %o', iceBroker.eventNames());
+              debug('smartwinFund.eventNames() %o', smartwinFund.eventNames());
               if (callback) callback({ ok: true });
             } catch (err) {
               debug('fundsIO.on(subscribe) Error: %o', err);
@@ -264,12 +294,15 @@ appid=${wechatConfig.corpId}\
   })
   ;
 
-  const marketsSocket = through.obj(
-    (chunk, enc, callback) => {
-      marketsIO.to(chunk.symbol.concat(':', chunk.resolution)).emit(chunk.resolution, chunk);
-      callback();
-    }
-  );
-  const iceLiveStream = iceLive.getDataFeed();
-  iceLiveStream.pipe(marketsSocket);
+  // const marketsSocket = through.obj(
+  //   (chunk, enc, callback) => {
+  //     marketsIO.to(chunk.symbol.concat(':', chunk.resolution)).emit(chunk.resolution, chunk);
+  //     callback();
+  //   }
+  // );
+  // const iceLiveStream = iceLive.getDataFeed();
+  // iceLiveStream.pipe(marketsSocket);
+
+  const tickerStream = smartwinMd.getTickerStream();
+  tickerStream.on('data', data => marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data));
 }
