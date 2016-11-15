@@ -17,6 +17,7 @@ import {
 
 const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
+
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
   server: {
@@ -25,6 +26,7 @@ const smartwinMd = createGrpcClient({
   },
   jwtoken,
 });
+
 const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
@@ -305,5 +307,8 @@ appid=${wechatConfig.corpId}\
   // iceLiveStream.pipe(marketsSocket);
 
   const tickerStream = smartwinMd.getTickerStream();
-  tickerStream.on('data', data => marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data));
+  tickerStream
+    .on('data', data => marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data))
+    .on('error', error => debug('error %o', error))
+    ;
 }
