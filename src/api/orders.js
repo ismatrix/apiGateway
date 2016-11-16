@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import createIceBroker from 'sw-broker-ice';
+// import createIceBroker from 'sw-broker-ice';
+import createGrpcClient from 'sw-grpc-client';
 import { order as orderDB } from 'sw-mongodb-crud';
 import { funds as fundsDB } from '../config';
 
@@ -42,9 +43,11 @@ export async function postOrder(order) {
     const fundid = order.fundid;
 
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
-    const iceBroker = createIceBroker(fundConf);
+    const smartwinFund = createGrpcClient(fundConf);
+    // const iceBroker = createIceBroker(fundConf);
 
-    await iceBroker.order(order);
+    await smartwinFund.placeOrder(order);
+    // await iceBroker.order(order);
 
     return { ok: true };
   } catch (error) {
@@ -54,24 +57,27 @@ export async function postOrder(order) {
   }
 }
 
-export async function deleteOrder({
-  fundid,
-  sessionid,
-  orderid,
-  instrumentid,
-  privateno,
-}) {
+export async function deleteOrder(orderToCancel) {
+  const {
+    fundid,
+    sessionid,
+    orderno,
+    instrumentid,
+    privateno,
+  } = orderToCancel;
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!sessionid) throw Boom.badRequest('Missing sessionid parameter');
-    if (!orderid) throw Boom.badRequest('Missing orderid parameter');
+    if (!orderno) throw Boom.badRequest('Missing orderid parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
 
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
-    const iceBroker = createIceBroker(fundConf);
+    const smartwinFund = createGrpcClient(fundConf);
+    // const iceBroker = createIceBroker(fundConf);
 
-    await iceBroker.cancelOrder(sessionid, instrumentid, privateno, orderid);
+    await smartwinFund.cancelOrder(orderToCancel);
+    // await iceBroker.cancelOrder(sessionid, instrumentid, privateno, orderid);
 
     return { ok: true };
   } catch (error) {
