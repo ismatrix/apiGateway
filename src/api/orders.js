@@ -44,6 +44,7 @@ export async function postOrder(order) {
     const fundid = order.fundid;
 
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
+    debug('fundConf %o', fundConf);
     const smartwinFund = createGrpcClient(fundConf);
     // const iceBroker = createIceBroker(fundConf);
 
@@ -75,6 +76,7 @@ export async function deleteOrder(orderToCancel) {
     debug('orderToCancel %o', orderToCancel);
 
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
+    debug('fundConf %o', fundConf);
     const smartwinFund = createGrpcClient(fundConf);
     // const iceBroker = createIceBroker(fundConf);
 
