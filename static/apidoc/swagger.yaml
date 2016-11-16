@@ -2300,7 +2300,7 @@ definitions:
     required:
       - fundid
       - sessionid
-      - orderno
+      - orderid
       - instrumentid
       - privateno
     properties:
@@ -2310,7 +2310,7 @@ definitions:
       sessionid:
         type: string
         example: "129392"
-      orderno:
+      orderid:
         type: string
         example: "260343"
       instrumentid:

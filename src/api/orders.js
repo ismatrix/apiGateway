@@ -63,14 +63,14 @@ export async function deleteOrder(orderToCancel) {
   const {
     fundid,
     sessionid,
-    orderno,
+    orderid,
     instrumentid,
     privateno,
   } = orderToCancel;
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!sessionid) throw Boom.badRequest('Missing sessionid parameter');
-    if (!orderno) throw Boom.badRequest('Missing orderid parameter');
+    if (!orderid) throw Boom.badRequest('Missing orderid parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
     debug('orderToCancel %o', orderToCancel);
