@@ -39,6 +39,7 @@ export async function postOrder(order) {
     if (!order.signalname) throw Boom.badRequest('Missing signalname parameter');
     if (!order.strategyid) throw Boom.badRequest('Missing strategyid parameter');
     if (!order.userid) throw Boom.badRequest('Missing userid parameter');
+    debug('order %o', order);
 
     const fundid = order.fundid;
 
@@ -71,6 +72,7 @@ export async function deleteOrder(orderToCancel) {
     if (!orderno) throw Boom.badRequest('Missing orderid parameter');
     if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
+    debug('orderToCancel %o', orderToCancel);
 
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
     const smartwinFund = createGrpcClient(fundConf);
