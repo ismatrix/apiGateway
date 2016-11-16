@@ -208,36 +208,22 @@ appid=${wechatConfig.corpId}\
             try {
               if (error) throw error;
 
-              let needRegisterEvents;
-              if (data.fundid in fundsRegisteredEvents) {
-                needRegisterEvents = difference(
-                  eventNames, fundsRegisteredEvents[data.fundid]);
-              } else {
-                fundsRegisteredEvents[data.fundid] = [];
-                needRegisterEvents = eventNames;
+              const theFundStreams = smartwinFund.getAllStreams();
+              if (!theFundStreams.eventNames().includes('error')) {
+                theFundStreams.on('error', (eventError) => {
+                  debug('eventError %o', eventError);
+                  throw eventError;
+                });
               }
-
+              const theFundRegisteredEvents = theFundStreams.eventName();
+              const needRegisterEvents = difference(eventNames, theFundRegisteredEvents);
               debug('needRegisterEvents %o', needRegisterEvents);
               for (const eventName of needRegisterEvents) {
-                // iceBroker.on(eventName, (eventData) => {
-                //   fundsIO.to(data.fundid).emit(eventName, eventData);
-                // });
-                const allFundEvents = smartwinFund.getAllStreams();
-                if (!allFundEvents.eventNames().includes('error')) {
-                  allFundEvents.on('error', eventError => debug('eventError %o', eventError));
-                }
-                allFundEvents
-                  .on(eventName, (eventData) => {
-                    fundsIO.to(data.fundid).emit(eventName, eventData);
-                  })
-                  ;
-
-                fundsRegisteredEvents[data.fundid].push(eventName);
+                theFundStreams.on(eventName, (eventData) => {
+                  fundsIO.to(data.fundid).emit(eventName, eventData);
+                });
               }
 
-              debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
-              // debug('iceBroker.eventNames() %o', iceBroker.eventNames());
-              // debug('smartwinFund.eventNames() %o', allFundEvents.eventNames());
               if (callback) callback({ ok: true });
             } catch (err) {
               debug('fundsIO.on(subscribe) Error: %o', err);

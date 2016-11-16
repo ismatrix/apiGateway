@@ -22,3 +22,7 @@ export async function getTrades(fundid, tradingDay) {
     throw error;
   }
 }
+
+export async function fake() {
+  debug('no use');
+}
