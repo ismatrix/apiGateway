@@ -1,17 +1,13 @@
 import createDebug from 'debug';
-// import through from 'through2';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
 import { difference } from 'lodash';
-// import iceLive from 'sw-datafeed-icelive';
-// import createIceBroker from 'sw-broker-ice';
 import createGzh from 'sw-weixin-gzh';
 import {
   jwtSecret,
   jwtoken,
   wechatGZHConfig,
   wechatConfig,
-  // funds as fundsDB,
   grpcFunds as fundsDB,
 } from './config';
 
@@ -26,8 +22,6 @@ const smartwinMd = createGrpcClient({
   },
   jwtoken,
 });
-
-const fundsRegisteredEvents = {};
 
 export default function ioRouter(io) {
   io.use((socket, next) => {
@@ -110,7 +104,6 @@ appid=${wechatConfig.corpId}\
           resolution: 'snapshot',
           dataType: 'ticker',
         });
-        // await iceLive.subscribe(data.symbol, data.resolution);
 
         socket.join(
           data.symbol.concat(':', 'ticker'),
@@ -195,10 +188,9 @@ appid=${wechatConfig.corpId}\
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
         const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
-        debug('fundConf %o', fundConf);
-        const smartwinFund = createGrpcClient(fundConf);
+        if (fundConf === undefined) throw new Error('The fund %o is not in apiGateway config', data.fundid);
 
-        // const iceBroker = createIceBroker(fundConf);
+        const smartwinFund = createGrpcClient(fundConf);
 
         const eventNames = ['order', 'trade', 'account', 'positions'];
 
@@ -289,15 +281,6 @@ appid=${wechatConfig.corpId}\
     });
   })
   ;
-
-  // const marketsSocket = through.obj(
-  //   (chunk, enc, callback) => {
-  //     marketsIO.to(chunk.symbol.concat(':', chunk.resolution)).emit(chunk.resolution, chunk);
-  //     callback();
-  //   }
-  // );
-  // const iceLiveStream = iceLive.getDataFeed();
-  // iceLiveStream.pipe(marketsSocket);
 
   const tickerStream = smartwinMd.getTickerStream();
   tickerStream

@@ -1,9 +1,8 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-// import createIceBroker from 'sw-broker-ice';
 import createGrpcClient from 'sw-grpc-client';
 import { order as orderDB } from 'sw-mongodb-crud';
-import { funds as fundsDB } from '../config';
+import { grpcFunds as fundsDB } from '../config';
 
 const debug = createDebug('api:orders');
 
