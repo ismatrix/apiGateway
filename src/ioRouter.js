@@ -215,7 +215,7 @@ appid=${wechatConfig.corpId}\
                   throw eventError;
                 });
               }
-              const theFundRegisteredEvents = theFundStreams.eventName();
+              const theFundRegisteredEvents = theFundStreams.eventNames();
               const needRegisterEvents = difference(eventNames, theFundRegisteredEvents);
               debug('needRegisterEvents %o', needRegisterEvents);
               for (const eventName of needRegisterEvents) {
