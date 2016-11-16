@@ -204,7 +204,6 @@ appid=${wechatConfig.corpId}\
               if (!theFundStreams.eventNames().includes('error')) {
                 theFundStreams.on('error', (eventError) => {
                   debug('eventError %o', eventError);
-                  throw eventError;
                 });
               }
               const theFundRegisteredEvents = theFundStreams.eventNames();

@@ -2,7 +2,7 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
 import { order as orderDB } from 'sw-mongodb-crud';
-import { grpcFunds as fundsDB } from '../config';
+import { grpcCanOrderFunds as fundsDB } from '../config';
 
 const debug = createDebug('api:orders');
 
@@ -45,10 +45,8 @@ export async function postOrder(order) {
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
     debug('fundConf %o', fundConf);
     const smartwinFund = createGrpcClient(fundConf);
-    // const iceBroker = createIceBroker(fundConf);
 
     await smartwinFund.placeOrder(order);
-    // await iceBroker.order(order);
 
     return { ok: true };
   } catch (error) {
@@ -77,10 +75,8 @@ export async function deleteOrder(orderToCancel) {
     const fundConf = fundsDB.find(fund => fund.fundid === fundid);
     debug('fundConf %o', fundConf);
     const smartwinFund = createGrpcClient(fundConf);
-    // const iceBroker = createIceBroker(fundConf);
 
     await smartwinFund.cancelOrder(orderToCancel);
-    // await iceBroker.cancelOrder(sessionid, instrumentid, privateno, orderid);
 
     return { ok: true };
   } catch (error) {
