@@ -195,9 +195,9 @@ appid=${wechatConfig.corpId}\
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
         const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
-
+        debug('fundConf %o', fundConf);
         const smartwinFund = createGrpcClient(fundConf);
-        const allFundEvents = smartwinFund.getAllStreams();
+
         // const iceBroker = createIceBroker(fundConf);
 
         const eventNames = ['order', 'trade', 'account', 'positions'];
@@ -222,15 +222,22 @@ appid=${wechatConfig.corpId}\
                 // iceBroker.on(eventName, (eventData) => {
                 //   fundsIO.to(data.fundid).emit(eventName, eventData);
                 // });
-                allFundEvents.on(eventName, (eventData) => {
-                  fundsIO.to(data.fundid).emit(eventName, eventData);
-                });
+                const allFundEvents = smartwinFund.getAllStreams();
+                if (!allFundEvents.eventNames().includes('error')) {
+                  allFundEvents.on('error', eventError => debug('eventError %o', eventError));
+                }
+                allFundEvents
+                  .on(eventName, (eventData) => {
+                    fundsIO.to(data.fundid).emit(eventName, eventData);
+                  })
+                  ;
+
                 fundsRegisteredEvents[data.fundid].push(eventName);
               }
 
               debug('fundsRegisteredEvents[data.fundid] %o', fundsRegisteredEvents[data.fundid]);
               // debug('iceBroker.eventNames() %o', iceBroker.eventNames());
-              debug('smartwinFund.eventNames() %o', allFundEvents.eventNames());
+              // debug('smartwinFund.eventNames() %o', allFundEvents.eventNames());
               if (callback) callback({ ok: true });
             } catch (err) {
               debug('fundsIO.on(subscribe) Error: %o', err);
