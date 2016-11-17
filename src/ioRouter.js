@@ -14,6 +14,8 @@ import {
 const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
 
+let globalPrevMarketsRooms;
+
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
   server: {
@@ -133,14 +135,14 @@ appid=${wechatConfig.corpId}\
         if (!data.symbol) throw new Error('Missing fundid parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
-        const oldMarketsRooms = Object.keys(marketsIO.adapter.rooms);
-        debug('oldMarketsRooms %o', oldMarketsRooms);
+        const prevMarketsRooms = Object.keys(marketsIO.adapter.rooms);
+        debug('prevMarketsRooms %o', prevMarketsRooms);
 
         if (data.symbol === 'all') {
-          const rooms = Object.keys(socket.rooms);
-          debug('Markets.IO all socket rooms: %o', rooms);
+          const socketRooms = Object.keys(socket.socketRooms);
+          debug('Markets.IO all socket socketRooms: %o', socketRooms);
 
-          const leaveAllRooms = rooms
+          const leaveAllRooms = socketRooms
             .filter(room => !room.includes('/markets#'))
             .map((room) => {
               debug('leaving room %o', room);
@@ -164,7 +166,7 @@ appid=${wechatConfig.corpId}\
         const newMarketsRooms = Object.keys(marketsIO.adapter.rooms);
         debug('newMarketsRooms %o', newMarketsRooms);
 
-        const removedMarketsRooms = difference(oldMarketsRooms, newMarketsRooms);
+        const removedMarketsRooms = difference(prevMarketsRooms, newMarketsRooms);
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
         for (const removedRoom of removedMarketsRooms) {
@@ -178,6 +180,39 @@ appid=${wechatConfig.corpId}\
       } catch (error) {
         debug('marketsIO.on(unsubscribe) Error: %o', error);
         if (callback) callback({ ok: false, error: error.message });
+      }
+    });
+
+    socket.on('disconnecting', () => {
+      try {
+        debug('disconnecting %o', socket.id);
+        globalPrevMarketsRooms = Object.keys(marketsIO.adapter.rooms).filter(room => !room.includes('/markets#'));
+        debug('globalPrevMarketsRooms %o', globalPrevMarketsRooms);
+      } catch (error) {
+        debug('marketsIO.on(disconnect) Error: %o', error);
+      }
+    });
+
+
+    socket.on('disconnect', () => {
+      try {
+        debug('%o disconnected', socket.id);
+        const newMarketsRooms = Object.keys(marketsIO.adapter.rooms).filter(room => !room.includes('/markets#'));
+        debug('newMarketsRooms %o', newMarketsRooms);
+
+        const removedMarketsRooms = difference(globalPrevMarketsRooms, newMarketsRooms);
+        debug('removedMarketsRooms %o', removedMarketsRooms);
+
+        for (const removedRoom of removedMarketsRooms) {
+          const instrument = removedRoom.split(':');
+          smartwinMd.unsubscribeMarketData({
+            symbol: instrument[0],
+            resolution: 'snapshot',
+            dataType: 'ticker',
+          });
+        }
+      } catch (error) {
+        debug('marketsIO.on(disconnect) Error: %o', error);
       }
     });
   })
