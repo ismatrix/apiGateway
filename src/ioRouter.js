@@ -158,15 +158,14 @@ appid=${wechatConfig.corpId}\
         const removedMarketsRooms = difference(oldMarketsRooms, newMarketsRooms);
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
-        removedMarketsRooms.map((removedRoom) => {
+        for (const removedRoom of removedMarketsRooms) {
           const instrument = removedRoom.split(':');
-          return smartwinMd.unsubscribeMarketData({
+          smartwinMd.unsubscribeMarketData({
             symbol: instrument[0],
             resolution: 'snapshot',
             dataType: 'ticker',
           });
-          // return iceLive.unsubscribe(instrument[0], instrument[1]);
-        });
+        }
       } catch (error) {
         debug('marketsIO.on(unsubscribe) Error: %o', error);
         if (callback) callback({ ok: false, error: error.message });
@@ -282,8 +281,9 @@ appid=${wechatConfig.corpId}\
   ;
 
   const tickerStream = smartwinMd.getTickerStream();
+  debug('tickerStream %o', tickerStream);
   tickerStream
     .on('data', data => marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data))
-    .on('error', error => debug('error %o', error))
+    .on('error', error => debug('Error tickerStream %o', error))
     ;
 }
