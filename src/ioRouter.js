@@ -87,6 +87,15 @@ appid=${wechatConfig.corpId}\
   ;
 
   const marketsIO = io.of('/markets');
+  const tickerStream = smartwinMd.getTickerStream();
+  debug('tickerStream %o', tickerStream);
+  tickerStream
+    .on('data', (data) => {
+      debug('tickerStream data %o', data);
+      marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data);
+    })
+    .on('error', error => debug('Error tickerStream %o', error))
+    ;
   marketsIO.on('connection', (socket) => {
     debug('%o connected to Market.IO', socket.id);
   })
@@ -279,11 +288,4 @@ appid=${wechatConfig.corpId}\
     });
   })
   ;
-
-  const tickerStream = smartwinMd.getTickerStream();
-  debug('tickerStream %o', tickerStream);
-  tickerStream
-    .on('data', data => marketsIO.to(data.symbol.concat(':', data.resolution)).emit('tick', data))
-    .on('error', error => debug('Error tickerStream %o', error))
-    ;
 }
