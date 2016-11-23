@@ -131,7 +131,7 @@ appid=${wechatConfig.corpId}\
 
     socket.on('unsubscribe', async (data, callback) => {
       try {
-        debug('Markets.IO subscribed to %o with callback: %o', data, !!callback);
+        debug('Markets.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data.symbol) throw new Error('Missing fundid parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
@@ -139,7 +139,7 @@ appid=${wechatConfig.corpId}\
         debug('prevMarketsRooms %o', prevMarketsRooms);
 
         if (data.symbol === 'all') {
-          const socketRooms = Object.keys(socket.socketRooms);
+          const socketRooms = Object.keys(socket.rooms);
           debug('Markets.IO all socket socketRooms: %o', socketRooms);
 
           const leaveAllRooms = socketRooms
@@ -276,8 +276,8 @@ appid=${wechatConfig.corpId}\
         debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
-        const oldFundsRooms = Object.keys(fundsIO.adapter.rooms);
-        debug('oldFundsRooms %o', oldFundsRooms);
+        const prevFundsRooms = Object.keys(fundsIO.adapter.rooms);
+        debug('prevFundsRooms %o', prevFundsRooms);
 
         if (data.fundid === 'all') {
           const rooms = Object.keys(socket.rooms);
@@ -310,7 +310,7 @@ appid=${wechatConfig.corpId}\
         const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
         debug('newFundsRooms %o', newFundsRooms);
 
-        const removedFundsRooms = difference(oldFundsRooms, newFundsRooms);
+        const removedFundsRooms = difference(prevFundsRooms, newFundsRooms);
         debug('removedFundsRooms %o', removedFundsRooms);
 
         for (const fundid of removedFundsRooms) {
