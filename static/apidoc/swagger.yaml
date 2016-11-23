@@ -2127,18 +2127,10 @@ definitions:
         type: string
         example: "068074"
         description: 账户标识 ctp.InvestorID/st.cell_id
-      brokerid:
-        type: string
-        example: "9999"
-        description: 期货经纪公司标识 ctp.BrokerID/st.cell_id
       requestid:
         type: string
         example: "1090330438"
         description: ctp接口请求标识
-      tradeid:
-        type: string
-        example: ""
-        description: 成交编号 Done中的成交编号
       instrumentid:
         type: string
         example: "IH1609"
@@ -2195,14 +2187,10 @@ definitions:
         type: number
         example: 267624
         description: 当前占用的保证金 ctp.UseMargin/st.total_margin
-      opencommission:
+      commission:
         type: number
         example: 0
-        description: 开仓手续费-TThostFtdcMoneyType-double
-      closecommission:
-        type: number
-        example: 0
-        description: 平仓手续费-TThostFtdcMoneyType-double
+        description: 手续费包含开平仓
       closeprofit:
         type: number
         example: 0
@@ -2215,6 +2203,10 @@ definitions:
         type: number
         example: 0
         description: 累计实现盈亏
+      positiondate:
+        type: string
+        example: "1"
+        description: 今仓昨仓 '1' '2' 默认今仓1
       updatedate:
         type: string
         example: "2016-09-09 09:03:30"
