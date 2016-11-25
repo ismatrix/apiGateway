@@ -244,12 +244,14 @@ appid=${wechatConfig.corpId}\
               if (error) throw error;
 
               const theFundStreams = smartwinFund.getAllStreams();
-              if (!theFundStreams.eventNames().includes('error')) {
+              const theFundRegisteredEvents = theFundStreams.eventNames();
+
+              if (!theFundRegisteredEvents.includes('error')) {
                 theFundStreams.on('error', (eventError) => {
                   debug('eventError %o', eventError);
                 });
               }
-              const theFundRegisteredEvents = theFundStreams.eventNames();
+
               const needRegisterEvents = difference(eventNames, theFundRegisteredEvents);
               debug('needRegisterEvents %o', needRegisterEvents);
               for (const eventName of needRegisterEvents) {
