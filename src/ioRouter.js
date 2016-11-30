@@ -57,25 +57,30 @@ appid=${wechatConfig.corpId}\
     socket.on('setToken', async (data, callback) => {
       try {
         jwt.verify(data.token, jwtSecret, (error, decodedToken) => {
-          if (error) throw error;
-          debug('decodedToken %o', decodedToken);
-          debug('socket.id %o', socket.id);
+          try {
+            if (error) throw error;
+            debug('decodedToken %o', decodedToken);
+            debug('socket.id %o', socket.id);
 
-          const serverNsps = Object.keys(socket.server.nsps);
-          debug('serverNsps %o', serverNsps);
+            const serverNsps = Object.keys(socket.server.nsps);
+            debug('serverNsps %o', serverNsps);
 
-          const clientNsps = Object.keys(socket.client.nsps);
-          debug('clientNsps %o', clientNsps);
+            const clientNsps = Object.keys(socket.client.nsps);
+            debug('clientNsps %o', clientNsps);
 
-          const clientSockets = Object.keys(socket.client.sockets);
-          debug('clientSockets %o', clientSockets);
+            const clientSockets = Object.keys(socket.client.sockets);
+            debug('clientSockets %o', clientSockets);
 
-          for (const clientSocketID of clientSockets) {
-            socket.client.sockets[clientSocketID].token = decodedToken;
-            socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
+            for (const clientSocketID of clientSockets) {
+              socket.client.sockets[clientSocketID].token = decodedToken;
+              socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
+            }
+
+            if (callback) callback({ ok: true });
+          } catch (err) {
+            debug('Error jwt.verify() %o', err);
+            if (callback) callback({ ok: false, err: err.message });
           }
-
-          if (callback) callback({ ok: true });
         });
       } catch (error) {
         debug('setToken Error: %o', error);
