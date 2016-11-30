@@ -58,7 +58,7 @@ appid=${wechatConfig.corpId}\
       try {
         jwt.verify(data.token, jwtSecret, (error, decodedToken) => {
           try {
-            if (error) throw error;
+            if (error) throw new Error('cannot verify the jwt token');
             debug('decodedToken %o', decodedToken);
             debug('socket.id %o', socket.id);
 
