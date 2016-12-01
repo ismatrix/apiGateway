@@ -122,4 +122,13 @@ export const grpcCanOrderFunds = [
     },
     jwtoken,
   },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '1330',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
 ];
