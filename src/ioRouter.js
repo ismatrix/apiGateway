@@ -15,6 +15,7 @@ const debug = createDebug('ioRouter');
 const gzh = createGzh(wechatGZHConfig);
 
 let globalPrevMarketsRooms;
+const fundsRegisteredEvents = [];
 
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
@@ -115,7 +116,7 @@ appid=${wechatConfig.corpId}\
     socket.on('subscribe', async (data, callback) => {
       try {
         debug('Markets.IO subscribed to %o with callback: %o', data, !!callback);
-        if (!data.symbol) throw new Error('Missing fundid parameter');
+        if (!data.symbol) throw new Error('Missing symbol parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
         await smartwinMd.subscribeMarketData({
@@ -243,38 +244,70 @@ appid=${wechatConfig.corpId}\
 
         const smartwinFund = createGrpcClient(fundConf);
 
-        const eventNames = ['order', 'trade', 'account', 'positions'];
+        const BasicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
+        const allEventNames = BasicEventNames.concat('combinedReport');
 
-        socket.join(
-          data.fundid,
-          (error) => {
-            try {
-              if (error) throw error;
+        if (('eventName' in data) && !allEventNames.includes(data.eventName)) throw new Error('The eventName value is not correct');
 
-              const theFundStreams = smartwinFund.getAllStreams();
-              const theFundRegisteredEvents = theFundStreams.eventNames();
+        if (('eventName' in data) && data.eventName === 'combinedReport') {
+          socket.join(
+            `${data.fundid}:${data.eventName}`,
+            (error) => {
+              try {
+                if (error) throw error;
+                const roomName = `${data.fundid}:${data.eventName}`;
 
-              if (!theFundRegisteredEvents.includes('error')) {
-                theFundStreams.on('error', (eventError) => {
-                  debug('eventError %o', eventError);
-                });
+                const isNeedRegister = !fundsRegisteredEvents
+                  .map(obj => obj.roomName)
+                  .includes(roomName);
+                debug('isNeedRegister %o: %o', roomName, isNeedRegister);
+
+                if (isNeedRegister) {
+                  const getAndPushCombinedReport = async () => {
+                    const combinedReport = await smartwinFund.getCombinedReport();
+                    fundsIO.to(roomName).emit(data.eventName, combinedReport);
+                  };
+                  const setIntervalID = setInterval(getAndPushCombinedReport, 5000);
+                  fundsRegisteredEvents.push({
+                    roomName,
+                    setIntervalID,
+                  });
+                }
+
+                if (callback) callback({ ok: true });
+              } catch (err) {
+                debug('fundsIO.on(subscribe) Error: %o', err);
+                if (callback) callback({ ok: false, error: err.message });
               }
-
-              const needRegisterEvents = difference(eventNames, theFundRegisteredEvents);
-              debug('needRegisterEvents %o', needRegisterEvents);
-              for (const eventName of needRegisterEvents) {
-                theFundStreams.on(eventName, (eventData) => {
-                  fundsIO.to(data.fundid).emit(eventName, eventData);
-                });
-              }
-
-              if (callback) callback({ ok: true });
-            } catch (err) {
-              debug('fundsIO.on(subscribe) Error: %o', err);
-              if (callback) callback({ ok: false, error: err.message });
             }
-          }
-        );
+          );
+        } else {
+          socket.join(
+            data.fundid,
+            (error) => {
+              try {
+                if (error) throw error;
+
+                const theFundStreams = smartwinFund.getAllStreams();
+                const theFundRegisteredEvents = theFundStreams.eventNames();
+
+                const needRegisterEvents = difference(BasicEventNames, theFundRegisteredEvents);
+                debug('needRegisterEvents %o', needRegisterEvents);
+
+                for (const eventName of needRegisterEvents) {
+                  theFundStreams.on(eventName, (eventData) => {
+                    fundsIO.to(data.fundid).emit(eventName, eventData);
+                  });
+                }
+
+                if (callback) callback({ ok: true });
+              } catch (err) {
+                debug('fundsIO.on(subscribe) Error: %o', err);
+                if (callback) callback({ ok: false, error: err.message });
+              }
+            }
+          );
+        }
       } catch (error) {
         debug('fundsIO.on(subscribe) Error: %o', error);
         if (callback) callback({ ok: false, error: error.message });
@@ -289,7 +322,17 @@ appid=${wechatConfig.corpId}\
         const prevFundsRooms = Object.keys(fundsIO.adapter.rooms);
         debug('prevFundsRooms %o', prevFundsRooms);
 
-        if (data.fundid === 'all') {
+        if (('eventName' in data) && data.eventName === 'combinedReport') {
+          const uniqueRoomName = `${data.fundid}:${data.eventName}`;
+
+          socket.leave(
+            uniqueRoomName,
+            (error) => {
+              if (error) throw error;
+              if (callback) callback({ ok: true });
+            }
+          );
+        } else if (data.fundid === 'all') {
           const rooms = Object.keys(socket.rooms);
           debug('Funds.IO all socket rooms: %o', rooms);
 
@@ -323,8 +366,19 @@ appid=${wechatConfig.corpId}\
         const removedFundsRooms = difference(prevFundsRooms, newFundsRooms);
         debug('removedFundsRooms %o', removedFundsRooms);
 
-        for (const fundid of removedFundsRooms) {
-          debug('nobody in room %o', fundid);
+        for (const roomName of removedFundsRooms) {
+          debug('nobody in room %o', roomName);
+          if (roomName.includes('combinedReport')) {
+            const needUnregisterEventIndex =
+              fundsRegisteredEvents.findIndex(obj => obj.roomName === roomName);
+            debug('needUnregisterEventIndex %o: %o', roomName, needUnregisterEventIndex);
+
+            if (needUnregisterEventIndex !== -1) {
+              const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
+              debug('removedFundsEvent %o', removedFundsEvent);
+              clearInterval(removedFundsEvent.setIntervalID);
+            }
+          }
         }
       } catch (error) {
         debug('fundsIO.on(unsubscribe) Error: %o', error);

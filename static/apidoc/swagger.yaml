@@ -1890,6 +1890,16 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Position'
+  funds/combinedReport:
+    get:
+      tags:
+        - Funds.IO
+      summary: Every 5s, Receive a combined report of a fund key indicators
+      responses:
+        '200':
+          description: The CombinedReport
+          schema:
+            $ref: '#/definitions/CombinedReport'
   markets/subscribe:
     post:
       tags:
@@ -3266,6 +3276,83 @@ definitions:
       fundid:
         type: string
         example: "123456"
+      eventName:
+        type: string
+        example: "combinedReport"
+  CombinedReport:
+    type: object
+    properties:
+      netValueAndEquityReport:
+        $ref: '#/definitions/NetValueAndEquityReport'
+      positionsLevelReport:
+        $ref: '#/definitions/PositionsLevelReport'
+      positionsLeverageReport:
+        $ref: '#/definitions/PositionsLeverageReport'
+  NetValueAndEquityReport:
+    type: object
+    properties:
+      fundid:
+        type: string
+        example: "123456"
+      tradingday:
+        type: string
+        example: "20161109"
+      equity:
+        $ref: '#/definitions/EquityBar'
+      netvalue:
+        $ref: '#/definitions/NetValueBar'
+      updatedate:
+        type: string
+  EquityBar:
+    type: object
+    properties:
+      last:
+        type: number
+      open:
+        type: number
+      high:
+        type: number
+      low:
+        type: number
+      close:
+        type: number
+      settle:
+        type: number
+  NetValueBar:
+    type: object
+    properties:
+      last:
+        type: number
+      open:
+        type: number
+      high:
+        type: number
+      low:
+        type: number
+      close:
+        type: number
+      settle:
+        type: number
+      dividend:
+        type: number
+      inferior:
+        type: number
+  PositionsLevelReport:
+    type: object
+    properties:
+      total:
+        type: number
+      long:
+        type: number
+      short:
+        type: number
+      net:
+        type: number
+  PositionsLeverageReport:
+    type: object
+    properties:
+      total:
+        type: number
   bar:
     type: object
     required:
