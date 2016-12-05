@@ -920,6 +920,58 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /funds/{fundid}/hostingAccountAmounts:
+    get:
+      summary: Get an array of hosting account amounts
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of hostingAccountAmounts
+          schema:
+            type: object
+            required:
+              - ok
+              - hostingAccountAmounts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              hostingAccountAmounts:
+                $ref: '#/definitions/HostingAccountAmounts'
+  /funds/{fundid}/dynamicEquity:
+    get:
+      summary: Get the fund dynamic equity value
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The dynamic equity value
+          schema:
+            type: object
+            required:
+              - ok
+              - dynamicEquity
+            properties:
+              ok:
+                type: boolean
+                default: true
+              dynamicEquity:
+                type: number
+                example: 11259302.8
+                description: 动态净值
   /account:
     get:
       summary: Get a fund account
@@ -2897,6 +2949,22 @@ definitions:
             remark:
               type: string
               example: 期货公司实际扣除明细备注
+  HostingAccountAmounts:
+    type: array
+    items:
+      $ref: '#/definitions/HostingAccountAmount'
+  HostingAccountAmount:
+    type: object
+    required:
+      - amount
+      - remark
+    properties:
+        amount:
+          type: number
+          example: 1830392.34
+        remark:
+          type: string
+          example: 托管户变动描述
   FixedCostOne:
     type: object
     properties:

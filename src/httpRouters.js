@@ -186,6 +186,14 @@ apiRouter
     const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteFixedCost(fundid, tradingday);
   })
+  .get('/funds/:fundid/hostingAccountAmounts', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getHostingAccountAmounts(fundid);
+  })
+  .get('/funds/:fundid/dynamicEquity', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getDynamicEquity(fundid);
+  })
   ;
 
 apiRouter

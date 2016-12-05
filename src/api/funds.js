@@ -380,3 +380,29 @@ export async function deleteFixedCost(fundid, tradingday) {
     throw error;
   }
 }
+
+export async function getHostingAccountAmounts(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const hostingAccountAmounts = await equityDB.getHostingAccountList(fundid);
+
+    return { ok: true, hostingAccountAmounts };
+  } catch (error) {
+    debug('getHostingAccountAmounts() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getDynamicEquity(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const dynamicEquity = await equityDB.getDynamicEquity(fundid);
+
+    return { ok: true, dynamicEquity };
+  } catch (error) {
+    debug('getDynamicEquity() Error: %o', error);
+    throw error;
+  }
+}

@@ -20,12 +20,12 @@
     "babel-eslint": "^7.1.1",
     "babel-plugin-transform-async-to-generator": "^6.16.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
-    "eslint": "^3.10.2",
+    "eslint": "^3.11.1",
     "eslint-config-airbnb": "^13.0.0",
-    "eslint-plugin-babel": "^3.3.0",
+    "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.7.1"
+    "eslint-plugin-jsx-a11y": "^3.0.1",
+    "eslint-plugin-react": "^6.8.0"
   },
   "dependencies": {
     "acl": "^0.4.9",
@@ -47,16 +47,16 @@
     "koa-send": "^3.2.0",
     "koa-static": "^3.0.0",
     "lodash": "^4.17.2",
-    "mongodb": "^2.2.11",
+    "mongodb": "^2.2.12",
     "node-fetch": "^1.6.1",
-    "socket.io": "^1.6.0",
+    "socket.io": "^1.7.1",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.7",
     "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.3",
     "sw-datafeed-icepast": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icepast.git#v1.0.8",
     "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.11",
-    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v1.0.21",
+    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v1.0.22",
     "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
     "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.1",
-    "through2": "^2.0.1"
+    "through2": "^2.0.3"
   }
 }
