@@ -381,15 +381,45 @@ export async function deleteFixedCost(fundid, tradingday) {
   }
 }
 
-export async function getHostingAccountAmounts(fundid) {
+export async function getHostingAccounts(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const hostingAccountAmounts = await equityDB.getHostingAccountList(fundid);
+    const hostingAccounts = await equityDB.getHostingAccountList(fundid);
 
-    return { ok: true, hostingAccountAmounts };
+    return { ok: true, hostingAccounts };
   } catch (error) {
-    debug('getHostingAccountAmounts() Error: %o', error);
+    debug('getHostingAccounts() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function putHostingAccount(fundid, tradingday, hostingaccount) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!hostingaccount) throw Boom.badRequest('Missing hostingaccount parameter');
+
+    const result = await equityDB.set(fundid, tradingday, { hostingaccount });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
+
+    return { ok: true };
+  } catch (error) {
+    debug('putFixedCost() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function deleteHostingAccount(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await equityDB.set(fundid, tradingday, { hostingaccount: { amount: 0, remark: '' } });
+
+    return { ok: true };
+  } catch (error) {
+    debug('deleteFixedCost() Error: %o', error);
     throw error;
   }
 }

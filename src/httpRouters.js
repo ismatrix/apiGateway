@@ -186,9 +186,20 @@ apiRouter
     const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteFixedCost(fundid, tradingday);
   })
-  .get('/funds/:fundid/hostingAccountAmounts', async (ctx) => {
+  .get('/funds/:fundid/hostingAccounts', async (ctx) => {
     const fundid = ctx.params.fundid;
-    ctx.body = await funds.getHostingAccountAmounts(fundid);
+    ctx.body = await funds.getHostingAccounts(fundid);
+  })
+  .put('/funds/:fundid/hostingAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const hostingaccount = ctx.request.body.hostingaccount;
+    ctx.body = await funds.putHostingAccount(fundid, tradingday, hostingaccount);
+  })
+  .delete('/funds/:fundid/hostingAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    ctx.body = await funds.deleteHostingAccount(fundid, tradingday);
   })
   .get('/funds/:fundid/dynamicEquity', async (ctx) => {
     const fundid = ctx.params.fundid;

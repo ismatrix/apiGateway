@@ -769,7 +769,7 @@ paths:
                 $ref: '#/definitions/Dividends'
   /funds/{fundid}/dividend/{tradingday}:
     put:
-      summary: update or add an dividend
+      summary: update or add a Dividend
       tags:
         - Funds
       parameters:
@@ -785,7 +785,7 @@ paths:
           type: string
         - name: body
           in: body
-          description: The new or updated dividend
+          description: The new or updated Dividend
           required: true
           schema:
             type: object
@@ -920,9 +920,9 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /funds/{fundid}/hostingAccountAmounts:
+  /funds/{fundid}/hostingAccounts:
     get:
-      summary: Get an array of hosting account amounts
+      summary: Get an array of HostingAccount
       tags:
         - Funds
       parameters:
@@ -933,18 +933,82 @@ paths:
           type: string
       responses:
         '200':
-          description: An array of hostingAccountAmounts
+          description: An array of HostingAccount
           schema:
             type: object
             required:
               - ok
-              - hostingAccountAmounts
+              - hostingAccounts
             properties:
               ok:
                 type: boolean
                 default: true
-              hostingAccountAmounts:
-                $ref: '#/definitions/HostingAccountAmounts'
+              hostingAccounts:
+                $ref: '#/definitions/HostingAccounts'
+  /funds/{fundid}/hostingAccount/{tradingday}:
+    put:
+      summary: update or add a HostingAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated HostingAccount
+          required: true
+          schema:
+            type: object
+            required:
+              - hostingaccount
+            properties:
+              hostingaccount:
+                $ref: '#/definitions/HostingAccountOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete a HostingAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/dynamicEquity:
     get:
       summary: Get the fund dynamic equity value
@@ -2802,12 +2866,8 @@ definitions:
         type: string
         example: "20160113"
       fixedincome:
-        type: object
-        properties:
-          amount:
-            type: number
-            example: 30000000
-  Fixedincome:
+        $ref: '#/definitions/FixedIncomeOne'
+  FixedIncomeOne:
       type: object
       properties:
         amount:
@@ -2824,17 +2884,7 @@ definitions:
         type: string
         example: "20160308"
       append:
-        type: object
-        properties:
-          amount:
-            type: number
-            example: 5000000
-          netvalue:
-            type: number
-            example: 1.2469
-          share:
-            type: number
-            example: 4009944.66
+        $ref: '#/definitions/AppendOne'
   AppendOne:
     type: object
     properties:
@@ -2858,20 +2908,7 @@ definitions:
         type: string
         example: "20160616"
       redemption:
-        type: object
-        properties:
-          amount:
-            type: number
-            example: 80000
-          netvalue:
-            type: number
-            example: 0
-          share:
-            type: number
-            example: 0
-          actual:
-            type: number
-            example: 80000
+        $ref: '#/definitions/RedemptionOne'
   RedemptionOne:
     type: object
     properties:
@@ -2898,14 +2935,7 @@ definitions:
         type: string
         example: "20140905"
       dividend:
-        type: object
-        properties:
-          amount:
-            type: number
-            example: 200000
-          netvalue:
-            type: number
-            example: 0
+        $ref: '#/definitions/DividenOne'
   DividendOne:
     type: object
     properties:
@@ -2926,45 +2956,7 @@ definitions:
           type: number
           example: 20160119
         fixedcost:
-          type: object
-          properties:
-            total:
-              type: number
-              example: 259046.54
-            priority:
-              type: number
-              example: 233643.84
-            management:
-              type: number
-              example: 21168.91
-            outsource:
-              type: number
-              example: 0
-            hosting:
-              type: number
-              example: 4233.79
-            actual:
-              type: number
-              example: 79942.03
-            remark:
-              type: string
-              example: 期货公司实际扣除明细备注
-  HostingAccountAmounts:
-    type: array
-    items:
-      $ref: '#/definitions/HostingAccountAmount'
-  HostingAccountAmount:
-    type: object
-    required:
-      - amount
-      - remark
-    properties:
-        amount:
-          type: number
-          example: 1830392.34
-        remark:
-          type: string
-          example: 托管户变动描述
+          $ref: '#/definitions/FixedCostOne'
   FixedCostOne:
     type: object
     properties:
@@ -2989,6 +2981,33 @@ definitions:
       remark:
         type: string
         example: 期货公司实际扣除明细备注
+  HostingAccounts:
+    type: array
+    items:
+      $ref: '#/definitions/HostingAccount'
+  HostingAccountOne:
+    type: object
+    required:
+      - amount
+      - remark
+    properties:
+      amount:
+        type: number
+        example: 1830392.34
+      remark:
+        type: string
+        example: 托管户变动描述
+  HostingAccount:
+    type: object
+    required:
+      - tradingday
+      - hostingaccount
+    properties:
+      tradingday:
+        type: number
+        example: 20160119
+      hostingaccount:
+        $ref: '#/definitions/HostingAccountOne'
   putPassword:
     type: object
     required:
