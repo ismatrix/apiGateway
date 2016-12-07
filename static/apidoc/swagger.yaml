@@ -1036,6 +1036,40 @@ paths:
                 type: number
                 example: 11259302.8
                 description: 动态净值
+  /funds/{fundid}/tradingdays:
+    get:
+      summary: Get the fund dynamic equity value
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingdayCount
+          in: query
+          description: The number of tradingdays
+          type: number
+          default: 2
+          example: 2
+      responses:
+        '200':
+          description: The Tradingdays
+          schema:
+            type: object
+            required:
+              - ok
+              - tradingdays
+            properties:
+              ok:
+                type: boolean
+                default: true
+              tradingdays:
+                type: array
+                example: ["20160627", "20160628"]
+                items:
+                  type: string
   /account:
     get:
       summary: Get a fund account

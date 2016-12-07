@@ -205,6 +205,11 @@ apiRouter
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getDynamicEquity(fundid);
   })
+  .get('/funds/:fundid/tradingdays', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingdayCount = parseInt(ctx.query.tradingdayCount, 10);
+    ctx.body = await funds.getTradingdays(fundid, tradingdayCount);
+  })
   ;
 
 apiRouter

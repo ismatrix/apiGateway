@@ -1,5 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
+import { isNumber } from 'lodash';
 import {
   fund as fundDB,
   equity as equityDB,
@@ -433,6 +434,22 @@ export async function getDynamicEquity(fundid) {
     return { ok: true, dynamicEquity };
   } catch (error) {
     debug('getDynamicEquity() Error: %o', error);
+    throw error;
+  }
+}
+
+export async function getTradingdays(fundid, tradingdayCount = 2) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!isNumber(tradingdayCount, 10)) throw Boom.badRequest('tradingdayCount is not a number');
+
+    debug('fundid %o tradingdayCount %o', fundid, tradingdayCount);
+
+    const tradingdays = await equityDB.getTradingdays(fundid, tradingdayCount);
+
+    return { ok: true, tradingdays };
+  } catch (error) {
+    debug('getTradingdays() Error: %o', error);
     throw error;
   }
 }
