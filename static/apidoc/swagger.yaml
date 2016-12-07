@@ -1038,7 +1038,7 @@ paths:
                 description: 动态净值
   /funds/{fundid}/tradingdays:
     get:
-      summary: Get the fund dynamic equity value
+      summary: Get the fund tradingdays
       tags:
         - Funds
       parameters:
