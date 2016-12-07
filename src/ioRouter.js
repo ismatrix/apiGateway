@@ -240,7 +240,7 @@ appid=${wechatConfig.corpId}\
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
         const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
-        if (fundConf === undefined) throw new Error('The fund %o is not in apiGateway config', data.fundid);
+        if (fundConf === undefined) throw new Error(`The fund ${data.fundid} is not in apiGateway config`);
 
         const smartwinFund = createGrpcClient(fundConf);
 
