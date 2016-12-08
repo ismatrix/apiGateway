@@ -40,7 +40,7 @@ export default function ioRouter(io) {
 
     socket.on('getQRCodeURL', async (data, callback) => {
       try {
-        const redirectURI = `https://api.invesmart.net/api/public/auth/wechat\
+        const redirectURI = `https://invesmart.net/api/public/auth/wechat\
 &response_type=code\
 &scope=snsapi_base\
 &state=${socket.id}`;

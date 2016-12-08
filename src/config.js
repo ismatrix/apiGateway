@@ -6,7 +6,7 @@ export const wechatConfig = {
   token: 'GT5jrEUG8qZ4dtWrBieilrhjWVdIX9D',
   corpId: 'wxf81392ac6d39f547',
   corpSecret: 'cWd1SUkX8hU-sLyuGovGwvFzHcVqpXfufpomDhOtc_5hcGVUKc6wJJTb4yo3k3tJ',
-  authorizeCallbackURL: 'https://api.invesmart.net/api/public/weixin/qy/id=13/callback',
+  authorizeCallbackURL: 'https://invesmart.net/api/public/weixin/qy/id=13/callback',
 };
 
 export const wechatGZHConfig = {
