@@ -10,7 +10,9 @@ import {
   indicators as indicatorsDB,
 } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:market');
+const debug = createDebug('app:api:market');
+const logError = createDebug('app:api:market:error');
+logError.log = console.error.bind(console);
 
 export async function bullBearTrend(sym, startDate, endDate) {
   try {
@@ -66,7 +68,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
 
     return { ok: true, timeline, indicators };
   } catch (error) {
-    debug('bullBearTrend() Error: %o', error);
+    logError('bullBearTrend(): %o', error);
     throw error;
   }
 }
@@ -116,7 +118,7 @@ export async function contractDailyPriceSpeed(symbols) {
 
     return { ok: true, timeline, indicators };
   } catch (error) {
-    debug('contractDailyPriceSpeed() Error: %o', error);
+    logError('contractDailyPriceSpeed(): %o', error);
     throw error;
   }
 }
@@ -182,7 +184,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
     }
     throw Boom.badRequest('Wrong resolution value');
   } catch (error) {
-    debug('getFuturesQuotes() Error: %o', error);
+    logError('getFuturesQuotes(): %o', error);
     throw error;
   }
 }
@@ -200,7 +202,7 @@ export async function getFuturesContracts(options = {}) {
 
     return { ok: true, contracts };
   } catch (error) {
-    debug('getFuturesContracts() Error: %o', error);
+    logError('getFuturesContracts(): %o', error);
     throw error;
   }
 }
@@ -211,7 +213,7 @@ export async function getFuturesProducts() {
 
     return { ok: true, products };
   } catch (error) {
-    debug('getFuturesProducts() Error: %o', error);
+    logError('getFuturesProducts(): %o', error);
     throw error;
   }
 }
@@ -235,7 +237,7 @@ export async function getFuturesProductsByExchange() {
     });
     return { ok: true, productsByExchange };
   } catch (error) {
-    debug('getFuturesProductsByExchange() Error: %o', error);
+    logError('getFuturesProductsByExchange(): %o', error);
     throw error;
   }
 }
@@ -250,7 +252,7 @@ export async function getFuturesLastSnapshot(symbols) {
 
     return { ok: true, lastSnapshot };
   } catch (error) {
-    debug('getDayBar() Error: %o', error);
+    logError('getDayBar(): %o', error);
     throw error;
   }
 }

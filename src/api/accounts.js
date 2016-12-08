@@ -4,11 +4,14 @@ import {
   account as accountDB,
 } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:accounts');
+const debug = createDebug('app:api:accounts');
+const logError = createDebug('app:api:accounts:error');
+logError.log = console.error.bind(console);
 
 export async function getAccount(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    debug('fundid %o', fundid);
 
     const accounts = await accountDB.getLast(fundid);
 
@@ -19,7 +22,7 @@ export async function getAccount(fundid) {
 
     return { ok: true, account };
   } catch (error) {
-    debug('getAccounts() Error: %o', error);
+    logError('getAccounts(): %o', error);
     throw error;
   }
 }

@@ -11,7 +11,10 @@ import {
   grpcFunds as fundsDB,
 } from './config';
 
-const debug = createDebug('ioRouter');
+const debug = createDebug('app:ioRouter');
+const logError = createDebug('app:ioRouter:error');
+logError.log = console.error.bind(console);
+
 const gzh = createGzh(wechatGZHConfig);
 
 let globalPrevMarketsRooms;
@@ -50,7 +53,7 @@ appid=${wechatConfig.corpId}\
 
         if (callback) callback({ ok: true, qrCodeURL });
       } catch (error) {
-        debug('getQRCodeURL Error: %o', error);
+        logError('getQRCodeURL(): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -60,7 +63,7 @@ appid=${wechatConfig.corpId}\
         jwt.verify(data.token, jwtSecret, (error, decodedToken) => {
           try {
             if (error) {
-              debug('Error jwt.verify() cb %o', error);
+              logError('jwt.verify() cb %o', error);
               throw new Error('cannot verify the jwt token');
             }
             debug('decodedToken %o', decodedToken);
@@ -82,12 +85,12 @@ appid=${wechatConfig.corpId}\
 
             if (callback) callback({ ok: true });
           } catch (err) {
-            debug('Error jwt.verify() %o', err);
+            logError('jwt.verify(): %o', err);
             if (callback) callback({ ok: false, err: err.message });
           }
         });
       } catch (error) {
-        debug('setToken Error: %o', error);
+        logError('setToken(): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -104,7 +107,7 @@ appid=${wechatConfig.corpId}\
     .on('data', (data) => {
       marketsIO.to(data.symbol.concat(':', data.dataType)).emit('tick', data);
     })
-    .on('error', error => debug('Error tickerStream %o', error))
+    .on('error', error => logError('tickerStream.on(error): %o', error))
     ;
 
   marketsIO.on('connection', (socket) => {
@@ -133,7 +136,7 @@ appid=${wechatConfig.corpId}\
           }
         );
       } catch (error) {
-        debug('marketsIO.on(subscribe) Error: %o', error);
+        logError('marketsIO.on(subscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -187,7 +190,7 @@ appid=${wechatConfig.corpId}\
           });
         }
       } catch (error) {
-        debug('marketsIO.on(unsubscribe) Error: %o', error);
+        logError('marketsIO.on(unsubscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -198,7 +201,7 @@ appid=${wechatConfig.corpId}\
         globalPrevMarketsRooms = Object.keys(marketsIO.adapter.rooms).filter(room => !room.includes('/markets#'));
         debug('globalPrevMarketsRooms %o', globalPrevMarketsRooms);
       } catch (error) {
-        debug('marketsIO.on(disconnect) Error: %o', error);
+        logError('marketsIO.on(disconnecting): %o', error);
       }
     });
 
@@ -221,7 +224,7 @@ appid=${wechatConfig.corpId}\
           });
         }
       } catch (error) {
-        debug('marketsIO.on(disconnect) Error: %o', error);
+        logError('marketsIO.on(disconnect): %o', error);
       }
     });
   })
@@ -264,8 +267,13 @@ appid=${wechatConfig.corpId}\
 
                 if (isNeedRegister) {
                   const getAndPushCombinedReport = async () => {
-                    const combinedReport = await smartwinFund.getCombinedReport();
-                    fundsIO.to(roomName).emit(data.eventName, combinedReport);
+                    try {
+                      const combinedReport = await smartwinFund.getCombinedReport();
+                      fundsIO.to(roomName).emit(data.eventName, combinedReport);
+                    } catch (err) {
+                      logError('getAndPushCombinedReport(): %o', err);
+                      fundsIO.to(roomName).emit(data.eventName, { ok: false, error: err.message });
+                    }
                   };
                   const setIntervalID = setInterval(getAndPushCombinedReport, 5000);
                   fundsRegisteredEvents.push({
@@ -276,7 +284,7 @@ appid=${wechatConfig.corpId}\
 
                 if (callback) callback({ ok: true });
               } catch (err) {
-                debug('fundsIO.on(subscribe) Error: %o', err);
+                logError('fundsIO.on(subscribe): %o', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
             }
@@ -302,14 +310,14 @@ appid=${wechatConfig.corpId}\
 
                 if (callback) callback({ ok: true });
               } catch (err) {
-                debug('fundsIO.on(subscribe) Error: %o', err);
+                logError('fundsIO.on(subscribe): %o', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
             }
           );
         }
       } catch (error) {
-        debug('fundsIO.on(subscribe) Error: %o', error);
+        logError('fundsIO.on(subscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -381,7 +389,7 @@ appid=${wechatConfig.corpId}\
           }
         }
       } catch (error) {
-        debug('fundsIO.on(unsubscribe) Error: %o', error);
+        logError('fundsIO.on(unsubscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });

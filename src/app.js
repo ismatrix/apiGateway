@@ -13,40 +13,48 @@ import socketio from 'socket.io';
 import koaError from './errors';
 import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
-import * as mongodb from './mongodb';
+import mongodb from './mongodb';
 import { jwtSecret, mongoUrl } from './config';
 
-const debug = createDebug('koa');
+const debug = createDebug('app');
+const logError = createDebug('app:error');
+logError.log = console.error.bind(console);
+process.on('uncaughtException', error => logError('process.on(uncaughtException): %o', error));
 
 debug('API Gateway starting...');
-mongodb.connect(mongoUrl);
-
 const koa = new Koa();
 const server = http.createServer(koa.callback());
 
 // ioRouter
 export const io = socketio(server);
-ioRouter(io);
 
-// Koa koa REST API middleware
-koa.use(logger());
-koa.use(cors());
-koa.use(koaError());
-koa.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
-koa.use(bodyParser());
-koa.use(apiRouter.routes());
-koa.use(apiRouter.allowedMethods({
-  throw: true,
-  notImplemented: () => Boom.notImplemented('Method not implemented'),
-  methodNotAllowed: () => Boom.methodNotAllowed('Method not allowed'),
-}));
+try {
+  mongodb.connect(mongoUrl);
 
-// Static files middleware
-const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
-const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
-const wxCloseMw = compose([cors(), serve(`${__dirname}/../static/wxlogin/`)]);
-koa.use(mount('/api/public/client', clientMw));
-koa.use(mount('/api/public/doc', docMw));
-koa.use(mount('/api/public/wxlogin', wxCloseMw));
+  ioRouter(io);
 
-server.listen(3000);
+  // Koa koa REST API middleware
+  koa.use(logger());
+  koa.use(cors());
+  koa.use(koaError());
+  koa.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
+  koa.use(bodyParser());
+  koa.use(apiRouter.routes());
+  koa.use(apiRouter.allowedMethods({
+    throw: true,
+    notImplemented: () => Boom.notImplemented('Method not implemented'),
+    methodNotAllowed: () => Boom.methodNotAllowed('Method not allowed'),
+  }));
+
+  // Static files middleware
+  const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
+  const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
+  const wxCloseMw = compose([cors(), serve(`${__dirname}/../static/wxlogin/`)]);
+  koa.use(mount('/api/public/client', clientMw));
+  koa.use(mount('/api/public/doc', docMw));
+  koa.use(mount('/api/public/wxlogin', wxCloseMw));
+
+  server.listen(3000);
+} catch (error) {
+  logError('main(): %o', error);
+}

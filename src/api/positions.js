@@ -2,7 +2,9 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import { position as positionDB } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:positions');
+const debug = createDebug('app:api:positions');
+const logError = createDebug('app:api:positions:error');
+logError.log = console.error.bind(console);
 
 export async function getPositions(fundid, tradingday) {
   try {
@@ -18,7 +20,7 @@ export async function getPositions(fundid, tradingday) {
 
     return { ok: true, tradingday, positions: [] };
   } catch (error) {
-    debug('getPositions() Error: %o', error);
+    logError('getPositions(): %o', error);
     throw error;
   }
 }
@@ -31,7 +33,7 @@ export async function getAllFundsMergedPositions(tradingday) {
 
     return { ok: true, positions };
   } catch (error) {
-    debug('getAllFundsMergedPositions() Error: %o', error);
+    logError('getAllFundsMergedPositions(): %o', error);
     throw error;
   }
 }
@@ -45,7 +47,7 @@ export async function getInstrumentPositionsByFund(tradingday, symbol) {
 
     return { ok: true, positionsByFund };
   } catch (error) {
-    debug('getInstrumentPositionsByFund() Error: %o', error);
+    logError('getInstrumentPositionsByFund(): %o', error);
     throw error;
   }
 }

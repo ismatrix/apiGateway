@@ -5,7 +5,9 @@ import {
   user as userDB,
 } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:users');
+const debug = createDebug('app:api:users');
+const logError = createDebug('app:api:users:error');
+logError.log = console.error.bind(console);
 
 export async function setUserPassword(userid, newPassword, password) {
   try {
@@ -43,7 +45,7 @@ export async function setUserPassword(userid, newPassword, password) {
     }
     throw Boom.badImplementation('Method not implemented');
   } catch (error) {
-    debug('setUserPassword() Error: %o', error);
+    logError('setUserPassword(): %o', error);
     throw error;
   }
 }
@@ -61,7 +63,7 @@ export async function getMeProfile(userid) {
 
     return { ok: true, profile };
   } catch (error) {
-    debug('getMeProfile() Error: %o', error);
+    logError('getMeProfile(): %o', error);
     throw error;
   }
 }
@@ -74,7 +76,7 @@ export async function getUsers() {
 
     return { ok: true, users };
   } catch (error) {
-    debug('getUsers() Error: %o', error);
+    logError('getUsers(): %o', error);
     throw error;
   }
 }

@@ -6,8 +6,9 @@ import {
   equity as equityDB,
 } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:funds');
-
+const debug = createDebug('app:api:funds');
+const logError = createDebug('app:api:funds:error');
+logError.log = console.error.bind(console);
 
 export async function getFunds() {
   try {
@@ -19,8 +20,8 @@ export async function getFunds() {
 
     return { ok: true, funds };
   } catch (error) {
-    debug('getFunds() Error: %o', error);
-    throw Boom.badImplementation('An internal server error occurred');
+    logError('getFunds(): %o', error);
+    throw error;
   }
 }
 
@@ -34,7 +35,7 @@ export async function getFund(fundid) {
 
     return { ok: true, fund };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    logError('getFund(): %o', error);
     throw error;
   }
 }
@@ -48,7 +49,7 @@ export async function postFund(fundid, fund) {
 
     return { ok: true };
   } catch (error) {
-    debug('postFund() Error: %o', error);
+    logError('postFund(): %o', error);
     throw error;
   }
 }
@@ -61,7 +62,7 @@ export async function deleteFund(fundid) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteFund() Error: %o', error);
+    logError('deleteFund(): %o', error);
     throw error;
   }
 }
@@ -76,7 +77,7 @@ export async function postEquity(fundid, tradingday, equity) {
 
     return { ok: true };
   } catch (error) {
-    debug('postEquity() Error: %o', error);
+    logError('postEquity(): %o', error);
     throw error;
   }
 }
@@ -91,7 +92,7 @@ export async function putEquity(fundid, tradingday, equity) {
 
     return { ok: true };
   } catch (error) {
-    debug('putEquity() Error: %o', error);
+    logError('putEquity(): %o', error);
     throw error;
   }
 }
@@ -105,7 +106,7 @@ export async function deleteEquity(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteEquity() Error: %o', error);
+    logError('deleteEquity(): %o', error);
     throw error;
   }
 }
@@ -118,7 +119,7 @@ export async function getTotal(fundid, tradingday) {
 
     return { ok: true, total };
   } catch (error) {
-    debug('getTotal() Error: %o', error);
+    logError('getTotal(): %o', error);
     throw error;
   }
 }
@@ -132,7 +133,7 @@ export async function getNetValue(fundid, tradingday) {
 
     return { ok: true, netValues };
   } catch (error) {
-    debug('getNetValue() Error: %o', error);
+    logError('getNetValue(): %o', error);
     throw error;
   }
 }
@@ -149,7 +150,7 @@ export async function getReturnByDateRange(fundid, beginDate, endDate) {
 
     return { ok: true, returnReport };
   } catch (error) {
-    debug('getReturnByDateRange() Error: %o', error);
+    logError('getReturnByDateRange(): %o', error);
     throw error;
   }
 }
@@ -162,7 +163,7 @@ export async function getNetValues(fundid) {
 
     return { ok: true, netLines };
   } catch (error) {
-    debug('getNetValues() Error: %o', error);
+    logError('getNetValues(): %o', error);
     throw error;
   }
 }
@@ -175,7 +176,7 @@ export async function getFixedIncomes(fundid) {
 
     return { ok: true, fixedIncomes };
   } catch (error) {
-    debug('getFixedIncomes() Error: %o', error);
+    logError('getFixedIncomes(): %o', error);
     throw error;
   }
 }
@@ -191,7 +192,7 @@ export async function putFixedIncome(fundid, tradingday, fixedincome) {
 
     return { ok: true };
   } catch (error) {
-    debug('putFixedIncome() Error: %o', error);
+    logError('putFixedIncome(): %o', error);
     throw error;
   }
 }
@@ -205,7 +206,7 @@ export async function deleteFixedIncome(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteFixedIncome() Error: %o', error);
+    logError('deleteFixedIncome(): %o', error);
     throw error;
   }
 }
@@ -218,7 +219,7 @@ export async function getAppends(fundid) {
 
     return { ok: true, appends };
   } catch (error) {
-    debug('getAppends() Error: %o', error);
+    logError('getAppends(): %o', error);
     throw error;
   }
 }
@@ -234,7 +235,7 @@ export async function putAppend(fundid, tradingday, append) {
 
     return { ok: true };
   } catch (error) {
-    debug('putAppend() Error: %o', error);
+    logError('putAppend(): %o', error);
     throw error;
   }
 }
@@ -248,7 +249,7 @@ export async function deleteAppend(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteAppend() Error: %o', error);
+    logError('deleteAppend(): %o', error);
     throw error;
   }
 }
@@ -261,7 +262,7 @@ export async function getRedemptions(fundid) {
 
     return { ok: true, redemptions };
   } catch (error) {
-    debug('getRedemptions() Error: %o', error);
+    logError('getRedemptions(): %o', error);
     throw error;
   }
 }
@@ -277,7 +278,7 @@ export async function putRedemption(fundid, tradingday, redemption) {
 
     return { ok: true };
   } catch (error) {
-    debug('putRedemption() Error: %o', error);
+    logError('putRedemption(): %o', error);
     throw error;
   }
 }
@@ -291,7 +292,7 @@ export async function deleteRedemption(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteRedemption() Error: %o', error);
+    logError('deleteRedemption(): %o', error);
     throw error;
   }
 }
@@ -304,7 +305,7 @@ export async function getDividends(fundid) {
 
     return { ok: true, dividends };
   } catch (error) {
-    debug('getFund() Error: %o', error);
+    logError('getFund(): %o', error);
     throw error;
   }
 }
@@ -320,7 +321,7 @@ export async function putDividend(fundid, tradingday, dividend) {
 
     return { ok: true };
   } catch (error) {
-    debug('putDividend() Error: %o', error);
+    logError('putDividend(): %o', error);
     throw error;
   }
 }
@@ -334,7 +335,7 @@ export async function deleteDividend(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteDividend() Error: %o', error);
+    logError('deleteDividend(): %o', error);
     throw error;
   }
 }
@@ -347,7 +348,7 @@ export async function getCostOuts(fundid) {
 
     return { ok: true, costOuts };
   } catch (error) {
-    debug('getCostOuts() Error: %o', error);
+    logError('getCostOuts(): %o', error);
     throw error;
   }
 }
@@ -363,7 +364,7 @@ export async function putFixedCost(fundid, tradingday, fixedcost) {
 
     return { ok: true };
   } catch (error) {
-    debug('putFixedCost() Error: %o', error);
+    logError('putFixedCost(): %o', error);
     throw error;
   }
 }
@@ -377,7 +378,7 @@ export async function deleteFixedCost(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteFixedCost() Error: %o', error);
+    logError('deleteFixedCost(): %o', error);
     throw error;
   }
 }
@@ -390,7 +391,7 @@ export async function getHostingAccounts(fundid) {
 
     return { ok: true, hostingAccounts };
   } catch (error) {
-    debug('getHostingAccounts() Error: %o', error);
+    logError('getHostingAccounts(): %o', error);
     throw error;
   }
 }
@@ -406,7 +407,7 @@ export async function putHostingAccount(fundid, tradingday, hostingaccount) {
 
     return { ok: true };
   } catch (error) {
-    debug('putFixedCost() Error: %o', error);
+    logError('putFixedCost(): %o', error);
     throw error;
   }
 }
@@ -420,7 +421,7 @@ export async function deleteHostingAccount(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteFixedCost() Error: %o', error);
+    logError('deleteFixedCost(): %o', error);
     throw error;
   }
 }
@@ -433,7 +434,7 @@ export async function getDynamicEquity(fundid) {
 
     return { ok: true, dynamicEquity };
   } catch (error) {
-    debug('getDynamicEquity() Error: %o', error);
+    logError('getDynamicEquity(): %o', error);
     throw error;
   }
 }
@@ -449,7 +450,7 @@ export async function getTradingdays(fundid, tradingdayCount = 2) {
 
     return { ok: true, tradingdays };
   } catch (error) {
-    debug('getTradingdays() Error: %o', error);
+    logError('getTradingdays(): %o', error);
     throw error;
   }
 }

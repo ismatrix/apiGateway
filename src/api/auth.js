@@ -9,7 +9,9 @@ import {
 import { jwtSecret, wechatConfig } from '../config';
 import { io } from '../app';
 
-const debug = createDebug('api:auth');
+const debug = createDebug('app:api:auth');
+const logError = createDebug('app:api:auth:error');
+logError.log = console.error.bind(console);
 const qydev = makeQydev(wechatConfig);
 
 export async function createUserToken(userObj) {
@@ -28,7 +30,7 @@ export async function createUserToken(userObj) {
     debug(`createUserToken() jwtToken: ${jwtToken}`);
     return jwtToken;
   } catch (error) {
-    debug('createUserToken() Error: %o', error);
+    logError('createUserToken(): %o', error);
     throw error;
   }
 }
@@ -66,7 +68,7 @@ export async function getTokenByWechatScan(code, state) {
 
     throw Boom.badImplementation('Cannot create token');
   } catch (error) {
-    debug('getTokenByWechatScan() Error: %o', error);
+    logError('getTokenByWechatScan(): %o', error);
     if (error.isBoom) {
       io.to(`${state}`).emit('token', { ok: false, error: error.output.payload.message });
     } else {
@@ -94,7 +96,7 @@ export async function getTokenByPassword(_userid, password) {
     }
     throw Boom.unauthorized('Invalid password');
   } catch (error) {
-    debug('getTokenByPassword() Error: %o', error);
+    logError('getTokenByPassword(): %o', error);
     throw error;
   }
 }

@@ -4,7 +4,9 @@ import createGrpcClient from 'sw-grpc-client';
 import { order as orderDB } from 'sw-mongodb-crud';
 import { grpcCanOrderFunds as fundsDB } from '../config';
 
-const debug = createDebug('api:orders');
+const debug = createDebug('app:api:orders');
+const logError = createDebug('app:api:orders:error');
+logError.log = console.error.bind(console);
 
 export async function getOrders(fundid, tradingDay) {
   try {
@@ -20,7 +22,7 @@ export async function getOrders(fundid, tradingDay) {
 
     return { ok: true, orders: [] };
   } catch (error) {
-    debug('getOrders() Error: %o', error);
+    logError('getOrders(): %o', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
@@ -50,7 +52,7 @@ export async function postOrder(order) {
 
     return { ok: true };
   } catch (error) {
-    debug('postOrder() Error: %o', error);
+    logError('postOrder(): %o', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
@@ -80,7 +82,7 @@ export async function deleteOrder(orderToCancel) {
 
     return { ok: true };
   } catch (error) {
-    debug('deleteOrder() Error: %o', error);
+    logError('deleteOrder(): %o', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }

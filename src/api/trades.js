@@ -2,7 +2,9 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import { done as tradeDB } from 'sw-mongodb-crud';
 
-const debug = createDebug('api:trades');
+const debug = createDebug('app:api:trades');
+const logError = createDebug('app:api:trades:error');
+logError.log = console.error.bind(console);
 
 export async function getTrades(fundid, tradingDay) {
   try {
@@ -18,7 +20,7 @@ export async function getTrades(fundid, tradingDay) {
 
     return { ok: true, trades: [] };
   } catch (error) {
-    debug('getTrades() Error: %o', error);
+    logError('getTrades(): %o', error);
     throw error;
   }
 }

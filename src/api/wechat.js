@@ -3,23 +3,27 @@ import Boom from 'boom';
 import createQydev from 'sw-weixin-qydev';
 import { wechatConfig as wxConf } from '../config';
 
-const debug = createDebug('api:wechat');
+const debug = createDebug('app:api:wechat');
+const logError = createDebug('app:api:wechat:error');
+logError.log = console.error.bind(console);
 const qydev = createQydev(wxConf);
 
 export async function app12Callback(ctx) {
   try {
+    debug('ctx %o', ctx);
     if (ctx.query.echostr) return qydev.decrypt(ctx.query.echostr).message;
   } catch (error) {
-    debug('appRegister() Error: %o', error);
+    logError('appRegister(): %o', error);
     throw error;
   }
 }
 
 export async function app13Callback(ctx) {
   try {
+    debug('ctx %o', ctx);
     if (ctx.query.echostr) return qydev.decrypt(ctx.query.echostr).message;
   } catch (error) {
-    debug('appRegister() Error: %o', error);
+    logError('appRegister(): %o', error);
     throw error;
   }
 }
@@ -37,7 +41,7 @@ export async function sendMessage({ from = 14, to, text }) {
 
     return { ok: true };
   } catch (error) {
-    debug('sendMessage() Error: %o', error);
+    logError('sendMessage(): %o', error);
     throw error;
   }
 }

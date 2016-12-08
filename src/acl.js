@@ -3,7 +3,9 @@ import Boom from 'boom';
 import NodeAclCb from 'acl';
 import Promise from 'bluebird';
 
-const debug = createDebug('acl');
+const debug = createDebug('app:acl');
+const logError = createDebug('app:acl:error');
+logError.log = console.error.bind(console);
 const NodeAcl = Promise.promisifyAll(NodeAclCb);
 const acl = new NodeAcl(new NodeAcl.memoryBackend());
 
@@ -61,23 +63,29 @@ async function can(roles, permissions, resource) {
     const isRoleAuthorized = await acl.areAnyRolesAllowed(roles, resource, permissions);
     return isRoleAuthorized;
   } catch (error) {
-    debug('canRole() Error: %o', error);
+    logError('can(): %o', error);
+    throw error;
   }
 }
 
 function canKoa(permissions, resource) {
   return async (ctx, next) => {
-    const dpt = ctx.state.user.dpt;
-    const userid = ctx.state.user.userid;
-    const roles = dpt ? dpt.concat(userid) : [].concat(userid);
-    debug(roles);
-    const hasRight = await can(roles, permissions, resource);
-    if (!hasRight) {
-      const message = `Access forbidden. ${userid} is member of '${roles}'.\
- Not enough to '${permissions}' the '${resource}'.`;
-      throw Boom.forbidden(message);
+    try {
+      const dpt = ctx.state.user.dpt;
+      const userid = ctx.state.user.userid;
+      const roles = dpt ? dpt.concat(userid) : [].concat(userid);
+      debug(roles);
+      const hasRight = await can(roles, permissions, resource);
+      if (!hasRight) {
+        const message = `Access forbidden. ${userid} is member of '${roles}'.\
+   Not enough to '${permissions}' the '${resource}'.`;
+        throw Boom.forbidden(message);
+      }
+      return next();
+    } catch (error) {
+      logError('canKoa(): %o', error);
+      throw error;
     }
-    return next();
   };
 }
 
