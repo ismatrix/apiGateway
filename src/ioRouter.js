@@ -18,6 +18,7 @@ logError.log = console.error.bind(console);
 const gzh = createGzh(wechatGZHConfig);
 
 let globalPrevMarketsRooms;
+let globalPrevFundsRooms;
 const fundsRegisteredEvents = [];
 
 const smartwinMd = createGrpcClient({
@@ -391,6 +392,42 @@ appid=${wechatConfig.corpId}\
       } catch (error) {
         logError('fundsIO.on(unsubscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
+      }
+    });
+
+    socket.on('disconnecting', () => {
+      try {
+        debug('disconnecting %o', socket.id);
+        globalPrevFundsRooms = Object.keys(fundsIO.adapter.rooms).filter(room => !room.includes('/funds#'));
+        debug('globalPrevFundsRooms %o', globalPrevFundsRooms);
+      } catch (error) {
+        logError('fundsIO.on(disconnecting): %o', error);
+      }
+    });
+
+
+    socket.on('disconnect', () => {
+      try {
+        debug('%o disconnected', socket.id);
+        const newFundsRooms = Object.keys(fundsIO.adapter.rooms).filter(room => !room.includes('/funds#'));
+        debug('newFundsRooms %o', newFundsRooms);
+
+        const removedFundsRooms = difference(globalPrevFundsRooms, newFundsRooms);
+        debug('removedFundsRooms %o', removedFundsRooms);
+
+        for (const removedRoom of removedFundsRooms) {
+          const needUnregisterEventIndex =
+            fundsRegisteredEvents.findIndex(obj => obj.roomName === removedRoom);
+
+          if (needUnregisterEventIndex !== -1) {
+            debug('needUnregisterEventIndex %o: %o', removedRoom, needUnregisterEventIndex);
+            const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
+            debug('removedFundsEvent %o', removedFundsEvent);
+            clearInterval(removedFundsEvent.setIntervalID);
+          }
+        }
+      } catch (error) {
+        logError('marketsIO.on(disconnect): %o', error);
       }
     });
   })
