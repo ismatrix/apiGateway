@@ -272,7 +272,7 @@ appid=${wechatConfig.corpId}\
                       fundsIO.to(roomName).emit(data.eventName, combinedReport);
                     } catch (err) {
                       logError('getAndPushCombinedReport(): %o', err);
-                      fundsIO.to(roomName).emit(data.eventName, { ok: false, error: err.message });
+                      fundsIO.to(roomName).emit(data.eventName, { ok: false, error: `${data.fundid}: ${err.message}` });
                     }
                   };
                   const setIntervalID = setInterval(getAndPushCombinedReport, 5000);
