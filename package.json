@@ -2,11 +2,11 @@
   "name": "api-gateway",
   "version": "1.1.3",
   "description": "Provide access to backend services",
-  "main": "lib/app",
+  "main": "dist/app",
   "scripts": {
-    "start": "node lib/app",
+    "start": "node dist/app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "rm -rf ./lib && babel src --out-dir lib --copy-files",
+    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files",
     "dev": "DEBUG=*,-babel nodemon src/index.js"
   },
   "repository": {
