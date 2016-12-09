@@ -31,7 +31,25 @@ export const grpcFunds = [
   },
   {
     serviceName: 'smartwinFuturesFund',
-    fundid: '1331',
+    fundid: '75697',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '1330',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '1333',
     server: {
       ip: 'invesmart.win',
       port: '50051',
@@ -146,15 +164,6 @@ export const grpcFunds = [
     },
     jwtoken,
   },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1330',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
 ];
 
 export const grpcCanOrderFunds = [
@@ -169,7 +178,7 @@ export const grpcCanOrderFunds = [
   },
   {
     serviceName: 'smartwinFuturesFund',
-    fundid: '1248',
+    fundid: '75697',
     server: {
       ip: 'invesmart.win',
       port: '50051',
@@ -179,6 +188,15 @@ export const grpcCanOrderFunds = [
   {
     serviceName: 'smartwinFuturesFund',
     fundid: '1330',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: '1333',
     server: {
       ip: 'invesmart.win',
       port: '50051',
