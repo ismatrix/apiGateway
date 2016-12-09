@@ -31,7 +31,7 @@ export const grpcFunds = [
   },
   {
     serviceName: 'smartwinFuturesFund',
-    fundid: '75697',
+    fundid: '075697',
     server: {
       ip: 'invesmart.win',
       port: '50051',
@@ -178,7 +178,7 @@ export const grpcCanOrderFunds = [
   },
   {
     serviceName: 'smartwinFuturesFund',
-    fundid: '75697',
+    fundid: '075697',
     server: {
       ip: 'invesmart.win',
       port: '50051',
