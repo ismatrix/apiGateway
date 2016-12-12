@@ -8,7 +8,7 @@ import {
   jwtoken,
   wechatGZHConfig,
   wechatConfig,
-  grpcFunds as fundsDB,
+  getFundConfigs,
 } from './config';
 
 const debug = createDebug('app:ioRouter');
@@ -24,7 +24,7 @@ const fundsRegisteredEvents = [];
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
   server: {
-    ip: 'invesmart.win',
+    ip: 'markets.invesmart.net',
     port: '50052',
   },
   jwtoken,
@@ -243,7 +243,7 @@ appid=${wechatConfig.corpId}\
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data.fundid) throw new Error('Missing fundid parameter');
 
-        const fundConf = fundsDB.find(fund => fund.fundid === data.fundid);
+        const fundConf = getFundConfigs().find(fund => fund.fundid === data.fundid);
         if (fundConf === undefined) throw new Error(`The fund ${data.fundid} is not in apiGateway config`);
 
         const smartwinFund = createGrpcClient(fundConf);

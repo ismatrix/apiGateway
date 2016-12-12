@@ -1,3 +1,12 @@
+import createDebug from 'debug';
+import {
+  fund as fundDB,
+} from 'sw-mongodb-crud';
+
+const debug = createDebug('app:config');
+const logError = createDebug('app:config:error');
+logError.log = console.error.bind(console);
+
 export const jwtSecret = 'Ci23fWtahDYE3dfirAHrJhzrUEoslIxqwcDN9VNhRJCWf8Tyc1F1mqYrjGYF';
 export const jwtoken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI1NzZhNDNjNjUyNmRjZWRjMDcwMjg4YjMiLCJ1c2VyaWQiOiJ2aWN0b3IiLCJkcHQiOlsi57O757uf6YOoIl0sImlhdCI6MTQ2NzE2NDg5Mn0.-ousXclNcnTbIDTJPJWnAkVVPErPw418TMKDqpWlZO0';
 
@@ -19,161 +28,36 @@ export const wechatGZHConfig = {
 
 export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
 
-export const grpcFunds = [
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '068074',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '075697',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1330',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1333',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '3000380',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '80000528',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1339',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '890831',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1285',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1448',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '82660',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '222959',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1160020',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '120100588',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '0292',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '50202468',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: 'szhwjj',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-];
+let fundConfigs;
+
+fundDB
+  .getList({ state: 'online' }, {})
+  .then((dbFunds) => {
+    try {
+      debug('dbFunds %o', dbFunds.map(f => f.fundid));
+      fundConfigs = dbFunds.map(dbFund => ({
+        serviceName: 'smartwinFuturesFund',
+        fundid: dbFund.fundid,
+        server: {
+          ip: 'funds.invesmart.net',
+          port: '50051',
+        },
+        jwtoken,
+      }));
+    } catch (err) {
+      logError('getList(): %o', err);
+    }
+  })
+  .catch(error => logError('fundDB.getList() %o', error))
+  ;
+
+export function getFundConfigs() {
+  return fundConfigs;
+}
+
+export function getCanOrderFundConfigs() {
+  return fundConfigs.filter(fundConf => fundConf.fundflag === 'simulation');
+}
 
 export const grpcCanOrderFunds = [
   {
