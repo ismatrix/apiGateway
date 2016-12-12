@@ -164,6 +164,15 @@ export const grpcFunds = [
     },
     jwtoken,
   },
+  {
+    serviceName: 'smartwinFuturesFund',
+    fundid: 'szhwjj',
+    server: {
+      ip: 'invesmart.win',
+      port: '50051',
+    },
+    jwtoken,
+  },
 ];
 
 export const grpcCanOrderFunds = [
