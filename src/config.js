@@ -28,6 +28,8 @@ export const wechatGZHConfig = {
 
 export const mongoUrl = 'mongodb://127.0.0.1:27017/smartwin';
 
+export const canOrderFundIDs = ['068074', '1330', '1333', '075697'];
+
 let fundConfigs;
 
 fundDB
@@ -56,44 +58,5 @@ export function getFundConfigs() {
 }
 
 export function getCanOrderFundConfigs() {
-  return fundConfigs.filter(fundConf => fundConf.fundflag === 'simulation');
+  return fundConfigs.filter(fundConf => canOrderFundIDs.includes(fundConf.fundid));
 }
-
-export const grpcCanOrderFunds = [
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '068074',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '075697',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1330',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-  {
-    serviceName: 'smartwinFuturesFund',
-    fundid: '1333',
-    server: {
-      ip: 'invesmart.win',
-      port: '50051',
-    },
-    jwtoken,
-  },
-];

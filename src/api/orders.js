@@ -44,8 +44,10 @@ export async function postOrder(order) {
 
     const fundid = order.fundid;
 
+    debug('getCanOrderFundConfigs() %o', getCanOrderFundConfigs());
+
     const fundConf = getCanOrderFundConfigs().find(fund => fund.fundid === fundid);
-    debug('fundConf %o', fundConf);
+
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot place order`);
     const smartwinFund = createGrpcClient(fundConf);
 
