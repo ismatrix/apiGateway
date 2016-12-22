@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
+import { isNumber, isString } from 'lodash';
 import { order as orderDB } from 'sw-mongodb-crud';
 import { getCanOrderFundConfigs } from '../config';
 
@@ -30,16 +31,17 @@ export async function getOrders(fundid, tradingDay) {
 
 export async function postOrder(order) {
   try {
-    if (!order.fundid) throw Boom.badRequest('Missing fundid parameter');
-    if (!order.exchangeid) throw Boom.badRequest('Missing exchangeid parameter');
-    if (!order.instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
-    if (!order.direction) throw Boom.badRequest('Missing direction parameter');
-    if (!order.offsetflag) throw Boom.badRequest('Missing offsetflag parameter');
-    if (!order.price) throw Boom.badRequest('Missing price parameter');
-    if (!order.volume) throw Boom.badRequest('Missing volume parameter');
-    if (!order.signalname) throw Boom.badRequest('Missing signalname parameter');
-    if (!order.strategyid) throw Boom.badRequest('Missing strategyid parameter');
-    if (!order.userid) throw Boom.badRequest('Missing userid parameter');
+    if (!order) throw Boom.badRequest('Missing order object');
+    if (!isString(order.fundid)) throw Boom.badRequest('Missing fundid parameter');
+    if (!isString(order.exchangeid)) throw Boom.badRequest('Missing exchangeid parameter');
+    if (!isString(order.instrumentid)) throw Boom.badRequest('Missing instrumentid parameter');
+    if (!isString(order.direction)) throw Boom.badRequest('Missing direction parameter');
+    if (!isString(order.offsetflag)) throw Boom.badRequest('Missing offsetflag parameter');
+    if (!isNumber(order.price)) throw Boom.badRequest('Missing price parameter or is not a number');
+    if (!isNumber(order.volume)) throw Boom.badRequest('Missing volume parameter or is not a number');
+    if (!isString(order.signalname)) throw Boom.badRequest('Missing signalname parameter');
+    if (!isString(order.strategyid)) throw Boom.badRequest('Missing strategyid parameter');
+    if (!isString(order.userid)) throw Boom.badRequest('Missing userid parameter');
     debug('order %o', order);
 
     const fundid = order.fundid;
