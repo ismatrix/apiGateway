@@ -103,13 +103,11 @@ appid=${wechatConfig.corpId}\
 
   const marketsIO = io.of('/markets');
 
-  const tickerStream = smartwinMd.getTickerStream();
-  tickerStream
-    .on('data', (data) => {
-      marketsIO.to(data.symbol.concat(':', data.dataType)).emit('tick', data);
+  smartwinMd.getStreams('ticker').then(tickerStream =>
+    tickerStream.on('ticker', (ticker) => {
+      marketsIO.to(ticker.symbol.concat(':', ticker.dataType)).emit('tick', ticker);
     })
-    .on('error', error => logError('tickerStream.on(error): %o', error))
-    ;
+  );
 
   marketsIO.on('connection', (socket) => {
     debug('%o connected to Market.IO', socket.id);
@@ -183,9 +181,9 @@ appid=${wechatConfig.corpId}\
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
         for (const removedRoom of removedMarketsRooms) {
-          const instrument = removedRoom.split(':');
+          const [symbol] = removedRoom.split(':');
           smartwinMd.unsubscribeMarketData({
-            symbol: instrument[0],
+            symbol,
             resolution: 'snapshot',
             dataType: 'ticker',
           });
@@ -217,9 +215,9 @@ appid=${wechatConfig.corpId}\
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
         for (const removedRoom of removedMarketsRooms) {
-          const instrument = removedRoom.split(':');
+          const [symbol] = removedRoom.split(':');
           smartwinMd.unsubscribeMarketData({
-            symbol: instrument[0],
+            symbol,
             resolution: 'snapshot',
             dataType: 'ticker',
           });
@@ -293,11 +291,11 @@ appid=${wechatConfig.corpId}\
         } else {
           socket.join(
             data.fundid,
-            (error) => {
+            async (error) => {
               try {
                 if (error) throw error;
 
-                const theFundStreams = smartwinFund.getAllStreams();
+                const theFundStreams = await smartwinFund.getAllStreams();
                 const theFundRegisteredEvents = theFundStreams.eventNames();
 
                 const needRegisterEvents = difference(BasicEventNames, theFundRegisteredEvents);
