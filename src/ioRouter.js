@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
-import { difference } from 'lodash';
+import { difference, upperFirst } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
 import {
   jwtSecret,
@@ -103,11 +103,9 @@ appid=${wechatConfig.corpId}\
 
   const marketsIO = io.of('/markets');
 
-  smartwinMd.getStreams('ticker').then(tickerStream =>
-    tickerStream.on('ticker', (ticker) => {
-      marketsIO.to(ticker.symbol.concat(':', ticker.dataType)).emit('tick', ticker);
-    })
-  );
+  smartwinMd.getStreams('ticker').on('ticker', (ticker) => {
+    marketsIO.to(ticker.symbol.concat(':', ticker.dataType)).emit('tick', ticker);
+  });
 
   marketsIO.on('connection', (socket) => {
     debug('%o connected to Market.IO', socket.id);
@@ -246,39 +244,42 @@ appid=${wechatConfig.corpId}\
 
         const smartwinFund = createGrpcClient(fundConf);
 
-        const BasicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
-        const allEventNames = BasicEventNames.concat('combinedReport');
+        const basicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
+        const extraEventNames = ['combinedReport', 'liveAccount', 'livePositions'];
+        const allEventNames = basicEventNames.concat(extraEventNames);
 
         if (('eventName' in data) && !allEventNames.includes(data.eventName)) throw new Error('The eventName value is not correct');
 
-        if (('eventName' in data) && data.eventName === 'combinedReport') {
+        if (('eventName' in data) && extraEventNames.includes(data.eventName)) {
+          const roomName = `${data.fundid}:${data.eventName}`;
           socket.join(
-            `${data.fundid}:${data.eventName}`,
+            roomName,
             (error) => {
               try {
                 if (error) throw error;
-                const roomName = `${data.fundid}:${data.eventName}`;
 
-                const isNeedRegister = !fundsRegisteredEvents
+                const isNeedRegisterGetAndEmitOnInterval = !fundsRegisteredEvents
                   .map(obj => obj.roomName)
                   .includes(roomName);
-                debug('isNeedRegister %o: %o', roomName, isNeedRegister);
+                debug('isNeedRegister %o: %o', roomName, isNeedRegisterGetAndEmitOnInterval);
 
-                if (isNeedRegister) {
-                  const getAndPushCombinedReport = async () => {
+                if (isNeedRegisterGetAndEmitOnInterval) {
+                  const getAndEmitFunction = async () => {
                     try {
-                      const combinedReport = await smartwinFund.getCombinedReport();
-                      fundsIO.to(roomName).emit(data.eventName, combinedReport);
+                      const functionName = 'get'.concat(upperFirst(data.eventName));
+                      const dataFromGet = await smartwinFund[functionName]();
+                      fundsIO.to(roomName).emit(data.eventName, dataFromGet);
                     } catch (err) {
-                      logError('getAndPushCombinedReport(): %o', err);
+                      logError('getAndEmitFunction(): roomName: %o, %o', roomName, err);
                       fundsIO.to(roomName).emit(data.eventName, { ok: false, error: `${data.fundid}: ${err.message}` });
                     }
                   };
-                  const setIntervalID = setInterval(getAndPushCombinedReport, 5000);
+                  const setIntervalID = setInterval(getAndEmitFunction, 5000);
                   fundsRegisteredEvents.push({
                     roomName,
                     setIntervalID,
                   });
+                  debug('number of getAndEmit functions', fundsRegisteredEvents.length);
                 }
 
                 if (callback) callback({ ok: true });
@@ -291,14 +292,14 @@ appid=${wechatConfig.corpId}\
         } else {
           socket.join(
             data.fundid,
-            async (error) => {
+            (error) => {
               try {
                 if (error) throw error;
 
-                const theFundStreams = await smartwinFund.getAllStreams();
+                const theFundStreams = smartwinFund.getAllStreams();
                 const theFundRegisteredEvents = theFundStreams.eventNames();
 
-                const needRegisterEvents = difference(BasicEventNames, theFundRegisteredEvents);
+                const needRegisterEvents = difference(basicEventNames, theFundRegisteredEvents);
                 debug('needRegisterEvents %o', needRegisterEvents);
 
                 for (const eventName of needRegisterEvents) {

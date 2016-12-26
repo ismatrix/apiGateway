@@ -1912,11 +1912,33 @@ paths:
           description: The account
           schema:
             $ref: '#/definitions/Account'
+  funds/liveAccount:
+    get:
+      tags:
+        - Funds.IO
+      summary: Every 5s, Receive the live account with values based on live positions
+      responses:
+        '200':
+          description: The live account
+          schema:
+            $ref: '#/definitions/Account'
   funds/positions:
     get:
       tags:
         - Funds.IO
       summary: Receive the positions on a trade
+      responses:
+        '200':
+          description: The positions
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Position'
+  funds/livePositions:
+    get:
+      tags:
+        - Funds.IO
+      summary: Every 5s, Receive the live positions with updated values based on last marketData
       responses:
         '200':
           description: The positions
@@ -3312,6 +3334,7 @@ definitions:
         example: "123456"
       eventName:
         type: string
+        enum: ["combinedReport", "liveAccount", "livePositions"]
         example: "combinedReport"
   CombinedReport:
     type: object
