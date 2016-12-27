@@ -15,19 +15,19 @@ async function main() {
       socket.emit('setToken', { token }, (result) => {
         if (!result.ok) throw new Error(result.error);
         debug('socket.setToken() %o', result);
-      });
-      funds.on('liveAccount', liveAccount => debug('liveAccount %o', liveAccount));
-      funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
-        if (!result.ok) throw new Error(result.error);
-        debug('funds.subscribe() %o', result);
-      });
-      const subscribe = () => {
-        funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
-          if (!result.ok) throw new Error(result.error);
-          debug('funds.subscribe() %o', result);
+        funds.on('liveAccount', liveAccount => debug('liveAccount %o', liveAccount));
+        funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (res) => {
+          if (!res.ok) throw new Error(res.error);
+          debug('funds.subscribe() %o', res);
         });
-      };
-      setInterval(subscribe, 5000);
+      });
+      // const subscribe = () => {
+      //   funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
+      //     if (!result.ok) throw new Error(result.error);
+      //     debug('funds.subscribe() %o', result);
+      //   });
+      // };
+      // setInterval(subscribe, 5000);
       // const unsubscribe = () => {
       //   funds.emit('unsubscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
       //     if (!result.ok) throw new Error(result.error);
