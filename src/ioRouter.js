@@ -241,7 +241,7 @@ appid=${wechatConfig.corpId}\
 
       if (needUnregisterEventIndex !== -1) {
         debug('needUnregisterEventIndex %o: %o', removedRoom, needUnregisterEventIndex);
-        clearInterval(fundsRegisteredEvents[needUnregisterEventIndex].setIntervalID);
+        clearInterval(fundsRegisteredEvents[needUnregisterEventIndex].recursiveCall.stop());
 
         const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
         debug('removedFundsEvent %o', removedFundsEvent);
@@ -293,10 +293,22 @@ appid=${wechatConfig.corpId}\
                       fundsIO.to(roomName).emit(data.eventName, { ok: false, error: `${data.fundid}: ${err.message}` });
                     }
                   };
-                  const setIntervalID = setInterval(getAndEmitFunction, 5000);
+                  const makeRecursiveCall = (funcToCall, timeout) => {
+                    let stopped = false;
+                    const start = async () => {
+                      await funcToCall();
+                      await new Promise(r => setTimeout(r, timeout));
+                      if (!stopped) start();
+                    };
+                    const stop = () => { stopped = true; };
+                    return { start, stop };
+                  };
+                  const recursiveCall = makeRecursiveCall(getAndEmitFunction, 5000);
+
+                  recursiveCall.start();
                   fundsRegisteredEvents.push({
                     roomName,
-                    setIntervalID,
+                    recursiveCall,
                   });
                   debug('number of getAndEmit functions', fundsRegisteredEvents.length);
                 }
