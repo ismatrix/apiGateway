@@ -50,6 +50,7 @@
     "mongodb": "^2.2.12",
     "node-fetch": "^1.6.1",
     "socket.io": "^1.7.1",
+    "socket.io-client": "^1.7.2",
     "sw-broker-ice": "git+ssh://git@code.invesmart.net:8800/npm/sw-broker-ice.git#v1.0.7",
     "sw-datafeed-icelive": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icelive.git#v1.0.3",
     "sw-datafeed-icepast": "git+ssh://git@code.invesmart.net:8800/npm/sw-datafeed-icepast.git#v1.0.8",
