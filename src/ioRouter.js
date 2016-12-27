@@ -286,7 +286,6 @@ appid=${wechatConfig.corpId}\
                     try {
                       const functionName = 'get'.concat(upperFirst(data.eventName));
                       const dataFromGet = await smartwinFund[functionName]();
-                      debug('dataFromGet %o', dataFromGet);
                       fundsIO.to(roomName).emit(data.eventName, dataFromGet);
                     } catch (err) {
                       logError('getAndEmitFunction(): roomName: %o, %o', roomName, err);
