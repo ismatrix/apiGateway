@@ -227,6 +227,28 @@ appid=${wechatConfig.corpId}\
   })
   ;
 
+  const basicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
+  const extraEventNames = ['combinedReport', 'liveAccount', 'livePositions'];
+  const allEventNames = basicEventNames.concat(extraEventNames);
+
+  const unregisterEmptyRoom = (previousRoomsSnapshot, currentRoomsSnapshot) => {
+    const removedFundsRooms = difference(previousRoomsSnapshot, currentRoomsSnapshot);
+    debug('removedFundsRooms %o', removedFundsRooms);
+
+    for (const removedRoom of removedFundsRooms) {
+      const needUnregisterEventIndex =
+        fundsRegisteredEvents.findIndex(obj => obj.roomName === removedRoom);
+
+      if (needUnregisterEventIndex !== -1) {
+        debug('needUnregisterEventIndex %o: %o', removedRoom, needUnregisterEventIndex);
+        clearInterval(fundsRegisteredEvents[needUnregisterEventIndex].setIntervalID);
+
+        const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
+        debug('removedFundsEvent %o', removedFundsEvent);
+      }
+    }
+  };
+
   const fundsIO = io.of('/funds');
   fundsIO.on('connection', (socket) => {
     debug('%o connected to Funds.IO', socket.id);
@@ -243,10 +265,6 @@ appid=${wechatConfig.corpId}\
         if (fundConf === undefined) throw new Error(`The fund ${data.fundid} is not in apiGateway config`);
 
         const smartwinFund = createGrpcClient(fundConf);
-
-        const basicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
-        const extraEventNames = ['combinedReport', 'liveAccount', 'livePositions'];
-        const allEventNames = basicEventNames.concat(extraEventNames);
 
         if (('eventName' in data) && !allEventNames.includes(data.eventName)) throw new Error('The eventName value is not correct');
 
@@ -268,6 +286,7 @@ appid=${wechatConfig.corpId}\
                     try {
                       const functionName = 'get'.concat(upperFirst(data.eventName));
                       const dataFromGet = await smartwinFund[functionName]();
+                      debug('dataFromGet %o', dataFromGet);
                       fundsIO.to(roomName).emit(data.eventName, dataFromGet);
                     } catch (err) {
                       logError('getAndEmitFunction(): roomName: %o, %o', roomName, err);
@@ -330,11 +349,11 @@ appid=${wechatConfig.corpId}\
         const prevFundsRooms = Object.keys(fundsIO.adapter.rooms);
         debug('prevFundsRooms %o', prevFundsRooms);
 
-        if (('eventName' in data) && data.eventName === 'combinedReport') {
-          const uniqueRoomName = `${data.fundid}:${data.eventName}`;
+        if (('eventName' in data) && extraEventNames.includes(data.eventName)) {
+          const roomName = `${data.fundid}:${data.eventName}`;
 
           socket.leave(
-            uniqueRoomName,
+            roomName,
             (error) => {
               if (error) throw error;
               if (callback) callback({ ok: true });
@@ -371,23 +390,7 @@ appid=${wechatConfig.corpId}\
         const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
         debug('newFundsRooms %o', newFundsRooms);
 
-        const removedFundsRooms = difference(prevFundsRooms, newFundsRooms);
-        debug('removedFundsRooms %o', removedFundsRooms);
-
-        for (const roomName of removedFundsRooms) {
-          debug('nobody in room %o', roomName);
-          if (roomName.includes('combinedReport')) {
-            const needUnregisterEventIndex =
-              fundsRegisteredEvents.findIndex(obj => obj.roomName === roomName);
-            debug('needUnregisterEventIndex %o: %o', roomName, needUnregisterEventIndex);
-
-            if (needUnregisterEventIndex !== -1) {
-              const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
-              debug('removedFundsEvent %o', removedFundsEvent);
-              clearInterval(removedFundsEvent.setIntervalID);
-            }
-          }
-        }
+        unregisterEmptyRoom(prevFundsRooms, newFundsRooms);
       } catch (error) {
         logError('fundsIO.on(unsubscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
@@ -411,20 +414,7 @@ appid=${wechatConfig.corpId}\
         const newFundsRooms = Object.keys(fundsIO.adapter.rooms).filter(room => !room.includes('/funds#'));
         debug('newFundsRooms %o', newFundsRooms);
 
-        const removedFundsRooms = difference(globalPrevFundsRooms, newFundsRooms);
-        debug('removedFundsRooms %o', removedFundsRooms);
-
-        for (const removedRoom of removedFundsRooms) {
-          const needUnregisterEventIndex =
-            fundsRegisteredEvents.findIndex(obj => obj.roomName === removedRoom);
-
-          if (needUnregisterEventIndex !== -1) {
-            debug('needUnregisterEventIndex %o: %o', removedRoom, needUnregisterEventIndex);
-            const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
-            debug('removedFundsEvent %o', removedFundsEvent);
-            clearInterval(removedFundsEvent.setIntervalID);
-          }
-        }
+        unregisterEmptyRoom(globalPrevFundsRooms, newFundsRooms);
       } catch (error) {
         logError('marketsIO.on(disconnect): %o', error);
       }
