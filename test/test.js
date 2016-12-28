@@ -12,14 +12,26 @@ async function main() {
   try {
     debug('test main');
     socket.on('connect', () => {
-      socket.emit('setToken', { token }, (result) => {
-        if (!result.ok) throw new Error(result.error);
-        debug('socket.setToken() %o', result);
+      socket.emit('setToken', { token }, (setTokenResult) => {
+        if (!setTokenResult.ok) throw new Error(setTokenResult.error);
+        debug('socket.setToken() %o', setTokenResult);
+
         funds.on('liveAccount', liveAccount => debug('liveAccount %o', liveAccount));
-        funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (res) => {
-          if (!res.ok) throw new Error(res.error);
-          debug('funds.subscribe() %o', res);
+        funds.on('livePositions', livePositions => debug('livePositions %o', livePositions));
+        funds.on('order', order => debug('order %o', order));
+
+        funds.emit('subscribe', { fundid: '068074', eventName: 'basics' }, (result) => {
+          if (!result.ok) throw new Error(result.error);
+          debug('funds.subscribe() %o', result);
         });
+
+        const unsubscribe = () => {
+          funds.emit('unsubscribe', { fundid: 'all', eventName: 'basics' }, (result) => {
+            if (!result.ok) throw new Error(result.error);
+            debug('funds.unsubscribe() %o', result);
+          });
+        };
+        setTimeout(unsubscribe, 5000);
       });
       // const subscribe = () => {
       //   funds.emit('subscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
@@ -28,13 +40,7 @@ async function main() {
       //   });
       // };
       // setInterval(subscribe, 5000);
-      // const unsubscribe = () => {
-      //   funds.emit('unsubscribe', { fundid: '068074', eventName: 'liveAccount' }, (result) => {
-      //     if (!result.ok) throw new Error(result.error);
-      //     debug('funds.subscribe() %o', result);
-      //   });
-      // };
-      // setTimeout(unsubscribe, 15000);
+
     });
   } catch (error) {
     debug('Error main(): %o', error);

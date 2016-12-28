@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
-import { difference, upperFirst } from 'lodash';
+import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
 import {
   jwtSecret,
@@ -20,6 +20,8 @@ const gzh = createGzh(wechatGZHConfig);
 let globalPrevMarketsRooms;
 let globalPrevFundsRooms;
 const fundsRegisteredEvents = [];
+const BASICS = 'basics';
+const ALL = 'all';
 
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
@@ -147,7 +149,7 @@ appid=${wechatConfig.corpId}\
         const prevMarketsRooms = Object.keys(marketsIO.adapter.rooms);
         debug('prevMarketsRooms %o', prevMarketsRooms);
 
-        if (data.symbol === 'all') {
+        if (data.symbol === ALL) {
           const socketRooms = Object.keys(socket.rooms);
           debug('Markets.IO all socket socketRooms: %o', socketRooms);
 
@@ -229,7 +231,6 @@ appid=${wechatConfig.corpId}\
 
   const basicEventNames = ['order', 'trade', 'account', 'positions', 'tradingday'];
   const extraEventNames = ['combinedReport', 'liveAccount', 'livePositions'];
-  const allEventNames = basicEventNames.concat(extraEventNames);
 
   const unregisterEmptyRoom = (previousRoomsSnapshot, currentRoomsSnapshot) => {
     const removedFundsRooms = difference(previousRoomsSnapshot, currentRoomsSnapshot);
@@ -259,16 +260,45 @@ appid=${wechatConfig.corpId}\
     socket.on('subscribe', async (data, callback) => {
       try {
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
-        if (!data.fundid) throw new Error('Missing fundid parameter');
+        if (!data) throw new Error('Missing main data object');
+        if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
+        if (!isString(data.eventName)) throw new Error('Missing eventName parameter or not a string');
+
+        if (!extraEventNames.includes(data.eventName) && data.eventName !== BASICS) throw new Error(`The eventName "${data.eventName}" does not exist`);
 
         const fundConf = getFundConfigs().find(fund => fund.fundid === data.fundid);
-        if (fundConf === undefined) throw new Error(`The fund ${data.fundid} is not in apiGateway config`);
+        if (fundConf === undefined) throw new Error(`The fund ${data.fundid} does not exist`);
 
         const smartwinFund = createGrpcClient(fundConf);
 
-        if (('eventName' in data) && !allEventNames.includes(data.eventName)) throw new Error('The eventName value is not correct');
+        if (data.eventName === BASICS) {
+          const roomName = `${data.fundid}:${BASICS}`;
+          socket.join(
+            roomName,
+            (error) => {
+              try {
+                if (error) throw error;
 
-        if (('eventName' in data) && extraEventNames.includes(data.eventName)) {
+                const theFundStreams = smartwinFund.getAllStreams();
+                const theFundRegisteredEvents = theFundStreams.eventNames();
+
+                const needRegisterEvents = difference(basicEventNames, theFundRegisteredEvents);
+                debug('need add listener on these basic events %o', needRegisterEvents);
+
+                for (const eventName of needRegisterEvents) {
+                  theFundStreams.on(eventName, (eventData) => {
+                    fundsIO.to(roomName).emit(eventName, eventData);
+                  });
+                }
+
+                if (callback) callback({ ok: true });
+              } catch (err) {
+                logError('fundsIO.on(subscribe): %o', err);
+                if (callback) callback({ ok: false, error: err.message });
+              }
+            }
+          );
+        } else if (extraEventNames.includes(data.eventName)) {
           const roomName = `${data.fundid}:${data.eventName}`;
           socket.join(
             roomName,
@@ -319,32 +349,6 @@ appid=${wechatConfig.corpId}\
               }
             }
           );
-        } else {
-          socket.join(
-            data.fundid,
-            (error) => {
-              try {
-                if (error) throw error;
-
-                const theFundStreams = smartwinFund.getAllStreams();
-                const theFundRegisteredEvents = theFundStreams.eventNames();
-
-                const needRegisterEvents = difference(basicEventNames, theFundRegisteredEvents);
-                debug('needRegisterEvents %o', needRegisterEvents);
-
-                for (const eventName of needRegisterEvents) {
-                  theFundStreams.on(eventName, (eventData) => {
-                    fundsIO.to(data.fundid).emit(eventName, eventData);
-                  });
-                }
-
-                if (callback) callback({ ok: true });
-              } catch (err) {
-                logError('fundsIO.on(subscribe): %o', err);
-                if (callback) callback({ ok: false, error: err.message });
-              }
-            }
-          );
         }
       } catch (error) {
         logError('fundsIO.on(subscribe): %o', error);
@@ -355,14 +359,43 @@ appid=${wechatConfig.corpId}\
     socket.on('unsubscribe', async (data, callback) => {
       try {
         debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
-        if (!data.fundid) throw new Error('Missing fundid parameter');
+        if (!data) throw new Error('Missing main data object');
+        if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
+        if (!isString(data.eventName)) throw new Error('Missing eventName parameter or not a string');
+
+        if (!extraEventNames.includes(data.eventName) && data.eventName !== BASICS) throw new Error(`The eventName "${data.eventName}" does not exist`);
+
+        if (data.fundid !== ALL) {
+          const fundConf = getFundConfigs().find(fund => fund.fundid === data.fundid);
+          if (fundConf === undefined) throw new Error(`The fund ${data.fundid} does not exist`);
+        }
 
         const prevFundsRooms = Object.keys(fundsIO.adapter.rooms);
         debug('prevFundsRooms %o', prevFundsRooms);
 
-        if (('eventName' in data) && extraEventNames.includes(data.eventName)) {
-          const roomName = `${data.fundid}:${data.eventName}`;
+        if (data.fundid === ALL) {
+          const rooms = Object.keys(socket.rooms);
+          debug('Funds.IO all socket rooms: %o', rooms);
 
+          const leaveAllRooms = rooms
+            .filter(room => !room.includes('/funds#'))
+            .map((room) => {
+              if (room.includes(data.eventName)) {
+                debug('leaving room %o', room);
+                return new Promise((resolve, reject) => {
+                  socket.leave(room, (error) => {
+                    if (error) reject(error);
+                    resolve();
+                  });
+                });
+              }
+              return 'no need to leave this room';
+            });
+          await Promise.all(leaveAllRooms);
+
+          if (callback) callback({ ok: true });
+        } else if (data.eventName === BASICS) {
+          const roomName = `${data.fundid}:${BASICS}`;
           socket.leave(
             roomName,
             (error) => {
@@ -370,27 +403,10 @@ appid=${wechatConfig.corpId}\
               if (callback) callback({ ok: true });
             }
           );
-        } else if (data.fundid === 'all') {
-          const rooms = Object.keys(socket.rooms);
-          debug('Funds.IO all socket rooms: %o', rooms);
-
-          const leaveAllRooms = rooms
-            .filter(room => !room.includes('/funds#'))
-            .map((room) => {
-              debug('leaving room %o', room);
-              return new Promise((resolve, reject) => {
-                socket.leave(room, (error) => {
-                  if (error) reject(error);
-                  resolve();
-                });
-              });
-            });
-          await Promise.all(leaveAllRooms);
-
-          if (callback) callback({ ok: true });
-        } else {
+        } else if (extraEventNames.includes(data.eventName)) {
+          const roomName = `${data.fundid}:${data.eventName}`;
           socket.leave(
-            data.fundid,
+            roomName,
             (error) => {
               if (error) throw error;
               if (callback) callback({ ok: true });
