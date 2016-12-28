@@ -1851,7 +1851,7 @@ paths:
           description: This is the orders subscribe request
           required: true
           schema:
-            $ref: '#/definitions/SubscribeFundOrders'
+            $ref: '#/definitions/SubscribeFundEvents'
       responses:
         '200':
           description: Response sent through callback function
@@ -1872,7 +1872,7 @@ paths:
           description: This is the orders unsubscribe request
           required: true
           schema:
-            $ref: '#/definitions/SubscribeFundOrders'
+            $ref: '#/definitions/SubscribeFundEvents'
       responses:
         '200':
           description: Response sent through callback function
@@ -3324,17 +3324,18 @@ definitions:
       resolution:
         type: string
         example: "tick"
-  SubscribeFundOrders:
+  SubscribeFundEvents:
     type: object
     required:
       - fundid
+      - eventName
     properties:
       fundid:
         type: string
-        example: "123456"
+        example: "068074"
       eventName:
         type: string
-        enum: ["combinedReport", "liveAccount", "livePositions"]
+        enum: ["basics", "combinedReport", "liveAccount", "livePositions"]
         example: "combinedReport"
   CombinedReport:
     type: object
