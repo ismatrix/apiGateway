@@ -3160,6 +3160,8 @@ definitions:
       - settlement
       - turnover
       - volume
+      - upperlimit
+      - lowerlimit
     properties:
       maxtradingday:
         type: string
@@ -3206,6 +3208,12 @@ definitions:
       volume:
         type: number
         example: 826
+      upperlimit:
+        type: number
+        example:  7774.8,
+      lowerlimit:
+        type: number
+        example: 5183.2
   reqFuturesContracts:
     type: object
     properties:
@@ -3346,6 +3354,8 @@ definitions:
         $ref: '#/definitions/PositionsLevelReport'
       positionsLeverageReport:
         $ref: '#/definitions/PositionsLeverageReport'
+      allPeriodsDrawdownReport:
+        $ref: '#/definitions/AllPeriodsDrawdownReport'
   NetValueAndEquityReport:
     type: object
     properties:
@@ -3411,6 +3421,20 @@ definitions:
     properties:
       total:
         type: number
+  DrawdownReport:
+    type: object
+    properties:
+      peak:
+        type: number
+      maxDrawdown:
+        type: number
+  AllPeriodsDrawdownReport:
+    type: object
+    properties:
+      history:
+        $ref: '#/definitions/DrawdownReport'
+      today:
+        $ref: '#/definitions/DrawdownReport'
   bar:
     type: object
     required:
