@@ -3,9 +3,7 @@ import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 import makeQydev from 'sw-weixin-qydev';
-import {
-  user as userDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 import { jwtSecret, wechatConfig } from '../config';
 import { io } from '../app';
 
@@ -51,7 +49,7 @@ export async function getTokenByWechatScan(code, state) {
 
     const set = qyUserObj;
     const filter = { userid };
-    const dbUserObj = await userDB.setAndGet(filter, set);
+    const dbUserObj = await crud.user.setAndGet(filter, set);
 
     if (!dbUserObj) {
       throw Boom.badImplementation('Cannot add user to database');
@@ -84,7 +82,7 @@ export async function getTokenByPassword(_userid, password) {
     if (!password) throw Boom.badRequest('Missing password parameter');
 
     const userid = _userid.toLowerCase();
-    const dbUserObj = await userDB.get({ userid });
+    const dbUserObj = await crud.user.get({ userid });
     debug(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');

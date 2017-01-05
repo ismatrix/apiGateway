@@ -1,8 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import {
-  account as accountDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:accounts');
 const logError = createDebug('app:api:accounts:error');
@@ -13,7 +11,7 @@ export async function getAccount(fundid) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     debug('fundid %o', fundid);
 
-    const accounts = await accountDB.getLast(fundid);
+    const accounts = await crud.account.getLast(fundid);
 
     if (!accounts && !accounts.account) throw Boom.badRequest('Missing account in DB');
 

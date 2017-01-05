@@ -2,7 +2,7 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
 import { isNumber, isString } from 'lodash';
-import { order as orderDB } from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 import { getCanOrderFundConfigs } from '../config';
 
 const debug = createDebug('app:api:orders');
@@ -14,7 +14,7 @@ export async function getOrders(fundid, tradingDay) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingDay) throw Boom.badRequest('Missing tradingDay parameter');
 
-    const dbOrders = await orderDB.getLast(fundid, tradingDay);
+    const dbOrders = await crud.order.getLast(fundid, tradingDay);
 
     if (dbOrders && dbOrders.order) {
       const orders = dbOrders.order;

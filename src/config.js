@@ -1,9 +1,5 @@
 import createDebug from 'debug';
-import {
-  fund as fundDB,
-} from 'sw-mongodb-crud';
 
-const debug = createDebug('app:config');
 const logError = createDebug('app:config:error');
 logError.log = console.error.bind(console);
 
@@ -32,29 +28,12 @@ export const canOrderFundIDs = ['068074', '1330', '1333', '075697'];
 
 let fundConfigs;
 
-fundDB
-  .getList({ state: 'online' }, {})
-  .then((dbFunds) => {
-    try {
-      debug('dbFunds %o', dbFunds.map(f => f.fundid));
-      fundConfigs = dbFunds.map(dbFund => ({
-        serviceName: 'smartwinFuturesFund',
-        fundid: dbFund.fundid,
-        server: {
-          ip: 'funds.invesmart.net',
-          port: '50051',
-        },
-        jwtoken,
-      }));
-    } catch (err) {
-      logError('getList(): %o', err);
-    }
-  })
-  .catch(error => logError('fundDB.getList() %o', error))
-  ;
-
 export function getFundConfigs() {
   return fundConfigs;
+}
+
+export function setFundConfigs(configs) {
+  fundConfigs = configs;
 }
 
 export function getCanOrderFundConfigs() {

@@ -3,12 +3,7 @@ import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
 import createIcePastDataFeed from 'sw-datafeed-icepast';
-import {
-  product as productDB,
-  daybar as daybarDB,
-  instrument as instrumentDB,
-  indicators as indicatorsDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:market');
 const logError = createDebug('app:api:market:error');
@@ -22,7 +17,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
     if (sym.includes('all')) {
       const key = 'symbol';
       const query = { name: 'bull bear trend' };
-      symbols = await indicatorsDB.distinct(key, query);
+      symbols = await crud.indicators.distinct(key, query);
     }
 
     debug('bullBearTrend() req symbols %o', symbols);
@@ -30,13 +25,13 @@ export async function bullBearTrend(sym, startDate, endDate) {
     const instrumentOptions = {
       instruments: symbols,
     };
-    const contracts = await instrumentDB.getList(instrumentOptions);
+    const contracts = await crud.instrument.getList(instrumentOptions);
 
     const indicatorsOptions = {
       symbols,
       name: 'bull bear trend',
     };
-    const indicators = await indicatorsDB.getList(indicatorsOptions);
+    const indicators = await crud.indicators.getList(indicatorsOptions);
 
     let timeline = indicators[0].dates;
     for (const indicator of indicators) {
@@ -83,7 +78,7 @@ export async function contractDailyPriceSpeed(symbols) {
       product: symbols,
     };
 
-    const contracts = await instrumentDB.getList(options);
+    const contracts = await crud.instrument.getList(options);
     debug(contracts);
     const contractSymbols = contracts.map(contract => contract.instrumentid);
     debug('contractDailyPriceSpeed() contractSymbols: %o', contractSymbols);
@@ -92,7 +87,7 @@ export async function contractDailyPriceSpeed(symbols) {
       symbols: contractSymbols,
       name: 'contract daily price speed',
     };
-    const indicators = await indicatorsDB.getList(indicatorsOptions);
+    const indicators = await crud.indicators.getList(indicatorsOptions);
 
     if (!indicators[0]) throw Boom.notFound('Indicators not found');
 
@@ -170,7 +165,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         startDate,
         endDate,
       };
-      const dbQuotes = await daybarDB.getList(options);
+      const dbQuotes = await crud.daybar.getList(options);
       const quotes = dbQuotes.map(quote => ({
         timestamp: parseInt(quote.timestamp, 10),
         open: quote.open,
@@ -198,7 +193,7 @@ export async function getFuturesContracts(options = {}) {
     if ('productClasses' in options && !options.productClasses.includes('all')) options.productclass = options.productClasses;
     if ('isTrading' in options && !options.isTrading.includes('all')) options.istrading = options.isTrading;
 
-    const contracts = await instrumentDB.getList(options);
+    const contracts = await crud.instrument.getList(options);
 
     return { ok: true, contracts };
   } catch (error) {
@@ -209,7 +204,7 @@ export async function getFuturesContracts(options = {}) {
 
 export async function getFuturesProducts() {
   try {
-    const products = await productDB.getList();
+    const products = await crud.product.getList();
 
     return { ok: true, products };
   } catch (error) {
@@ -220,7 +215,7 @@ export async function getFuturesProducts() {
 
 export async function getFuturesProductsByExchange() {
   try {
-    const products = await productDB.getList();
+    const products = await crud.product.getList();
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
     debug('exchangesid %o', exchangesid);
@@ -248,7 +243,7 @@ export async function getFuturesLastSnapshot(symbols) {
       throw Boom.badRequest('Missing instrument parameter');
     }
 
-    const lastSnapshot = await daybarDB.getLast(symbols);
+    const lastSnapshot = await crud.daybar.getLast(symbols);
 
     return { ok: true, lastSnapshot };
   } catch (error) {

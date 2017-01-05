@@ -10,16 +10,21 @@ import cors from 'kcors';
 import serve from 'koa-static';
 import mount from 'koa-mount';
 import socketio from 'socket.io';
+import mongodb from 'sw-mongodb';
+import crud from 'sw-mongodb-crud';
 import koaError from './errors';
 import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
-import mongodb from './mongodb';
-import { jwtSecret, mongoUrl } from './config';
+import { jwtSecret, mongoUrl, jwtoken, setFundConfigs } from './config';
 
 const debug = createDebug('app');
 const logError = createDebug('app:error');
 logError.log = console.error.bind(console);
-process.on('uncaughtException', error => logError('process.on(uncaughtException): %o', error));
+
+process
+  .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
+  .on('warning', warning => logError('process.on(warning): %o', warning))
+  ;
 
 debug('API Gateway starting...');
 const koa = new Koa();
@@ -29,7 +34,35 @@ const server = http.createServer(koa.callback());
 export const io = socketio(server);
 
 try {
-  mongodb.connect(mongoUrl);
+  mongodb.getDB(mongoUrl).then((dbInstance) => {
+    try {
+      crud.setDB(dbInstance);
+
+      crud.fund
+        .getList({ state: 'online' }, {})
+        .then((dbFunds) => {
+          try {
+            debug('dbFunds %o', dbFunds.map(f => f.fundid));
+            const fundConfigs = dbFunds.map(dbFund => ({
+              serviceName: 'smartwinFuturesFund',
+              fundid: dbFund.fundid,
+              server: {
+                ip: 'funds.invesmart.net',
+                port: '50051',
+              },
+              jwtoken,
+            }));
+            setFundConfigs(fundConfigs);
+          } catch (err) {
+            logError('getList(): %o', err);
+          }
+        })
+        .catch(error => logError('fundDB.getList() %o', error))
+        ;
+    } catch (error) {
+      logError('mongodb.getDB().then: %o', error);
+    }
+  });
 
   ioRouter(io);
 

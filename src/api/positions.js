@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { position as positionDB } from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:positions');
 const logError = createDebug('app:api:positions:error');
@@ -11,7 +11,7 @@ export async function getPositions(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    const dbPositions = await positionDB.get(fundid, tradingday);
+    const dbPositions = await crud.position.get(fundid, tradingday);
     debug('dbPositions %o', dbPositions);
     if (dbPositions && dbPositions.positions) {
       const positions = dbPositions.positions;
@@ -29,7 +29,7 @@ export async function getAllFundsMergedPositions(tradingday) {
   try {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    const positions = await positionDB.getAllFundsInstrumentSum(tradingday);
+    const positions = await crud.position.getAllFundsInstrumentSum(tradingday);
 
     return { ok: true, positions };
   } catch (error) {
@@ -43,7 +43,7 @@ export async function getInstrumentPositionsByFund(tradingday, symbol) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!symbol) throw Boom.badRequest('Missing symbol parameter');
 
-    const positionsByFund = await positionDB.getFundsPositionsByInstrument(tradingday, symbol);
+    const positionsByFund = await crud.position.getFundsPositionsByInstrument(tradingday, symbol);
 
     return { ok: true, positionsByFund };
   } catch (error) {

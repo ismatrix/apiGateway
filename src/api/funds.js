@@ -1,10 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import { isNumber } from 'lodash';
-import {
-  fund as fundDB,
-  equity as equityDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:funds');
 const logError = createDebug('app:api:funds:error');
@@ -14,7 +11,7 @@ export async function getFunds() {
   try {
     const filter = {};
     const projection = {};
-    const funds = await fundDB.getList(filter, projection);
+    const funds = await crud.fund.getList(filter, projection);
 
     if (!funds.length > 0) throw Boom.notFound('Funds not found');
 
@@ -29,7 +26,7 @@ export async function getFund(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fund = await fundDB.get(fundid);
+    const fund = await crud.fund.get(fundid);
 
     if (!fund) throw Boom.notFound('Fund not found');
 
@@ -45,7 +42,7 @@ export async function postFund(fundid, fund) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!fund) throw Boom.badRequest('Missing fund parameter');
 
-    await fundDB.set(fundid, fund);
+    await crud.fund.set(fundid, fund);
 
     return { ok: true };
   } catch (error) {
@@ -58,7 +55,7 @@ export async function deleteFund(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    await fundDB.remove(fundid);
+    await crud.fund.remove(fundid);
 
     return { ok: true };
   } catch (error) {
@@ -73,7 +70,7 @@ export async function postEquity(fundid, tradingday, equity) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!equity) throw Boom.badRequest('Missing equity parameter');
 
-    await equityDB.add(fundid, tradingday, equity);
+    await crud.equity.add(fundid, tradingday, equity);
 
     return { ok: true };
   } catch (error) {
@@ -88,7 +85,7 @@ export async function putEquity(fundid, tradingday, equity) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!equity) throw Boom.badRequest('Missing equity parameter');
 
-    await equityDB.set(fundid, tradingday, { equity });
+    await crud.equity.set(fundid, tradingday, { equity });
 
     return { ok: true };
   } catch (error) {
@@ -102,7 +99,7 @@ export async function deleteEquity(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.remove(fundid, tradingday);
+    await crud.equity.remove(fundid, tradingday);
 
     return { ok: true };
   } catch (error) {
@@ -115,7 +112,7 @@ export async function getTotal(fundid, tradingday) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const total = await equityDB.getTotal(fundid, tradingday);
+    const total = await crud.equity.getTotal(fundid, tradingday);
 
     return { ok: true, total };
   } catch (error) {
@@ -129,7 +126,7 @@ export async function getNetValue(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    const netValues = await equityDB.getNetValues(fundid, tradingday);
+    const netValues = await crud.equity.getNetValues(fundid, tradingday);
 
     return { ok: true, netValues };
   } catch (error) {
@@ -145,7 +142,7 @@ export async function getReturnByDateRange(fundid, beginDate, endDate) {
     if (!endDate) throw Boom.badRequest('Missing endDate parameter');
 
     debug('fundid %o  beginDate %o endDate %o', fundid, beginDate, endDate);
-    const returnReport = await equityDB.getReturnsByRange(fundid, beginDate, endDate);
+    const returnReport = await crud.equity.getReturnsByRange(fundid, beginDate, endDate);
     debug('returnReport %o', returnReport);
 
     return { ok: true, returnReport };
@@ -159,7 +156,7 @@ export async function getNetValues(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const netLines = await equityDB.getNetLines(fundid);
+    const netLines = await crud.equity.getNetLines(fundid);
 
     return { ok: true, netLines };
   } catch (error) {
@@ -172,7 +169,7 @@ export async function getFixedIncomes(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const fixedIncomes = await equityDB.getFixedIncomeList(fundid);
+    const fixedIncomes = await crud.equity.getFixedIncomeList(fundid);
 
     return { ok: true, fixedIncomes };
   } catch (error) {
@@ -187,7 +184,7 @@ export async function putFixedIncome(fundid, tradingday, fixedincome) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!fixedincome) throw Boom.badRequest('Missing fixedincome parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { fixedincome });
+    const result = await crud.equity.set(fundid, tradingday, { fixedincome });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -202,7 +199,7 @@ export async function deleteFixedIncome(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { fixedincome: {} });
+    await crud.equity.set(fundid, tradingday, { fixedincome: {} });
 
     return { ok: true };
   } catch (error) {
@@ -215,7 +212,7 @@ export async function getAppends(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const appends = await equityDB.getAppendList(fundid);
+    const appends = await crud.equity.getAppendList(fundid);
 
     return { ok: true, appends };
   } catch (error) {
@@ -230,7 +227,7 @@ export async function putAppend(fundid, tradingday, append) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!append) throw Boom.badRequest('Missing append parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { append });
+    const result = await crud.equity.set(fundid, tradingday, { append });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -245,7 +242,7 @@ export async function deleteAppend(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { append: {} });
+    await crud.equity.set(fundid, tradingday, { append: {} });
 
     return { ok: true };
   } catch (error) {
@@ -258,7 +255,7 @@ export async function getRedemptions(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const redemptions = await equityDB.getRedemptionList(fundid);
+    const redemptions = await crud.equity.getRedemptionList(fundid);
 
     return { ok: true, redemptions };
   } catch (error) {
@@ -273,7 +270,7 @@ export async function putRedemption(fundid, tradingday, redemption) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!redemption) throw Boom.badRequest('Missing redemption parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { redemption });
+    const result = await crud.equity.set(fundid, tradingday, { redemption });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -288,7 +285,7 @@ export async function deleteRedemption(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { redemption: {} });
+    await crud.equity.set(fundid, tradingday, { redemption: {} });
 
     return { ok: true };
   } catch (error) {
@@ -301,7 +298,7 @@ export async function getDividends(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const dividends = await equityDB.getDividendList(fundid);
+    const dividends = await crud.equity.getDividendList(fundid);
 
     return { ok: true, dividends };
   } catch (error) {
@@ -316,7 +313,7 @@ export async function putDividend(fundid, tradingday, dividend) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!dividend) throw Boom.badRequest('Missing dividend parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { dividend });
+    const result = await crud.equity.set(fundid, tradingday, { dividend });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -331,7 +328,7 @@ export async function deleteDividend(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { dividend: {} });
+    await crud.equity.set(fundid, tradingday, { dividend: {} });
 
     return { ok: true };
   } catch (error) {
@@ -344,7 +341,7 @@ export async function getCostOuts(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const costOuts = await equityDB.getCostOutList(fundid);
+    const costOuts = await crud.equity.getCostOutList(fundid);
 
     return { ok: true, costOuts };
   } catch (error) {
@@ -359,7 +356,7 @@ export async function putFixedCost(fundid, tradingday, fixedcost) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!fixedcost) throw Boom.badRequest('Missing fixedcost parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { fixedcost });
+    const result = await crud.equity.set(fundid, tradingday, { fixedcost });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -374,7 +371,7 @@ export async function deleteFixedCost(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { fixedcost: { actual: 0, remark: '' } });
+    await crud.equity.set(fundid, tradingday, { fixedcost: { actual: 0, remark: '' } });
 
     return { ok: true };
   } catch (error) {
@@ -387,7 +384,7 @@ export async function getHostingAccounts(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const hostingAccounts = await equityDB.getHostingAccountList(fundid);
+    const hostingAccounts = await crud.equity.getHostingAccountList(fundid);
 
     return { ok: true, hostingAccounts };
   } catch (error) {
@@ -402,7 +399,7 @@ export async function putHostingAccount(fundid, tradingday, hostingaccount) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!hostingaccount) throw Boom.badRequest('Missing hostingaccount parameter');
 
-    const result = await equityDB.set(fundid, tradingday, { hostingaccount });
+    const result = await crud.equity.set(fundid, tradingday, { hostingaccount });
     if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
 
     return { ok: true };
@@ -417,7 +414,7 @@ export async function deleteHostingAccount(fundid, tradingday) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
-    await equityDB.set(fundid, tradingday, { hostingaccount: { amount: 0, remark: '' } });
+    await crud.equity.set(fundid, tradingday, { hostingaccount: { amount: 0, remark: '' } });
 
     return { ok: true };
   } catch (error) {
@@ -430,7 +427,7 @@ export async function getDynamicEquity(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
-    const dynamicEquity = await equityDB.getDynamicEquity(fundid);
+    const dynamicEquity = await crud.equity.getDynamicEquity(fundid);
 
     return { ok: true, dynamicEquity };
   } catch (error) {
@@ -446,7 +443,7 @@ export async function getTradingdays(fundid, tradingdayCount = 2) {
 
     debug('fundid %o tradingdayCount %o', fundid, tradingdayCount);
 
-    const tradingdays = await equityDB.getTradingdays(fundid, tradingdayCount);
+    const tradingdays = await crud.equity.getTradingdays(fundid, tradingdayCount);
 
     return { ok: true, tradingdays };
   } catch (error) {

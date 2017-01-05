@@ -1,9 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import argon2 from 'argon2';
-import {
-  user as userDB,
-} from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:users');
 const logError = createDebug('app:api:users:error');
@@ -14,7 +12,7 @@ export async function setUserPassword(userid, newPassword, password) {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
     if (!newPassword) throw Boom.badRequest('Missing newPassword parameter');
 
-    const user = await userDB.get({ userid });
+    const user = await crud.user.get({ userid });
 
     if (!user) throw Boom.notFound('User not found');
 
@@ -24,7 +22,7 @@ export async function setUserPassword(userid, newPassword, password) {
 
       const set = { password: hashedPassword };
       const filter = { userid };
-      await userDB.set(filter, set);
+      await crud.user.set(filter, set);
 
       return { ok: true };
     } else if (newPassword && password && user.password) {
@@ -37,7 +35,7 @@ export async function setUserPassword(userid, newPassword, password) {
 
         const set = { password: hashedPassword };
         const filter = { userid };
-        await userDB.set(filter, set);
+        await crud.user.set(filter, set);
 
         return { ok: true };
       }
@@ -54,7 +52,7 @@ export async function getMeProfile(userid) {
   try {
     if (!userid) throw Boom.badRequest('Missing userid parameter');
 
-    const profile = await userDB.get({ userid });
+    const profile = await crud.user.get({ userid });
 
     if (!profile) throw Boom.notFound('User not found');
 
@@ -70,7 +68,7 @@ export async function getMeProfile(userid) {
 
 export async function getUsers() {
   try {
-    const users = await userDB.getList();
+    const users = await crud.user.getList();
 
     if (!users) throw Boom.notFound('Users not found');
 

@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 import Boom from 'boom';
-import { done as tradeDB } from 'sw-mongodb-crud';
+import crud from 'sw-mongodb-crud';
 
 const debug = createDebug('app:api:trades');
 const logError = createDebug('app:api:trades:error');
@@ -11,7 +11,7 @@ export async function getTrades(fundid, tradingDay) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingDay) throw Boom.badRequest('Missing tradingDay parameter');
 
-    const dbTrades = await tradeDB.getLast(fundid, tradingDay);
+    const dbTrades = await crud.trade.getLast(fundid, tradingDay);
 
     if (dbTrades && dbTrades.done) {
       const trades = dbTrades.done;
