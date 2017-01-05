@@ -11,7 +11,7 @@ export async function getTrades(fundid, tradingDay) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!tradingDay) throw Boom.badRequest('Missing tradingDay parameter');
 
-    const dbTrades = await crud.trade.getLast(fundid, tradingDay);
+    const dbTrades = await crud.done.getLast(fundid, tradingDay);
 
     if (dbTrades && dbTrades.done) {
       const trades = dbTrades.done;
