@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
 import makeQydev from 'sw-weixin-qydev';
 import crud from 'sw-mongodb-crud';
-import { jwtSecret, wechatConfig } from '../config';
+import config from '../config';
 import { io } from '../app';
 
 const debug = createDebug('app:api:auth');
 const logError = createDebug('app:api:auth:error');
 logError.log = console.error.bind(console);
-const qydev = makeQydev(wechatConfig);
+const qydev = makeQydev(config.wechatConfig);
 
 export async function createUserToken(userObj) {
   try {
@@ -24,7 +24,7 @@ export async function createUserToken(userObj) {
       userid: userObj.userid,
       dpt,
     };
-    const jwtToken = jwt.sign(jwtTokenData, jwtSecret);
+    const jwtToken = jwt.sign(jwtTokenData, config.jwtSecret);
     debug(`createUserToken() jwtToken: ${jwtToken}`);
     return jwtToken;
   } catch (error) {

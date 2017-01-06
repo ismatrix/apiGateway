@@ -15,7 +15,7 @@ import crud from 'sw-mongodb-crud';
 import koaError from './errors';
 import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
-import { jwtSecret, mongoUrl, jwtoken, setFundConfigs } from './config';
+import config from './config';
 
 const debug = createDebug('app');
 const logError = createDebug('app:error');
@@ -33,61 +33,53 @@ const server = http.createServer(koa.callback());
 // ioRouter
 export const io = socketio(server);
 
-try {
-  mongodb.getDB(mongoUrl).then((dbInstance) => {
-    try {
-      crud.setDB(dbInstance);
+async function init() {
+  try {
+    // hard dependency on mongodb connection
+    const dbInstance = await mongodb.getDB(config.mongodbURL);
+    crud.setDB(dbInstance);
 
-      crud.fund
-        .getList({ state: 'online' }, {})
-        .then((dbFunds) => {
-          try {
-            debug('dbFunds %o', dbFunds.map(f => f.fundid));
-            const fundConfigs = dbFunds.map(dbFund => ({
-              serviceName: 'smartwinFuturesFund',
-              fundid: dbFund.fundid,
-              server: {
-                ip: 'funds.invesmart.net',
-                port: '50051',
-              },
-              jwtoken,
-            }));
-            setFundConfigs(fundConfigs);
-          } catch (err) {
-            logError('getList(): %o', err);
-          }
-        })
-        .catch(error => logError('fundDB.getList() %o', error))
-        ;
-    } catch (error) {
-      logError('mongodb.getDB().then: %o', error);
-    }
-  });
+    const dbFunds = await crud.fund.getList({ state: 'online' }, {});
 
-  ioRouter(io);
+    const fundConfigs = dbFunds.map(dbFund => ({
+      serviceName: 'smartwinFuturesFund',
+      fundid: dbFund.fundid,
+      server: {
+        ip: 'funds.invesmart.net',
+        port: '50051',
+      },
+      jwtoken: config.jwtoken,
+      canOrder: dbFund.fundflag === 'simulation',
+    }));
+    config.fundConfigs = fundConfigs;
+    debug('dbFunds %o', config.fundConfigs.map(({ fundid, canOrder }) => ({ fundid, canOrder })));
+    ioRouter(io);
 
-  // Koa koa REST API middleware
-  koa.use(logger());
-  koa.use(cors());
-  koa.use(koaError());
-  koa.use(jwt({ secret: jwtSecret }).unless({ path: [/^\/api\/public/] }));
-  koa.use(bodyParser());
-  koa.use(apiRouter.routes());
-  koa.use(apiRouter.allowedMethods({
-    throw: true,
-    notImplemented: () => Boom.notImplemented('Method not implemented'),
-    methodNotAllowed: () => Boom.methodNotAllowed('Method not allowed'),
-  }));
+    // Koa koa REST API middleware
+    koa.use(logger());
+    koa.use(cors());
+    koa.use(koaError());
+    koa.use(jwt({ secret: config.jwtSecret }).unless({ path: [/^\/api\/public/] }));
+    koa.use(bodyParser());
+    koa.use(apiRouter.routes());
+    koa.use(apiRouter.allowedMethods({
+      throw: true,
+      notImplemented: () => Boom.notImplemented('Method not implemented'),
+      methodNotAllowed: () => Boom.methodNotAllowed('Method not allowed'),
+    }));
 
-  // Static files middleware
-  const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
-  const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
-  const wxCloseMw = compose([cors(), serve(`${__dirname}/../static/wxlogin/`)]);
-  koa.use(mount('/api/public/client', clientMw));
-  koa.use(mount('/api/public/doc', docMw));
-  koa.use(mount('/api/public/wxlogin', wxCloseMw));
+    // Static files middleware
+    const clientMw = compose([cors(), serve(`${__dirname}/../static/client/`)]);
+    const docMw = compose([cors(), serve(`${__dirname}/../static/apidoc/`)]);
+    const wxCloseMw = compose([cors(), serve(`${__dirname}/../static/wxlogin/`)]);
+    koa.use(mount('/api/public/client', clientMw));
+    koa.use(mount('/api/public/doc', docMw));
+    koa.use(mount('/api/public/wxlogin', wxCloseMw));
 
-  server.listen(3000);
-} catch (error) {
-  logError('main(): %o', error);
+    server.listen(3000);
+  } catch (error) {
+    logError('init(): %o', error);
+    throw error;
+  }
 }
+init();

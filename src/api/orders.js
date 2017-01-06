@@ -3,7 +3,7 @@ import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
 import { isNumber, isString } from 'lodash';
 import crud from 'sw-mongodb-crud';
-import { getCanOrderFundConfigs } from '../config';
+import config from '../config';
 
 const debug = createDebug('app:api:orders');
 const logError = createDebug('app:api:orders:error');
@@ -46,9 +46,9 @@ export async function postOrder(order) {
 
     const fundid = order.fundid;
 
-    debug('getCanOrderFundConfigs() %o', getCanOrderFundConfigs());
+    debug('getCanOrderFundConfigs() %o', config.fundConfigs.filter(f => f.canOrder));
 
-    const fundConf = getCanOrderFundConfigs().find(fund => fund.fundid === fundid);
+    const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid && fund.canOrder));
 
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot place order`);
     const smartwinFund = createGrpcClient(fundConf);
@@ -79,7 +79,7 @@ export async function deleteOrder(orderToCancel) {
     if (!privateno) throw Boom.badRequest('Missing privateno parameter');
     debug('orderToCancel %o', orderToCancel);
 
-    const fundConf = getCanOrderFundConfigs().find(fund => fund.fundid === fundid);
+    const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid && fund.canOrder));
     debug('fundConf %o', fundConf);
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot delete order`);
     const smartwinFund = createGrpcClient(fundConf);

@@ -3,19 +3,13 @@ import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
 import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
-import {
-  jwtSecret,
-  jwtoken,
-  wechatGZHConfig,
-  wechatConfig,
-  getFundConfigs,
-} from './config';
+import config from './config';
 
 const debug = createDebug('app:ioRouter');
 const logError = createDebug('app:ioRouter:error');
 logError.log = console.error.bind(console);
 
-const gzh = createGzh(wechatGZHConfig);
+const gzh = createGzh(config.wechatGZHConfig);
 
 let globalPrevMarketsRooms;
 let globalPrevFundsRooms;
@@ -29,7 +23,7 @@ const smartwinMd = createGrpcClient({
     ip: 'markets.invesmart.net',
     port: '50052',
   },
-  jwtoken,
+  jwtoken: config.jwtoken,
 });
 
 export default function ioRouter(io) {
@@ -49,7 +43,7 @@ export default function ioRouter(io) {
 &state=${socket.id}`;
 
         const longURL = `https://open.weixin.qq.com/connect/oauth2/authorize?\
-appid=${wechatConfig.corpId}\
+appid=${config.wechatConfig.corpId}\
 &redirect_uri=${redirectURI}#wechat_redirect`;
 
         const qrCodeURL = await gzh.getShortURL(longURL);
@@ -63,7 +57,7 @@ appid=${wechatConfig.corpId}\
 
     socket.on('setToken', async (data, callback) => {
       try {
-        jwt.verify(data.token, jwtSecret, (error, decodedToken) => {
+        jwt.verify(data.token, config.jwtSecret, (error, decodedToken) => {
           try {
             if (error) {
               logError('jwt.verify() cb %o', error);
@@ -266,7 +260,7 @@ appid=${wechatConfig.corpId}\
 
         if (!extraEventNames.includes(data.eventName) && data.eventName !== BASICS) throw new Error(`The eventName "${data.eventName}" does not exist`);
 
-        const fundConf = getFundConfigs().find(fund => fund.fundid === data.fundid);
+        const fundConf = config.fundConfigs.find(fund => fund.fundid === data.fundid);
         if (fundConf === undefined) throw new Error(`The fund ${data.fundid} does not exist`);
 
         const smartwinFund = createGrpcClient(fundConf);
@@ -366,7 +360,7 @@ appid=${wechatConfig.corpId}\
         if (!extraEventNames.includes(data.eventName) && data.eventName !== BASICS) throw new Error(`The eventName "${data.eventName}" does not exist`);
 
         if (data.fundid !== ALL) {
-          const fundConf = getFundConfigs().find(fund => fund.fundid === data.fundid);
+          const fundConf = config.fundConfigs.find(fund => fund.fundid === data.fundid);
           if (fundConf === undefined) throw new Error(`The fund ${data.fundid} does not exist`);
         }
 
