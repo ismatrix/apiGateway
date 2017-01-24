@@ -45,7 +45,7 @@ apiRouter
   ;
 
 apiRouter
-  .get('/users', can.koamw('read', 'users'),
+  .get('/users', can.koamw('get', 'users'),
     async (ctx) => { ctx.body = await users.getUsers(); })
   .get('/users/me', async (ctx) => {
     const userid = ctx.state.user.userid;
@@ -227,7 +227,7 @@ apiRouter
   })
   .post('/order', async (ctx) => {
     const order = ctx.request.body;
-    await can.koa(ctx, 'write', `fundid:${order.fundid}/order`);
+    await can.koa(ctx, 'add', `fundid:${order.fundid}/order`);
     order.userid = ctx.state.user.userid;
     ctx.body = await orders.postOrder(order);
   })
@@ -262,7 +262,7 @@ apiRouter
   })
   ;
 
-apiRouter.use('/codemap', can.koamw(['read', 'write', 'delete', 'update'], 'codemap'));
+apiRouter.use('/codemap', can.koamw(['get', 'add', 'delete', 'update'], 'codemap'));
 apiRouter
   .get('/codemap/catalogs', async (ctx) => {
     ctx.body = await codemap.getCatalogs();
