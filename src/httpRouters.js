@@ -1,4 +1,5 @@
 import createDebug from 'debug';
+import can from 'sw-can';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
 import * as users from './api/users';
@@ -9,7 +10,6 @@ import * as trades from './api/trades';
 import * as positions from './api/positions';
 import * as markets from './api/markets';
 import * as codemap from './api/codemap';
-import { canKoa } from './acl';
 
 const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
@@ -45,7 +45,7 @@ apiRouter
   ;
 
 apiRouter
-  .get('/users', canKoa('read', 'users'),
+  .get('/users', can.koamw('read', 'users'),
     async (ctx) => { ctx.body = await users.getUsers(); })
   .get('/users/me', async (ctx) => {
     const userid = ctx.state.user.userid;
@@ -227,6 +227,7 @@ apiRouter
   })
   .post('/order', async (ctx) => {
     const order = ctx.request.body;
+    await can.koa(ctx, 'write', `fundid:${order.fundid}/order`);
     order.userid = ctx.state.user.userid;
     ctx.body = await orders.postOrder(order);
   })
@@ -261,6 +262,7 @@ apiRouter
   })
   ;
 
+apiRouter.use('/codemap', can.koamw(['read', 'write', 'delete', 'update'], 'codemap'));
 apiRouter
   .get('/codemap/catalogs', async (ctx) => {
     ctx.body = await codemap.getCatalogs();

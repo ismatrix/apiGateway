@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node dist/app",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files",
-    "dev": "DEBUG=*,-babel nodemon src/index.js"
+    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files"
   },
   "repository": {
     "type": "git",
@@ -59,6 +58,7 @@
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3",
     "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
     "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.1",
+    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.0",
     "through2": "^2.0.3"
   }
 }

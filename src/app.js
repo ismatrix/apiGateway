@@ -12,6 +12,7 @@ import mount from 'koa-mount';
 import socketio from 'socket.io';
 import mongodb from 'sw-mongodb';
 import crud from 'sw-mongodb-crud';
+import can from 'sw-can';
 import koaError from './errors';
 import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
@@ -38,6 +39,10 @@ async function init() {
     // hard dependency on mongodb connection
     const dbInstance = await mongodb.getDB(config.mongodbURL);
     crud.setDB(dbInstance);
+
+    // init can module with ACL
+    const acl = await dbInstance.collection('ACL').find().toArray();
+    can.init({ jwtSecret: config.jwtSecret, acl });
 
     const dbFunds = await crud.fund.getList({ state: 'online' }, {});
 
