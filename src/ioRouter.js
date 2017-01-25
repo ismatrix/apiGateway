@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
+import grpc from 'grpc';
 import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
 import can from 'sw-can';
@@ -79,6 +80,9 @@ appid=${config.wechatConfig.corpId}\
             for (const clientSocketID of clientSockets) {
               socket.client.sockets[clientSocketID].token = data.token;
               socket.client.sockets[clientSocketID].user = decodedToken;
+              const grpcMeta = new grpc.Metadata();
+              grpcMeta.add('Authorization', socket.token);
+              socket.client.sockets[clientSocketID].user = grpcMeta;
               socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
             }
 

@@ -1,6 +1,7 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
+import grpc from 'grpc';
 import { isNumber, isString } from 'lodash';
 import crud from 'sw-mongodb-crud';
 import config from '../config';
@@ -29,7 +30,7 @@ export async function getOrders(fundid, tradingDay) {
   }
 }
 
-export async function postOrder(order) {
+export async function postOrder(order, token) {
   try {
     if (!order) throw Boom.badRequest('Missing order object');
     if (!isString(order.fundid)) throw Boom.badRequest('Missing fundid parameter');
@@ -53,7 +54,9 @@ export async function postOrder(order) {
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot place order`);
     const smartwinFund = createGrpcClient(fundConf);
 
-    await smartwinFund.placeOrder(order);
+    const meta = new grpc.Metadata();
+    meta.add('Authorization', token);
+    await smartwinFund.placeOrder(order, meta);
 
     return { ok: true };
   } catch (error) {
@@ -63,7 +66,7 @@ export async function postOrder(order) {
   }
 }
 
-export async function deleteOrder(orderToCancel) {
+export async function deleteOrder(orderToCancel, token) {
   const {
     fundid,
     sessionid,
@@ -84,7 +87,9 @@ export async function deleteOrder(orderToCancel) {
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot delete order`);
     const smartwinFund = createGrpcClient(fundConf);
 
-    await smartwinFund.cancelOrder(orderToCancel);
+    const meta = new grpc.Metadata();
+    meta.add('Authorization', token);
+    await smartwinFund.cancelOrder(orderToCancel, meta);
 
     return { ok: true };
   } catch (error) {

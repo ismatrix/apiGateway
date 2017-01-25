@@ -229,11 +229,12 @@ apiRouter
     const order = ctx.request.body;
     await can.koa(ctx, 'add', `fundid:${order.fundid}/order`);
     order.userid = ctx.state.user.userid;
-    ctx.body = await orders.postOrder(order);
+    ctx.body = await orders.postOrder(order, ctx.header.authorization);
   })
   .delete('/order', async (ctx) => {
     const orderToDelete = ctx.request.body;
-    ctx.body = await orders.deleteOrder(orderToDelete);
+    await can.koa(ctx, 'delete', `fundid:${orderToDelete.fundid}/order`);
+    ctx.body = await orders.deleteOrder(orderToDelete, ctx.header.authorization);
   })
   ;
 
