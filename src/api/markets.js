@@ -2,12 +2,22 @@ import createDebug from 'debug';
 import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
-import createIcePastDataFeed from 'sw-datafeed-icepast';
+import createGrpcClient from 'sw-grpc-client';
 import crud from 'sw-mongodb-crud';
+import config from '../config';
 
 const debug = createDebug('app:api:market');
 const logError = createDebug('app:api:market:error');
 logError.log = console.error.bind(console);
+
+const smartwinMd = createGrpcClient({
+  serviceName: 'smartwinFuturesMd',
+  server: {
+    ip: 'markets.invesmart.net',
+    port: '50052',
+  },
+  jwtoken: config.jwtoken,
+});
 
 export async function bullBearTrend(sym, startDate, endDate) {
   try {
@@ -141,24 +151,17 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
         callback();
       }
     );
-    let transformFunction;
+
     if (resolution === 'minute') {
-      const quotes = await createIcePastDataFeed(symbol, resolution, startDate, endDate);
+      const quotes = smartwinMd.getPastBarStream({
+        symbol,
+        dataType: 'bar',
+        resolution,
+        startDate,
+        endDate,
+      });
 
-      transformFunction = (chunk, enc, callback) => {
-        const candlestick = {
-          timestamp: chunk.timestamp,
-          open: chunk.open,
-          high: chunk.high,
-          low: chunk.low,
-          close: chunk.close,
-          volume: chunk.volume,
-          tradingday: chunk.tradingDay,
-        };
-        callback(null, candlestick);
-      };
-
-      return quotes.pipe(through.obj(transformFunction)).pipe(stringifyIce);
+      return quotes.pipe(stringifyIce);
     } else if (resolution === 'day') {
       const options = {
         instruments: [symbol],
