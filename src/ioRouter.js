@@ -80,9 +80,6 @@ appid=${config.wechatConfig.corpId}\
             for (const clientSocketID of clientSockets) {
               socket.client.sockets[clientSocketID].token = data.token;
               socket.client.sockets[clientSocketID].user = decodedToken;
-              const grpcMeta = new grpc.Metadata();
-              grpcMeta.add('Authorization', socket.token);
-              socket.client.sockets[clientSocketID].user = grpcMeta;
               socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
             }
 
@@ -117,7 +114,7 @@ appid=${config.wechatConfig.corpId}\
 
     socket.on('subscribe', async (data, callback) => {
       try {
-        await can.user(socket.user, 'get', 'fundid:all/basics');
+        // await can.user(socket.user, 'get', 'fundid:all/basics');
         debug('Markets.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data.symbol) throw new Error('Missing symbol parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
@@ -143,7 +140,7 @@ appid=${config.wechatConfig.corpId}\
 
     socket.on('unsubscribe', async (data, callback) => {
       try {
-        await can.user(socket.user, 'get', 'fundid:all/basics');
+        // await can.user(socket.user, 'get', 'fundid:all/basics');
         debug('Markets.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data.symbol) throw new Error('Missing fundid parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
@@ -261,7 +258,7 @@ appid=${config.wechatConfig.corpId}\
 
     socket.on('subscribe', async (data, callback) => {
       try {
-        await can.user(socket.user, 'get', 'fundid:all/basics');
+        // await can.user(socket.user, 'get', 'fundid:all/basics');
         debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
         if (!data) throw new Error('Missing main data object');
         if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
@@ -361,7 +358,7 @@ appid=${config.wechatConfig.corpId}\
 
     socket.on('unsubscribe', async (data, callback) => {
       try {
-        await can.user(socket.user, 'get', 'fundid:all/basics');
+        // await can.user(socket.user, 'get', 'fundid:all/basics');
         debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
         if (!data) throw new Error('Missing main data object');
         if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
