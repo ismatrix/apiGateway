@@ -59,6 +59,8 @@ apiRouter
   })
   ;
 
+apiRouter.use('/fund', can.koamw('get', 'fundid:all/basics'));
+apiRouter.use('/funds', can.koamw('get', 'fundid:all/basics'));
 apiRouter
   .get('/funds', async (ctx) => { ctx.body = await funds.getFunds(); })
   .get('/funds/:fundid', async (ctx) => {
@@ -212,6 +214,7 @@ apiRouter
   })
   ;
 
+apiRouter.use('/account', can.koamw('get', 'fundid:all/basics'));
 apiRouter
   .get('/account', async (ctx) => {
     const fundid = ctx.query.fundid;
@@ -263,12 +266,11 @@ apiRouter
   })
   ;
 
-apiRouter.use('/codemap', can.koamw(['get', 'add', 'delete', 'update'], 'codemap'));
 apiRouter
   .get('/codemap/catalogs', async (ctx) => {
     ctx.body = await codemap.getCatalogs();
   })
-  .post('/codemap/catalog', async (ctx) => {
+  .post('/codemap/catalog', can.koamw('add', 'codemap'), async (ctx) => {
     const catalog = ctx.request.body;
     const catalogKey = catalog.catalog;
     ctx.body = await codemap.postCatalog(catalogKey, catalog);
@@ -277,7 +279,7 @@ apiRouter
     const catalogKey = ctx.params.catalogKey;
     ctx.body = await codemap.getCatalog(catalogKey);
   })
-  .delete('/codemap/:catalogKey', async (ctx) => {
+  .delete('/codemap/:catalogKey', can.koamw('delete', 'codemap'), async (ctx) => {
     const catalogKey = ctx.params.catalogKey;
     ctx.body = await codemap.deleteCatalog(catalogKey);
   })
@@ -285,13 +287,13 @@ apiRouter
     const catalogKey = ctx.params.catalogKey;
     ctx.body = await codemap.getCatalogItems(catalogKey);
   })
-  .put('/codemap/:catalogKey/item', async (ctx) => {
+  .put('/codemap/:catalogKey/item', can.koamw('update', 'codemap'), async (ctx) => {
     const catalogKey = ctx.params.catalogKey;
     const item = ctx.request.body;
     const itemKey = item.key;
     ctx.body = await codemap.putCatalogItem(catalogKey, itemKey, item);
   })
-  .post('/codemap/:catalogKey/item', async (ctx) => {
+  .post('/codemap/:catalogKey/item', can.koamw('add', 'codemap'), async (ctx) => {
     const catalogKey = ctx.params.catalogKey;
     const item = ctx.request.body;
     ctx.body = await codemap.postCatalogItem(catalogKey, item);
@@ -301,7 +303,7 @@ apiRouter
     const itemKey = ctx.params.itemKey;
     ctx.body = await codemap.getCatalogItem(catalogKey, itemKey);
   })
-  .delete('/codemap/:catalogKey/items/:itemKey', async (ctx) => {
+  .delete('/codemap/:catalogKey/items/:itemKey', can.koamw('delete', 'codemap'), async (ctx) => {
     const catalogKey = ctx.params.catalogKey;
     const itemKey = ctx.params.itemKey;
     ctx.body = await codemap.deleteCatalogItem(catalogKey, itemKey);
