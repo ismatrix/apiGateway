@@ -2421,14 +2421,14 @@ definitions:
         description: "合约ID"
       direction:
         type: string
-        example: "L"
-        enum: ["L", "S"]
-        description: 多空方向 (L:买入, S:卖出)
+        example: "buy"
+        enum: ["buy", "sell"]
+        description: 多空方向 (buy:买入, sell:卖出)
       offsetflag:
         type: string
-        example: "O"
-        enum: ["O", "C"]
-        description: (O:开仓, C:平仓)
+        example: "open"
+        enum: ["open", "close"]
+        description: (open:开仓, close:平仓)
       price:
         type: number
         example: 1394
@@ -2443,10 +2443,10 @@ definitions:
         description: 经纪ID
       ordertype:
         type: string
-        example: "1"
-        enum: ["0", "1", "2", "3", "4"]
-        default: "1"
-        description: 订单类型	(0:市价, 1:限价, 2:最优价, 3:对手方最优, 4:市价最优5挡)
+        example: "limitPrice"
+        enum: [ "limitPrice", "marketPrice", "bestPrice", "lastPrice", "askPrice1", "bidPrice1" ]
+        default: "limitPrice"
+        description: 订单类型	(limitPrice:限价, marketPrice:市价,  bestPrice:对手方最优, lastPrice:最新价, askPrice1:卖一价, bidPrice1:买一价)
       hedgeflag:
         type: string
         example: "0"
