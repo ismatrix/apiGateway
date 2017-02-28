@@ -152,7 +152,7 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
       }
     );
 
-    if (resolution === 'minute') {
+    if (resolution.includes('minute')) {
       const quotes = smartwinMd.getPastBarStream({
         symbol,
         dataType: 'bar',
