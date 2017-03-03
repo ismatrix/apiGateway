@@ -3444,7 +3444,7 @@ definitions:
       - low
       - close
       - volume
-      - tradingDay
+      - tradingday
     properties:
       timestamp:
         type: number
@@ -3464,7 +3464,7 @@ definitions:
       volume:
         type: number
         example: 234
-      tradingDay:
+      tradingday:
         type: string
         example: "IF1606"
   tick:
