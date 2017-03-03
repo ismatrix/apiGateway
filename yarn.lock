@@ -2061,13 +2061,9 @@ oauth-sign@~0.8.1:
   version "0.8.2"
   resolved "http://registry.npm.taobao.org/oauth-sign/download/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-object-assign@4.1.0:
+object-assign@4.1.0, object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.0"
   resolved "http://registry.npm.taobao.org/object-assign/download/object-assign-4.1.0.tgz#7a3b3d0e98063d43f4c03f2e8ae6cd51a86883a0"
-
-object-assign@^4.0.1, object-assign@^4.1.0:
-  version "4.1.1"
-  resolved "http://registry.npm.taobao.org/object-assign/download/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
 object-component@0.0.3:
   version "0.0.3"
@@ -2681,9 +2677,9 @@ supports-color@^2.0.0:
     lodash "^4.17.4"
     uuid "^3.0.1"
 
-"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.1":
-  version "2.0.1"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#db408bc2eeaa25b8bf292808ddece48e00f3fe57"
+"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.2":
+  version "2.0.2"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#93f234e0e3141a56024fdf6ec1b70381ae394000"
   dependencies:
     babel-register "^6.18.0"
     debug "^2.6.0"
@@ -2707,9 +2703,9 @@ supports-color@^2.0.0:
     debug "^2.2.0"
     node-fetch "^1.6.0"
 
-"sw-weixin-qydev@git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.1":
-  version "1.0.1"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#5ca3f670c06a63004d302ea0abc8d31113b64076"
+"sw-weixin-qydev@git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.2":
+  version "1.0.2"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#343eefd64b856d48d20e520e5dd4115c1212ef40"
   dependencies:
     babel-register "^6.16.3"
     boom "^4.1.0"

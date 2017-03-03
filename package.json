@@ -54,7 +54,7 @@
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3",
     "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.2",
     "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
-    "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.1",
+    "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.2",
     "through2": "^2.0.3"
   }
 }

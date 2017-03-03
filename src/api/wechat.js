@@ -1,12 +1,13 @@
 import createDebug from 'debug';
 import Boom from 'boom';
 import createQydev from 'sw-weixin-qydev';
-import { wechatConfig as wxConf } from '../config';
+import config from '../config';
 
 const debug = createDebug('app:api:wechat');
 const logError = createDebug('app:api:wechat:error');
 logError.log = console.error.bind(console);
-const qydev = createQydev(wxConf);
+
+const qydev = createQydev(config.wechatConfig);
 
 export async function app12Callback(ctx) {
   try {
