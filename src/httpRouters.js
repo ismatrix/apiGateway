@@ -230,13 +230,11 @@ apiRouter
   })
   .post('/order', async (ctx) => {
     const order = ctx.request.body;
-    await can.koa(ctx, 'add', `fundid:${order.fundid}/order`);
     order.userid = ctx.state.user.userid;
     ctx.body = await orders.postOrder(order, ctx.header.authorization);
   })
   .delete('/order', async (ctx) => {
     const orderToDelete = ctx.request.body;
-    await can.koa(ctx, 'delete', `fundid:${orderToDelete.fundid}/order`);
     ctx.body = await orders.deleteOrder(orderToDelete, ctx.header.authorization);
   })
   ;
@@ -321,11 +319,7 @@ apiRouter
     ctx.body = await markets.getFuturesProductsByExchange();
   })
   .post('/markets/futures/quotes', async (ctx) => {
-    const symbol = ctx.request.body.symbol;
-    const resolution = ctx.request.body.resolution;
-    const startDate = ctx.request.body.startDate;
-    const endDate = ctx.request.body.endDate;
-    ctx.body = await markets.getFuturesQuotes(symbol, resolution, startDate, endDate);
+    ctx.body = await markets.getFuturesQuotes(ctx.request.body, ctx.header.authorization);
     ctx.type = 'application/json';
   })
   .post('/markets/futures/indicators/bullBearTrend', async (ctx) => {
