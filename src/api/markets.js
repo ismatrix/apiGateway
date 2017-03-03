@@ -3,6 +3,7 @@ import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
 import createGrpcClient from 'sw-grpc-client';
+import grpc from 'grpc';
 import crud from 'sw-mongodb-crud';
 import config from '../config';
 
@@ -128,7 +129,7 @@ export async function contractDailyPriceSpeed(symbols) {
   }
 }
 
-export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
+export async function getFuturesQuotes({ symbol, resolution, startDate, endDate }, token) {
   try {
     if (!symbol || !resolution || !startDate || !endDate) {
       throw Boom.badRequest('Missing parameter');
@@ -152,35 +153,18 @@ export async function getFuturesQuotes(symbol, resolution, startDate, endDate) {
       }
     );
 
-    if (resolution.includes('minute')) {
-      const quotes = smartwinMd.getPastBarStream({
-        symbol,
-        dataType: 'bar',
-        resolution,
-        startDate,
-        endDate,
-      });
+    const meta = new grpc.Metadata();
+    meta.add('Authorization', token);
 
-      return quotes.pipe(stringifyIce);
-    } else if (resolution === 'day') {
-      const options = {
-        instruments: [symbol],
-        startDate,
-        endDate,
-      };
-      const dbQuotes = await crud.daybar.getList(options);
-      const quotes = dbQuotes.map(quote => ({
-        timestamp: parseInt(quote.timestamp, 10),
-        open: quote.open,
-        high: quote.high,
-        low: quote.low,
-        close: quote.close,
-        volume: quote.volume,
-        tradingDay: quote.tradingday,
-      }));
-      return { ok: true, quotes };
-    }
-    throw Boom.badRequest('Wrong resolution value');
+    const quotes = smartwinMd.getPastBarStream({
+      symbol,
+      dataType: 'bar',
+      resolution,
+      startDate,
+      endDate,
+    }, meta);
+
+    return quotes.pipe(stringifyIce);
   } catch (error) {
     logError('getFuturesQuotes(): %o', error);
     throw error;
