@@ -25,7 +25,7 @@ const developmentConfig = Object.assign({},
   productionConfig,
   {
     mongodbURL: 'mongodb://127.0.0.1:27018/smartwin',
-  }
+  },
 );
 
 const config = process.env.NODE_ENV === 'development' ? developmentConfig : productionConfig;
