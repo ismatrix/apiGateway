@@ -194,13 +194,13 @@ aws4@^1.2.1:
   version "1.6.0"
   resolved "http://registry.npm.taobao.org/aws4/download/aws4-1.6.0.tgz#83ef5ca860b2b32e4a0deedee8c771b9db57471e"
 
-babel-cli@^6.23.0:
-  version "6.23.0"
-  resolved "http://registry.npm.taobao.org/babel-cli/download/babel-cli-6.23.0.tgz#52ff946a2b0f64645c35e7bd5eea267aa0948c0f"
+babel-cli@^6.24.0:
+  version "6.24.0"
+  resolved "http://registry.npm.taobao.org/babel-cli/download/babel-cli-6.24.0.tgz#a05ffd210dca0c288a26d5319c5ac8669a265ad0"
   dependencies:
-    babel-core "^6.23.0"
+    babel-core "^6.24.0"
     babel-polyfill "^6.23.0"
-    babel-register "^6.23.0"
+    babel-register "^6.24.0"
     babel-runtime "^6.22.0"
     commander "^2.8.1"
     convert-source-map "^1.1.0"
@@ -247,6 +247,30 @@ babel-core@^6.23.0:
     slash "^1.0.0"
     source-map "^0.5.0"
 
+babel-core@^6.24.0:
+  version "6.24.0"
+  resolved "http://registry.npm.taobao.org/babel-core/download/babel-core-6.24.0.tgz#8f36a0a77f5c155aed6f920b844d23ba56742a02"
+  dependencies:
+    babel-code-frame "^6.22.0"
+    babel-generator "^6.24.0"
+    babel-helpers "^6.23.0"
+    babel-messages "^6.23.0"
+    babel-register "^6.24.0"
+    babel-runtime "^6.22.0"
+    babel-template "^6.23.0"
+    babel-traverse "^6.23.1"
+    babel-types "^6.23.0"
+    babylon "^6.11.0"
+    convert-source-map "^1.1.0"
+    debug "^2.1.1"
+    json5 "^0.5.0"
+    lodash "^4.2.0"
+    minimatch "^3.0.2"
+    path-is-absolute "^1.0.0"
+    private "^0.1.6"
+    slash "^1.0.0"
+    source-map "^0.5.0"
+
 babel-eslint@^7.1.1:
   version "7.1.1"
   resolved "http://registry.npm.taobao.org/babel-eslint/download/babel-eslint-7.1.1.tgz#8a6a884f085aa7060af69cfc77341c2f99370fb2"
@@ -260,6 +284,19 @@ babel-eslint@^7.1.1:
 babel-generator@^6.23.0:
   version "6.23.0"
   resolved "http://registry.npm.taobao.org/babel-generator/download/babel-generator-6.23.0.tgz#6b8edab956ef3116f79d8c84c5a3c05f32a74bc5"
+  dependencies:
+    babel-messages "^6.23.0"
+    babel-runtime "^6.22.0"
+    babel-types "^6.23.0"
+    detect-indent "^4.0.0"
+    jsesc "^1.3.0"
+    lodash "^4.2.0"
+    source-map "^0.5.0"
+    trim-right "^1.0.1"
+
+babel-generator@^6.24.0:
+  version "6.24.0"
+  resolved "http://registry.npm.taobao.org/babel-generator/download/babel-generator-6.24.0.tgz#eba270a8cc4ce6e09a61be43465d7c62c1f87c56"
   dependencies:
     babel-messages "^6.23.0"
     babel-runtime "^6.22.0"
@@ -322,9 +359,9 @@ babel-plugin-transform-async-to-generator@^6.22.0:
     babel-plugin-syntax-async-functions "^6.8.0"
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-es2015-modules-commonjs@^6.23.0:
-  version "6.23.0"
-  resolved "http://registry.npm.taobao.org/babel-plugin-transform-es2015-modules-commonjs/download/babel-plugin-transform-es2015-modules-commonjs-6.23.0.tgz#cba7aa6379fb7ec99250e6d46de2973aaffa7b92"
+babel-plugin-transform-es2015-modules-commonjs@^6.24.0:
+  version "6.24.0"
+  resolved "http://registry.npm.taobao.org/babel-plugin-transform-es2015-modules-commonjs/download/babel-plugin-transform-es2015-modules-commonjs-6.24.0.tgz#e921aefb72c2cc26cb03d107626156413222134f"
   dependencies:
     babel-plugin-transform-strict-mode "^6.22.0"
     babel-runtime "^6.22.0"
@@ -351,6 +388,18 @@ babel-register@^6.16.3, babel-register@^6.18.0, babel-register@^6.23.0:
   resolved "http://registry.npm.taobao.org/babel-register/download/babel-register-6.23.0.tgz#c9aa3d4cca94b51da34826c4a0f9e08145d74ff3"
   dependencies:
     babel-core "^6.23.0"
+    babel-runtime "^6.22.0"
+    core-js "^2.4.0"
+    home-or-tmp "^2.0.0"
+    lodash "^4.2.0"
+    mkdirp "^0.5.1"
+    source-map-support "^0.4.2"
+
+babel-register@^6.24.0:
+  version "6.24.0"
+  resolved "http://registry.npm.taobao.org/babel-register/download/babel-register-6.24.0.tgz#5e89f8463ba9970356d02eb07dabe3308b080cfd"
+  dependencies:
+    babel-core "^6.24.0"
     babel-runtime "^6.22.0"
     core-js "^2.4.0"
     home-or-tmp "^2.0.0"
@@ -452,11 +501,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.0.2, bluebird@^3.4.6, bluebird@^3.4.7:
-  version "3.4.7"
-  resolved "http://registry.npm.taobao.org/bluebird/download/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
-
-bluebird@^3.5.0:
+bluebird@^3.0.2, bluebird@^3.4.6, bluebird@^3.4.7, bluebird@^3.5.0:
   version "3.5.0"
   resolved "http://registry.npm.taobao.org/bluebird/download/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
@@ -714,9 +759,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-debug@*, debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.1:
-  version "2.6.1"
-  resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
+debug@*, debug@^2.1.1, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.1, debug@^2.6.2:
+  version "2.6.2"
+  resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.2.tgz#dfa96a861ee9b8c2f29349b3bcc41aa599a71e0f"
   dependencies:
     ms "0.7.2"
 
@@ -1994,7 +2039,7 @@ mongodb-core@2.1.8:
     bson "~1.0.4"
     require_optional "~1.0.0"
 
-mongodb@^2.0.47, mongodb@^2.2.16:
+mongodb@^2.0.47, mongodb@^2.2.16, mongodb@^2.2.24:
   version "2.2.24"
   resolved "http://registry.npm.taobao.org/mongodb/download/mongodb-2.2.24.tgz#80f40d6ec5bdec0ddecf0f9ce0144e794c46449a"
   dependencies:
@@ -2679,11 +2724,11 @@ supports-color@^2.0.0:
     debug "^2.6.0"
     jsonwebtoken "^7.2.1"
 
-"sw-fund-smartwin-futures-calculations@git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.23":
-  version "1.0.23"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#91d7b48fe540954a8c81933ad4398a428f15991e"
+"sw-fund-smartwin-futures-calculations@git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.24":
+  version "1.0.24"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#f2744cb307b678b624d095bffd84beeaac0f890f"
   dependencies:
-    debug "^2.6.0"
+    debug "^2.6.1"
     lodash "^4.17.4"
     moment "^2.17.1"
 
@@ -2698,15 +2743,15 @@ supports-color@^2.0.0:
     lodash "^4.17.4"
     uuid "^3.0.1"
 
-"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.2":
-  version "2.0.2"
-  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#93f234e0e3141a56024fdf6ec1b70381ae394000"
+"sw-mongodb-crud@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.3":
+  version "2.0.3"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#c73679e766ee3bff454abe694f797d11c96a4c26"
   dependencies:
     babel-register "^6.18.0"
-    debug "^2.6.0"
+    debug "^2.6.1"
     lodash "^4.17.4"
     moment "^2.17.1"
-    sw-fund-smartwin-futures-calculations "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.23"
+    sw-fund-smartwin-futures-calculations "git+ssh://git@code.invesmart.net:8800/npm/sw-fund-smartwin-futures-calculations.git#v1.0.24"
     sw-mongodb "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3"
 
 "sw-mongodb@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.3":
@@ -2715,6 +2760,13 @@ supports-color@^2.0.0:
   dependencies:
     debug "^2.3.3"
     mongodb "^2.2.16"
+
+"sw-mongodb@git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.4":
+  version "1.0.4"
+  resolved "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#b404a319ddffd31cb90ec6de7852ec14a7fbd8f7"
+  dependencies:
+    debug "^2.6.2"
+    mongodb "^2.2.24"
 
 "sw-weixin-gzh@git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0":
   version "1.0.0"
