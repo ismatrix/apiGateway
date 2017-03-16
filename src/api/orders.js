@@ -47,9 +47,8 @@ export async function postOrder(order, token) {
 
     const fundid = order.fundid;
 
-    debug('getCanOrderFundConfigs() %o', config.fundConfigs.filter(f => f.canOrder));
-
     const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid));
+    debug('fundConf %o', fundConf);
 
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot place order`);
     const smartwinFund = createGrpcClient(fundConf);
@@ -67,23 +66,19 @@ export async function postOrder(order, token) {
 }
 
 export async function deleteOrder(orderToCancel, token) {
-  const {
-    fundid,
-    sessionid,
-    orderid,
-    instrumentid,
-    privateno,
-  } = orderToCancel;
   try {
-    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
-    if (!sessionid) throw Boom.badRequest('Missing sessionid parameter');
-    if (!orderid) throw Boom.badRequest('Missing orderid parameter');
-    if (!instrumentid) throw Boom.badRequest('Missing instrumentid parameter');
-    if (!privateno) throw Boom.badRequest('Missing privateno parameter');
+    if (!isString(orderToCancel.fundid)) throw Boom.badRequest('Missing fundid parameter');
+    if (!isString(orderToCancel.sessionid)) throw Boom.badRequest('Missing sessionid parameter');
+    if (!isString(orderToCancel.orderid)) throw Boom.badRequest('Missing orderid parameter');
+    if (!isString(orderToCancel.instrumentid)) throw Boom.badRequest('Missing instrumentid parameter');
+    if (!isString(orderToCancel.privateno)) throw Boom.badRequest('Missing privateno parameter');
     debug('orderToCancel %o', orderToCancel);
 
-    const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid && fund.canOrder));
+    const fundid = orderToCancel.fundid;
+
+    const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid));
     debug('fundConf %o', fundConf);
+
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot delete order`);
     const smartwinFund = createGrpcClient(fundConf);
 
