@@ -1,10 +1,10 @@
 import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
-import grpc from 'grpc';
+// import grpc from 'grpc';
 import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
-import can from 'sw-can';
+// import can from 'sw-can';
 import config from './config';
 
 const debug = createDebug('app:ioRouter');
@@ -86,7 +86,7 @@ appid=${config.wechatConfig.corpId}\
             if (callback) callback({ ok: true });
           } catch (err) {
             logError('jwt.verify(): %o', err);
-            if (callback) callback({ ok: false, err: err.message });
+            if (callback) callback({ ok: false, error: err.message });
           }
         });
       } catch (error) {
@@ -130,7 +130,7 @@ appid=${config.wechatConfig.corpId}\
           (error) => {
             if (error) throw error;
             if (callback) callback({ ok: true });
-          }
+          },
         );
       } catch (error) {
         logError('marketsIO.on(subscribe): %o', error);
@@ -296,7 +296,7 @@ appid=${config.wechatConfig.corpId}\
                 logError('fundsIO.on(subscribe): %o', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
-            }
+            },
           );
         } else if (extraEventNames.includes(data.eventName)) {
           const roomName = `${data.fundid}:${data.eventName}`;
@@ -347,7 +347,7 @@ appid=${config.wechatConfig.corpId}\
                 logError('fundsIO.on(subscribe): %o', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
-            }
+            },
           );
         }
       } catch (error) {
@@ -402,7 +402,7 @@ appid=${config.wechatConfig.corpId}\
             (error) => {
               if (error) throw error;
               if (callback) callback({ ok: true });
-            }
+            },
           );
         } else if (extraEventNames.includes(data.eventName)) {
           const roomName = `${data.fundid}:${data.eventName}`;
@@ -411,7 +411,7 @@ appid=${config.wechatConfig.corpId}\
             (error) => {
               if (error) throw error;
               if (callback) callback({ ok: true });
-            }
+            },
           );
         }
 
