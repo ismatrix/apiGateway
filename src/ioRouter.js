@@ -77,11 +77,11 @@ appid=${config.wechatConfig.corpId}\
             const clientSockets = Object.keys(socket.client.sockets);
             debug('clientSockets %o', clientSockets);
 
-            for (const clientSocketID of clientSockets) {
+            clientSockets.forEach((clientSocketID) => {
               socket.client.sockets[clientSocketID].token = data.token;
               socket.client.sockets[clientSocketID].user = decodedToken;
               socket.client.sockets[clientSocketID].nsp.emit('authenticated', socket.client.sockets[clientSocketID]);
-            }
+            });
 
             if (callback) callback({ ok: true });
           } catch (err) {
@@ -179,14 +179,14 @@ appid=${config.wechatConfig.corpId}\
         const removedMarketsRooms = difference(prevMarketsRooms, newMarketsRooms);
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
-        for (const removedRoom of removedMarketsRooms) {
+        removedMarketsRooms.forEach((removedRoom) => {
           const [symbol] = removedRoom.split(':');
           smartwinMd.unsubscribeMarketData({
             symbol,
             resolution: 'snapshot',
             dataType: 'ticker',
           });
-        }
+        });
       } catch (error) {
         logError('marketsIO.on(unsubscribe): %o', error);
         if (callback) callback({ ok: false, error: error.message });
@@ -213,14 +213,14 @@ appid=${config.wechatConfig.corpId}\
         const removedMarketsRooms = difference(globalPrevMarketsRooms, newMarketsRooms);
         debug('removedMarketsRooms %o', removedMarketsRooms);
 
-        for (const removedRoom of removedMarketsRooms) {
+        removedMarketsRooms.forEach((removedRoom) => {
           const [symbol] = removedRoom.split(':');
           smartwinMd.unsubscribeMarketData({
             symbol,
             resolution: 'snapshot',
             dataType: 'ticker',
           });
-        }
+        });
       } catch (error) {
         logError('marketsIO.on(disconnect): %o', error);
       }
@@ -235,7 +235,7 @@ appid=${config.wechatConfig.corpId}\
     const removedFundsRooms = difference(previousRoomsSnapshot, currentRoomsSnapshot);
     debug('removedFundsRooms %o', removedFundsRooms);
 
-    for (const removedRoom of removedFundsRooms) {
+    removedFundsRooms.forEach((removedRoom) => {
       const needUnregisterEventIndex =
         fundsRegisteredEvents.findIndex(obj => obj.roomName === removedRoom);
 
@@ -246,7 +246,7 @@ appid=${config.wechatConfig.corpId}\
         const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
         debug('removedFundsEvent %o', removedFundsEvent);
       }
-    }
+    });
   };
 
   const fundsIO = io.of('/funds');
@@ -285,11 +285,11 @@ appid=${config.wechatConfig.corpId}\
                 const needRegisterEvents = difference(basicEventNames, theFundRegisteredEvents);
                 debug('need add listener on these basic events %o', needRegisterEvents);
 
-                for (const eventName of needRegisterEvents) {
+                needRegisterEvents.forEach((eventName) => {
                   theFundStreams.on(eventName, (eventData) => {
                     fundsIO.to(roomName).emit(eventName, eventData);
                   });
-                }
+                });
 
                 if (callback) callback({ ok: true });
               } catch (err) {
