@@ -1742,6 +1742,27 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /notifyConfigs:
+    get:
+      tags:
+        - Configs
+      summary: Get notifyConfigs
+      responses:
+        '200':
+          description: NotifyConfigs response
+          schema:
+            type: object
+            required:
+              - ok
+              - notifyConfigs
+            properties:
+              ok:
+                type: boolean
+                default: true
+              notifyConfigs:
+                type: array
+                items:
+                  $ref: '#/definitions/NotifyConfig'
   /wechat/sendMessage:
     post:
       tags:
@@ -3571,6 +3592,31 @@ definitions:
       zh:
         type: string
         example: item value
+  NotifyConfig:
+    type: object
+    properties:
+      type:
+        type: string
+        example: accountChange
+      desc:
+        type: string
+        example: 账户变动通知
+      funds:
+        type: array
+        example: ["1339","80000528"]
+        items:
+          type: string
+      from:
+        type: number
+        example: 10
+      to:
+        type: array
+        example: ["Tristan","Angel","Kevin","Will"]
+        items:
+          type: string
+      updatedate:
+        type: string
+        example: 2017-03-14T12:18:42.713+08:00
   wechatMessage:
     type: object
     required:

@@ -10,6 +10,7 @@ import * as trades from './api/trades';
 import * as positions from './api/positions';
 import * as markets from './api/markets';
 import * as codemap from './api/codemap';
+import * as configs from './api/configs';
 
 const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
@@ -335,6 +336,12 @@ apiRouter
   .post('/markets/futures/lastSnapshot', async (ctx) => {
     const symbols = ctx.request.body.symbols;
     ctx.body = await markets.getFuturesLastSnapshot(symbols);
+  })
+  ;
+
+apiRouter
+  .get('/notifyConfigs', async (ctx) => {
+    ctx.body = await configs.getNotifyConfigs();
   })
   ;
 
