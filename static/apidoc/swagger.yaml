@@ -436,6 +436,17 @@ paths:
               equity:
                 type: number
                 example: 1000000
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
     put:
       summary: update an equity
       tags:
@@ -526,7 +537,7 @@ paths:
               - fixedincome
             properties:
               fixedincome:
-                $ref: '#/definitions/Fixedincome'
+                $ref: '#/definitions/FixedIncome'
       responses:
         '200':
           description: The operation result response (true or false)
@@ -1052,7 +1063,6 @@ paths:
           description: The number of tradingdays
           type: number
           default: 2
-          example: 2
       responses:
         '200':
           description: The Tradingdays
@@ -1183,13 +1193,11 @@ paths:
           description: The fund unique ID
           required: true
           type: string
-          example: "068074"
         - name: tradingday
           in: query
           description: The trading day
           required: true
           type: string
-          example: "20160922"
       responses:
         '200':
           description: The trades data
@@ -1223,7 +1231,6 @@ paths:
           required: true
           type: string
           default: 'current tradingday'
-          example: '20160907'
       responses:
         '200':
           description: The positions data
@@ -1254,7 +1261,6 @@ paths:
           description: The tradingday
           required: true
           type: string
-          example: '20160907'
       responses:
         '200':
           description: The positions data
@@ -1282,7 +1288,6 @@ paths:
           description: The tradingday
           required: true
           type: string
-          example: '20160907'
         - name: symbol
           in: query
           description: The instrument symbol
@@ -1742,7 +1747,7 @@ paths:
               ok:
                 type: boolean
                 default: true
-  /notifyConfigs:
+  /configs/notifyConfigs:
     get:
       tags:
         - Configs
@@ -1763,6 +1768,100 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/NotifyConfig'
+  /configs/followingConfigs:
+    get:
+      tags:
+        - Configs
+      summary: Get followingConfigs
+      responses:
+        '200':
+          description: FollowingConfigs response
+          schema:
+            type: object
+            required:
+              - ok
+              - followingConfigs
+            properties:
+              ok:
+                type: boolean
+                default: true
+              followingConfigs:
+                type: array
+                items:
+                  $ref: '#/definitions/FollowingConfig'
+    post:
+      tags:
+        - Configs
+      summary: Add many configs to followingConfigs
+      parameters:
+        - name: followingConfigs
+          in: body
+          description: The followingConfigs to add
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/FollowingConfig'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /configs/followingConfigs/{masterid}:
+    put:
+      tags:
+        - Configs
+      summary: Update an item in a catalog
+      parameters:
+        - name: masterid
+          in: path
+          description: The masterid of the config to update
+          required: true
+          type: string
+        - name: followinfConfig
+          in: body
+          description: The update object
+          required: true
+          schema:
+            $ref: '#/definitions/FollowingConfig'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: Delete a followConfig
+      tags:
+        - Configs
+      parameters:
+        - name: masterid
+          in: path
+          description: The followConfig masterid
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /wechat/sendMessage:
     post:
       tags:
@@ -1861,7 +1960,7 @@ paths:
                 type: string
                 example: http://w.url.cn/s/AsDdGZ5
       security: []
-  funds/subscribe:
+  /funds/subscribe:
     post:
       tags:
         - Funds.IO
@@ -1882,7 +1981,7 @@ paths:
               ok:
                 type: boolean
                 default: true
-  funds/unsubscribe:
+  /funds/unsubscribe:
     post:
       tags:
         - Funds.IO
@@ -1903,7 +2002,7 @@ paths:
               ok:
                 type: boolean
                 default: true
-  funds/order:
+  /funds/order:
     get:
       tags:
         - Funds.IO
@@ -1913,7 +2012,7 @@ paths:
           description: The order placement
           schema:
             $ref: '#/definitions/Order'
-  funds/trade:
+  /funds/trade:
     get:
       tags:
         - Funds.IO
@@ -1923,7 +2022,7 @@ paths:
           description: The trade
           schema:
             $ref: '#/definitions/Trade'
-  funds/account:
+  /funds/account:
     get:
       tags:
         - Funds.IO
@@ -1933,7 +2032,7 @@ paths:
           description: The account
           schema:
             $ref: '#/definitions/Account'
-  funds/liveAccount:
+  /funds/liveAccount:
     get:
       tags:
         - Funds.IO
@@ -1943,7 +2042,7 @@ paths:
           description: The live account
           schema:
             $ref: '#/definitions/Account'
-  funds/positions:
+  /funds/positions:
     get:
       tags:
         - Funds.IO
@@ -1955,7 +2054,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Position'
-  funds/livePositions:
+  /funds/livePositions:
     get:
       tags:
         - Funds.IO
@@ -1967,7 +2066,7 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Position'
-  funds/combinedReport:
+  /funds/combinedReport:
     get:
       tags:
         - Funds.IO
@@ -1977,7 +2076,7 @@ paths:
           description: The CombinedReport
           schema:
             $ref: '#/definitions/CombinedReport'
-  markets/subscribe:
+  /markets/subscribe:
     post:
       tags:
         - Markets.IO
@@ -2002,7 +2101,7 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
-  markets/unsubscribe:
+  /markets/unsubscribe:
     post:
       tags:
         - Markets.IO
@@ -2027,7 +2126,7 @@ paths:
           description: Invalid query
           schema:
             $ref: '#/definitions/Error400'
-  markets/tick:
+  /markets/tick:
     get:
       tags:
         - Markets.IO
@@ -3022,7 +3121,7 @@ definitions:
         type: string
         example: "20140905"
       dividend:
-        $ref: '#/definitions/DividenOne'
+        $ref: '#/definitions/DividendOne'
   DividendOne:
     type: object
     properties:
@@ -3614,6 +3713,31 @@ definitions:
         example: ["Tristan","Angel","Kevin","Will"]
         items:
           type: string
+      updatedate:
+        type: string
+        example: 2017-03-14T12:18:42.713+08:00
+  Follower:
+    type: object
+    properties:
+      fundid:
+        type: string
+        example: 890831
+      multiple:
+        type: number
+        example: 2
+  FollowingConfig:
+    type: object
+    properties:
+      master:
+        type: string
+        example: huiwang01
+      follower:
+        type: array
+        items:
+          $ref: '#/definitions/Follower'
+      state:
+        type: string
+        example: online
       updatedate:
         type: string
         example: 2017-03-14T12:18:42.713+08:00

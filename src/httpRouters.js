@@ -340,8 +340,24 @@ apiRouter
   ;
 
 apiRouter
-  .get('/notifyConfigs', async (ctx) => {
+  .get('/configs/notifyConfigs', can.koamw('get', 'configs'), async (ctx) => {
     ctx.body = await configs.getNotifyConfigs();
+  })
+  .get('/configs/followingConfigs', can.koamw('get', 'configs'), async (ctx) => {
+    ctx.body = await configs.getFollowingConfigs();
+  })
+  .post('/configs/followingConfigs', can.koamw('add', 'configs'), async (ctx) => {
+    const followingConfigs = ctx.request.body.followingConfigs;
+    ctx.body = await configs.postFollowingConfigs(followingConfigs);
+  })
+  .put('/configs/followingConfigs/:masterid', can.koamw('update', 'configs'), async (ctx) => {
+    const masterid = ctx.params.masterid;
+    const followingConfig = ctx.request.body.followingConfig;
+    ctx.body = await configs.putFollowingConfig(masterid, followingConfig);
+  })
+  .delete('/configs/followingConfigs/:masterid', can.koamw('delete', 'configs'), async (ctx) => {
+    const masterid = ctx.params.masterid;
+    ctx.body = await configs.deleteFollowingConfig(masterid);
   })
   ;
 
