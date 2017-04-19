@@ -332,6 +332,7 @@ appid=${config.wechatConfig.corpId}\
                     const stop = () => { stopped = true; };
                     return { start, stop };
                   };
+                  getAndEmitFunction();
                   const recursiveCall = makeRecursiveCall(getAndEmitFunction, 5000);
 
                   recursiveCall.start();
