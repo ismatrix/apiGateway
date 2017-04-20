@@ -1862,6 +1862,48 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /acls:
+    get:
+      tags:
+        - ACL
+      summary: Get acls
+      responses:
+        '200':
+          description: ACLs response
+          schema:
+            type: object
+            required:
+              - ok
+              - acls
+            properties:
+              ok:
+                type: boolean
+                default: true
+              acls:
+                type: array
+                items:
+                  $ref: '#/definitions/ACL'
+  /strategies:
+    get:
+      tags:
+        - Strategy
+      summary: Get strategies
+      responses:
+        '200':
+          description: Strategies response
+          schema:
+            type: object
+            required:
+              - ok
+              - strategies
+            properties:
+              ok:
+                type: boolean
+                default: true
+              strategies:
+                type: array
+                items:
+                  $ref: '#/definitions/Strategy'
   /wechat/sendMessage:
     post:
       tags:
@@ -3741,6 +3783,21 @@ definitions:
       updatedate:
         type: string
         example: 2017-03-14T12:18:42.713+08:00
+  ACL:
+    type: object
+    properties:
+      roles:
+        type: string
+        example: []
+      allows:
+        type: string
+        example: {}
+  Strategy:
+    type: object
+    properties:
+      tbd:
+        type: string
+        example: tbd
   wechatMessage:
     type: object
     required:

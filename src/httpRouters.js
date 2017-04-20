@@ -11,6 +11,8 @@ import * as positions from './api/positions';
 import * as markets from './api/markets';
 import * as codemap from './api/codemap';
 import * as configs from './api/configs';
+import * as acls from './api/acls';
+import * as strategy from './api/strategy';
 
 const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
@@ -360,5 +362,17 @@ apiRouter
     ctx.body = await configs.deleteFollowingConfig(masterid);
   })
   ;
+
+apiRouter
+  .get('/acls', async (ctx) => {
+    ctx.body = await acls.getACLs();
+  })
+  ;
+
+apiRouter
+    .get('/strategies', async (ctx) => {
+      ctx.body = await strategy.getStrategies();
+    })
+    ;
 
 export default apiRouter;
