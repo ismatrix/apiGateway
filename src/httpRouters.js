@@ -13,6 +13,7 @@ import * as codemap from './api/codemap';
 import * as configs from './api/configs';
 import * as acls from './api/acls';
 import * as strategy from './api/strategy';
+import * as productGroup from './api/productGroup';
 
 const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
@@ -372,6 +373,12 @@ apiRouter
 apiRouter
     .get('/strategies', async (ctx) => {
       ctx.body = await strategy.getStrategies();
+    })
+    ;
+
+apiRouter
+    .get('/productGroups', async (ctx) => {
+      ctx.body = await productGroup.getProductGroups();
     })
     ;
 
