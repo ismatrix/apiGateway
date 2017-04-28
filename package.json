@@ -49,7 +49,7 @@
     "node-fetch": "^1.6.1",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
-    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.2",
+    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.3",
     "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.32",
     "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.4",
     "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.10",
