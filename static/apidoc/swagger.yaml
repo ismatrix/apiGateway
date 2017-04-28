@@ -1904,6 +1904,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Strategy'
+  /productGroups:
+    get:
+      tags:
+        - Product Group
+      summary: Get productGroups
+      responses:
+        '200':
+          description: productGroups response
+          schema:
+            type: object
+            required:
+              - ok
+              - productGroups
+            properties:
+              ok:
+                type: boolean
+                default: true
+              productGroups:
+                type: array
+                items:
+                  $ref: '#/definitions/ProductGroup'
   /wechat/sendMessage:
     post:
       tags:
@@ -3793,6 +3814,12 @@ definitions:
         type: string
         example: {}
   Strategy:
+    type: object
+    properties:
+      tbd:
+        type: string
+        example: tbd
+  productGroup:
     type: object
     properties:
       tbd:
