@@ -3611,6 +3611,8 @@ definitions:
         type: number
       maxDrawdown:
         type: number
+      currentDrawdown:
+        type: number
   AllPeriodsDrawdownReport:
     type: object
     properties:
