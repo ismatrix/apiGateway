@@ -451,3 +451,16 @@ export async function getTradingdays(fundid, tradingdayCount = 2) {
     throw error;
   }
 }
+
+export async function getPositionLevels(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const positionLevels = await crud.positionlevel.getLastInDay(fundid);
+
+    return { ok: true, positionLevels };
+  } catch (error) {
+    logError('getPositionLevels(): %o', error);
+    throw error;
+  }
+}

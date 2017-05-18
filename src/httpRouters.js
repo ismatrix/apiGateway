@@ -216,6 +216,10 @@ apiRouter
     const tradingdayCount = parseInt(ctx.query.tradingdayCount, 10);
     ctx.body = await funds.getTradingdays(fundid, tradingdayCount);
   })
+  .get('/funds/:fundid/positionLevels', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getPositionLevels(fundid);
+  })
   ;
 
 apiRouter.use('/account', can.koamw('get', 'fundid:all/basics'));
