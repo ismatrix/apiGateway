@@ -93,3 +93,44 @@ export async function deleteOrder(orderToCancel, token) {
     throw error;
   }
 }
+
+export async function getConditionalOrders(fundid) {
+  try {
+    const query = {};
+
+    if (fundid !== undefined) query.fundid = fundid;
+
+    const orders = await crud.conditionorder.getList(query);
+
+    return { ok: true, orders };
+  } catch (error) {
+    logError('getConditionalOrders(): %o', error);
+    throw error;
+  }
+}
+
+export async function postConditionalOrders(orders) {
+  try {
+    if (!orders) throw Boom.badRequest('Missing orders parameter');
+
+    await crud.conditionorder.add(orders);
+
+    return { ok: true };
+  } catch (error) {
+    logError('postConditionalOrder(): %o', error);
+    throw error;
+  }
+}
+
+export async function deleteConditionalOrder(orderID) {
+  try {
+    if (!orderID) throw Boom.badRequest('Missing orderID parameter');
+
+    await crud.conditionorder.remove(orderID);
+
+    return { ok: true };
+  } catch (error) {
+    logError('deleteConditionalOrder(): %o', error);
+    throw error;
+  }
+}
