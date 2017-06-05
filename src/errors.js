@@ -13,7 +13,7 @@ export default function koaError() {
         ctx.status = error.output.statusCode;
         ctx.body = { ok: false, error: error.output.payload.message };
         return;
-      } else if (error.status === 401 && error.message === `Invalid token\n`) {
+      } else if (error.status === 401 && error.message === 'Invalid token\n') {
         logError('koaError(): %o', error);
         ctx.status = 401;
         ctx.body = {
@@ -21,7 +21,7 @@ export default function koaError() {
           error: 'Invalid token',
         };
         return;
-      } else if (ctx.status === 404 && error.message === `No authentication token found\n`) {
+      } else if (ctx.status === 404 && error.message === 'No authentication token found\n') {
         logError('koaError(): %o', error);
         ctx.status = 404;
         ctx.body = {
