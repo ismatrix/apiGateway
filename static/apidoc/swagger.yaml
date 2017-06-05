@@ -1020,6 +1020,184 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /funds/{fundid}/stockAccounts:
+    get:
+      summary: Get an array of StockAccounts
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of StockAccounts
+          schema:
+            type: object
+            required:
+              - ok
+              - stockAccounts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              stockAccounts:
+                $ref: '#/definitions/StockAccounts'
+  /funds/{fundid}/stockAccount/{tradingday}:
+    put:
+      summary: update or add a StockAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated StockAccount
+          required: true
+          schema:
+            type: object
+            required:
+              - stockaccount
+            properties:
+              stockaccount:
+                $ref: '#/definitions/StockAccountOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete a StockAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /funds/{fundid}/bondAccounts:
+    get:
+      summary: Get an array of BondAccounts
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: An array of BondAccounts
+          schema:
+            type: object
+            required:
+              - ok
+              - bondAccounts
+            properties:
+              ok:
+                type: boolean
+                default: true
+              bondAccounts:
+                $ref: '#/definitions/BondAccounts'
+  /funds/{fundid}/bondAccount/{tradingday}:
+    put:
+      summary: update or add a BondAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The new or updated BondAccount
+          required: true
+          schema:
+            type: object
+            required:
+              - bondaccount
+            properties:
+              bondaccount:
+                $ref: '#/definitions/BondAccountOne'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+    delete:
+      summary: delete a BondAccount
+      tags:
+        - Funds
+      parameters:
+        - name: fundid
+          in: path
+          description: The fund id
+          required: true
+          type: string
+        - name: tradingday
+          in: path
+          description: The trading day
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /funds/{fundid}/dynamicEquity:
     get:
       summary: Get the fund dynamic equity value
@@ -3285,6 +3463,60 @@ definitions:
         example: 20160119
       hostingaccount:
         $ref: '#/definitions/HostingAccountOne'
+  StockAccounts:
+    type: array
+    items:
+      $ref: '#/definitions/StockAccount'
+  StockAccountOne:
+    type: object
+    required:
+      - amount
+      - remark
+    properties:
+      amount:
+        type: number
+        example: 1830392.34
+      remark:
+        type: string
+        example: 股票账户金额
+  StockAccount:
+    type: object
+    required:
+      - tradingday
+      - stockaccount
+    properties:
+      tradingday:
+        type: number
+        example: 20160119
+      stockaccount:
+        $ref: '#/definitions/StockAccountOne'
+  BondAccounts:
+    type: array
+    items:
+      $ref: '#/definitions/BondAccount'
+  BondAccountOne:
+    type: object
+    required:
+      - amount
+      - remark
+    properties:
+      amount:
+        type: number
+        example: 1830392.34
+      remark:
+        type: string
+        example: 股票账户金额
+  BondAccount:
+    type: object
+    required:
+      - tradingday
+      - bondaccount
+    properties:
+      tradingday:
+        type: number
+        example: 20160119
+      bondaccount:
+        $ref: '#/definitions/BondAccountOne'
   putPassword:
     type: object
     required:
