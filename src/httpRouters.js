@@ -263,8 +263,16 @@ apiRouter
 apiRouter
   .get('/orders', async (ctx) => {
     const fundid = ctx.query.fundid;
+    const beginDate = ctx.query.beginDate;
+    const endDate = ctx.query.endDate;
+    const product = ctx.query.product;
+    const instrumentid = ctx.query.instrumentid;
+    ctx.body = await orders.getOrders(fundid, beginDate, endDate, product, instrumentid);
+  })
+  .get('/oneDayOrders', async (ctx) => {
+    const fundid = ctx.query.fundid;
     const tradingday = ctx.query.tradingday;
-    ctx.body = await orders.getOrders(fundid, tradingday);
+    ctx.body = await orders.getOneDayOrders(fundid, tradingday);
   })
   .post('/order', async (ctx) => {
     const order = ctx.request.body;
