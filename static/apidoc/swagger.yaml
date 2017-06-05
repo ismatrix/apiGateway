@@ -1313,7 +1313,54 @@ paths:
                 $ref: '#/definitions/Account'
   /orders:
     get:
-      summary: Get all orders
+      summary: Get all orders, with filter options
+      tags:
+        - Orders
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
+        - name: beginDate
+          in: query
+          description: The begin date
+          required: false
+          type: string
+        - name: endDate
+          in: query
+          description: The end date
+          required: false
+          type: string
+        - name: product
+          in: query
+          description: The product symbol
+          required: false
+          type: string
+        - name: instrumentid
+          in: query
+          description: The instrument symbol
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The orders array
+          schema:
+            type: object
+            required:
+              - ok
+              - orders
+            properties:
+              ok:
+                type: boolean
+                default: true
+              orders:
+                type: array
+                items:
+                  $ref: '#/definitions/Order'
+  /oneDayOrders:
+    get:
+      summary: Get all orders of a trading day
       tags:
         - Orders
       parameters:
