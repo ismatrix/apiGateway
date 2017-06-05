@@ -10,12 +10,31 @@ const debug = createDebug('app:api:orders');
 const logError = createDebug('app:api:orders:error');
 logError.log = console.error.bind(console);
 
-export async function getOrders(fundid, tradingDay) {
+export async function getOrders(fundid, beginDate, endDate, product, instrumentid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
-    if (!tradingDay) throw Boom.badRequest('Missing tradingDay parameter');
 
-    const dbOrders = await crud.order.getLast(fundid, tradingDay);
+    const orders = await crud.order.getSignalByProduct(
+      fundid,
+      beginDate,
+      endDate,
+      product,
+      instrumentid,
+    );
+
+    return { ok: true, orders };
+  } catch (error) {
+    logError('getOrders(): %o', error);
+    throw error;
+  }
+}
+
+export async function getOneDayOrders(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    const dbOrders = await crud.order.getLast(fundid, tradingday);
 
     if (dbOrders && dbOrders.order) {
       const orders = dbOrders.order;
@@ -24,7 +43,7 @@ export async function getOrders(fundid, tradingDay) {
 
     return { ok: true, orders: [] };
   } catch (error) {
-    logError('getOrders(): %o', error);
+    logError('getOneDayOrders(): %o', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
