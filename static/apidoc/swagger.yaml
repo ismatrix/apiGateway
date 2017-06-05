@@ -316,12 +316,12 @@ paths:
             type: object
             required:
               - ok
-              - netValue
+              - netValues
             properties:
               ok:
                 type: boolean
                 default: true
-              netValue:
+              netValues:
                 $ref: '#/definitions/NetValue'
   /funds/{fundid}/netValues:
     get:
