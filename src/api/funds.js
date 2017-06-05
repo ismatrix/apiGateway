@@ -404,7 +404,7 @@ export async function putHostingAccount(fundid, tradingday, hostingaccount) {
 
     return { ok: true };
   } catch (error) {
-    logError('putFixedCost(): %o', error);
+    logError('putHostingAccount(): %o', error);
     throw error;
   }
 }
@@ -418,7 +418,93 @@ export async function deleteHostingAccount(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteFixedCost(): %o', error);
+    logError('deleteHostingAccount(): %o', error);
+    throw error;
+  }
+}
+
+export async function getStockAccounts(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const stockAccounts = await crud.equity.getStockAccountList(fundid);
+
+    return { ok: true, stockAccounts };
+  } catch (error) {
+    logError('getStockAccounts(): %o', error);
+    throw error;
+  }
+}
+
+export async function putStockAccount(fundid, tradingday, stockaccount) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!stockaccount) throw Boom.badRequest('Missing stockaccount parameter');
+
+    const result = await crud.equity.set(fundid, tradingday, { stockaccount });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
+
+    return { ok: true };
+  } catch (error) {
+    logError('putStockAccount(): %o', error);
+    throw error;
+  }
+}
+
+export async function deleteStockAccount(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await crud.equity.set(fundid, tradingday, { stockaccount: { amount: 0, remark: '' } });
+
+    return { ok: true };
+  } catch (error) {
+    logError('deleteStockAccount(): %o', error);
+    throw error;
+  }
+}
+
+export async function getBondAccounts(fundid) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const bondAccounts = await crud.equity.getBondAccountList(fundid);
+
+    return { ok: true, bondAccounts };
+  } catch (error) {
+    logError('getBondAccounts(): %o', error);
+    throw error;
+  }
+}
+
+export async function putBondAccount(fundid, tradingday, bondaccount) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!bondaccount) throw Boom.badRequest('Missing bondaccount parameter');
+
+    const result = await crud.equity.set(fundid, tradingday, { bondaccount });
+    if (result.nModified === 0) throw Boom.badRequest('no matching record in DB');
+
+    return { ok: true };
+  } catch (error) {
+    logError('putBondAccount(): %o', error);
+    throw error;
+  }
+}
+
+export async function deleteBondAccount(fundid, tradingday) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    await crud.equity.set(fundid, tradingday, { stockaccount: { amount: 0, remark: '' } });
+
+    return { ok: true };
+  } catch (error) {
+    logError('deleteBondAccount(): %o', error);
     throw error;
   }
 }

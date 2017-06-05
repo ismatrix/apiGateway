@@ -207,6 +207,36 @@ apiRouter
     const tradingday = ctx.params.tradingday;
     ctx.body = await funds.deleteHostingAccount(fundid, tradingday);
   })
+  .get('/funds/:fundid/stockAccounts', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getStockAccounts(fundid);
+  })
+  .put('/funds/:fundid/stockAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const stockaccount = ctx.request.body.stockaccount;
+    ctx.body = await funds.putStockAccount(fundid, tradingday, stockaccount);
+  })
+  .delete('/funds/:fundid/stockAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    ctx.body = await funds.deleteStockAccount(fundid, tradingday);
+  })
+  .get('/funds/:fundid/bondAccounts', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    ctx.body = await funds.getBondAccounts(fundid);
+  })
+  .put('/funds/:fundid/bondAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    const bondaccount = ctx.request.body.bondaccount;
+    ctx.body = await funds.putBondAccount(fundid, tradingday, bondaccount);
+  })
+  .delete('/funds/:fundid/bondAccount/:tradingday', async (ctx) => {
+    const fundid = ctx.params.fundid;
+    const tradingday = ctx.params.tradingday;
+    ctx.body = await funds.deleteBondAccount(fundid, tradingday);
+  })
   .get('/funds/:fundid/dynamicEquity', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getDynamicEquity(fundid);
