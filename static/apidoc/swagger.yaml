@@ -1388,6 +1388,79 @@ paths:
               ok:
                 type: boolean
                 default: true
+  /conditionalOrders:
+    get:
+      summary: Get all conditional orders
+      tags:
+        - Orders
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: false
+          type: string
+      responses:
+        '200':
+          description: The orders array
+          schema:
+            type: object
+            required:
+              - ok
+              - orders
+            properties:
+              ok:
+                type: boolean
+                default: true
+              orders:
+                type: array
+                items:
+                  $ref: '#/definitions/Order'
+    post:
+      summary: Send many Orders
+      tags:
+        - Orders
+      parameters:
+        - name: body
+          in: body
+          description: The new orders to submit
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OrderPost'
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
+  /conditionalOrder/{orderID}:
+    delete:
+      summary: Delete a conditional order
+      tags:
+        - Orders
+      parameters:
+        - name: orderID
+          in: path
+          description: The order key
+          required: true
+          type: string
+      responses:
+        '200':
+          description: The operation result response (true or false)
+          schema:
+            type: object
+            required:
+              - ok
+            properties:
+              ok:
+                type: boolean
+                default: true
   /trades:
     get:
       summary: Get the trades of the current tradingday
