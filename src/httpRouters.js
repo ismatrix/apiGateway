@@ -275,6 +275,18 @@ apiRouter
     const orderToDelete = ctx.request.body;
     ctx.body = await orders.deleteOrder(orderToDelete, ctx.header.authorization);
   })
+  .get('/conditionalOrders', async (ctx) => {
+    const fundid = ctx.query.fundid;
+    ctx.body = await orders.getConditionalOrders(fundid);
+  })
+  .post('/conditionalOrders', async (ctx) => {
+    const condOrders = ctx.request.body;
+    ctx.body = await orders.postConditionalOrders(condOrders);
+  })
+  .delete('/conditionalOrder/:orderID', async (ctx) => {
+    const orderID = ctx.params.orderID;
+    ctx.body = await orders.deleteConditionalOrder(orderID);
+  })
   ;
 
 apiRouter
