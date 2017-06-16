@@ -1542,7 +1542,44 @@ paths:
                   $ref: '#/definitions/Trade'
   /positions:
     get:
-      summary: Get the current positions
+      summary: Get positions
+      tags:
+        - Positions
+      parameters:
+        - name: fundid
+          in: query
+          description: The fund unique ID
+          required: true
+          type: string
+        - name: startDate
+          in: query
+          description: The startDate
+          type: string
+          default: 0
+        - name: endDate
+          in: query
+          description: The endDate
+          type: string
+          default: 99999999
+      responses:
+        '200':
+          description: The positions data
+          schema:
+            type: object
+            required:
+              - ok
+              - positions
+            properties:
+              ok:
+                type: boolean
+                default: true
+              positions:
+                type: array
+                items:
+                  $ref: '#/definitions/Position'
+  /oneDayPositions:
+    get:
+      summary: Get one day positions
       tags:
         - Positions
       parameters:

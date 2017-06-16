@@ -308,8 +308,14 @@ apiRouter
 apiRouter
   .get('/positions', async (ctx) => {
     const fundid = ctx.query.fundid;
+    const beginDate = ctx.query.beginDate;
+    const endDate = ctx.query.endDate;
+    ctx.body = await positions.getPositions(fundid, beginDate, endDate);
+  })
+  .get('/oneDayPositions', async (ctx) => {
+    const fundid = ctx.query.fundid;
     const tradingday = ctx.query.tradingday;
-    ctx.body = await positions.getPositions(fundid, tradingday);
+    ctx.body = await positions.getOneDayPositions(fundid, tradingday);
   })
   .get('/allFunds/allInstruments/mergedPositions', async (ctx) => {
     const tradingday = ctx.query.tradingday;
