@@ -15,6 +15,7 @@ import * as acls from './api/acls';
 import * as strategy from './api/strategy';
 import * as productGroup from './api/productGroup';
 
+// 负责路由ｗｅｂ
 const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
 

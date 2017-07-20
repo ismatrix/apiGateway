@@ -1,12 +1,11 @@
 import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
-// import grpc from 'grpc';
 import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
-// import can from 'sw-can';
 import config from './config';
 
+// 负责路由ｗｅｂｓｏｃｋｅｔ
 const debug = createDebug('app:ioRouter');
 const logError = createDebug('app:ioRouter:error');
 logError.log = console.error.bind(console);

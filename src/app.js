@@ -22,6 +22,8 @@ const debug = createDebug('app');
 const logError = createDebug('app:error');
 logError.log = console.error.bind(console);
 
+// 链数据库获取基金信息
+// 启动ｗｅｂ服务
 process
   .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
   .on('warning', warning => logError('process.on(warning): %o', warning))

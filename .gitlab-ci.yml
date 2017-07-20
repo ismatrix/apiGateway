@@ -16,7 +16,6 @@ deploy:
     - git clean -f -d
     - git pull
     - npm --registry=https://registry.npm.taobao.org install
-    - npm run compile
     - pm2 restart apiGateway
   only:
     - master
