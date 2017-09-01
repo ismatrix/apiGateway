@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import jwt from 'jsonwebtoken';
 import argon2 from 'argon2';
@@ -7,9 +7,6 @@ import crud from 'sw-mongodb-crud';
 import config from '../config';
 import { io } from '../app';
 
-const debug = createDebug('app:api:auth');
-const logError = createDebug('app:api:auth:error');
-logError.log = console.error.bind(console);
 const qydev = makeQydev(config.wechatConfig);
 
 export async function createUserToken(userObj) {
@@ -25,10 +22,10 @@ export async function createUserToken(userObj) {
       dpt,
     };
     const jwtToken = jwt.sign(jwtTokenData, config.jwtSecret);
-    debug(`createUserToken() jwtToken: ${jwtToken}`);
+    logger.info(`createUserToken() jwtToken: ${jwtToken}`);
     return jwtToken;
   } catch (error) {
-    logError('createUserToken(): %o', error);
+    logger.error('createUserToken(): %j', error);
     throw error;
   }
 }
@@ -38,10 +35,10 @@ export async function getTokenByWechatScan(code, state) {
     if (!code || !state) {
       throw Boom.badRequest('Missing parameter');
     }
-    debug('code %o, state %o', code, state);
+    logger.info('code %j, state %j', code, state);
 
     const qyUserObj = await qydev.getUserWithDepartments(code);
-    debug('getTokenByWechatScan() user: %o', qyUserObj);
+    logger.info('getTokenByWechatScan() user: %j', qyUserObj);
 
     const userid = qyUserObj.userid.toLowerCase();
     qyUserObj.userid = userid;
@@ -66,7 +63,7 @@ export async function getTokenByWechatScan(code, state) {
 
     throw Boom.badImplementation('Cannot create token');
   } catch (error) {
-    logError('getTokenByWechatScan(): %o', error);
+    logger.error('getTokenByWechatScan(): %j', error);
     if (error.isBoom) {
       io.to(`${state}`).emit('token', { ok: false, error: error.output.payload.message });
     } else {
@@ -83,7 +80,7 @@ export async function getTokenByPassword(_userid, password) {
 
     const userid = _userid.toLowerCase();
     const dbUserObj = await crud.user.get({ userid });
-    debug(dbUserObj);
+    logger.info(dbUserObj);
     if (!dbUserObj) throw Boom.notFound('User not found');
     if (!dbUserObj.password) throw Boom.notFound('User must set a password first');
 
@@ -94,7 +91,7 @@ export async function getTokenByPassword(_userid, password) {
     }
     throw Boom.unauthorized('Invalid password');
   } catch (error) {
-    logError('getTokenByPassword(): %o', error);
+    logger.error('getTokenByPassword(): %j', error);
     throw error;
   }
 }

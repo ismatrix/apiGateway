@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/app",
     "test": "mocha $(find test -name '*test.js') --compilers js:babel-register",
-    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files"
+    "compile": "rm -rf ./dist && babel src --out-dir dist --copy-files && for i in `ls node_modules/ | grep sw`; do cd node_modules/$i && npm run compile; cd ../../; done"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,6 @@
     "babel-register": "^6.24.1",
     "bluebird": "^3.5.0",
     "boom": "^5.2.0",
-    "debug": "^2.6.8",
     "grpc": "^1.4.1",
     "ice": "^3.6.3",
     "jsonwebtoken": "^7.4.1",
@@ -49,12 +48,13 @@
     "node-fetch": "^1.7.1",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.5",
-    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.35",
-    "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.6",
-    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.17",
-    "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
-    "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.2",
+    "sw-common": "git+ssh://git@code.invesmart.net:8800/npm/sw-common.git#v1.0.1",
+    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.6",
+    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.36",
+    "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.7",
+    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.19",
+    "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.2",
+    "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.3",
     "through2": "^2.0.3"
   }
 }

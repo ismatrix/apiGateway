@@ -1,10 +1,6 @@
-import createDebug from 'debug';
 import Boom from 'boom';
 import crud from 'sw-mongodb-crud';
-
-const debug = createDebug('app:api:positions');
-const logError = createDebug('app:api:positions:error');
-logError.log = console.error.bind(console);
+import logger from 'sw-common';
 
 export async function getPositions(fundid, beginDate, endDate) {
   try {
@@ -15,11 +11,11 @@ export async function getPositions(fundid, beginDate, endDate) {
       beginDate,
       endDate,
     );
-    debug('dbPositions.length %o', positions.length);
+    logger.info('dbPositions.length %j', positions.length);
 
     return { ok: true, positions };
   } catch (error) {
-    logError('getPositions(): %o', error);
+    logger.error('getPositions(): %j', error);
     throw error;
   }
 }
@@ -30,7 +26,7 @@ export async function getOneDayPositions(fundid, tradingday) {
     if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
     const dbPositions = await crud.position.get(fundid, tradingday);
-    debug('dbPositions.length %o', dbPositions.length);
+    logger.info('dbPositions.length %j', dbPositions.length);
     if (dbPositions && dbPositions.positions) {
       const positions = dbPositions.positions;
       return { ok: true, tradingday, positions };
@@ -38,7 +34,7 @@ export async function getOneDayPositions(fundid, tradingday) {
 
     return { ok: true, tradingday, positions: [] };
   } catch (error) {
-    logError('getOneDayPositions(): %o', error);
+    logger.error('getOneDayPositions(): %j', error);
     throw error;
   }
 }
@@ -51,7 +47,7 @@ export async function getAllFundsMergedPositions(tradingday) {
 
     return { ok: true, positions };
   } catch (error) {
-    logError('getAllFundsMergedPositions(): %o', error);
+    logger.error('getAllFundsMergedPositions(): %j', error);
     throw error;
   }
 }
@@ -65,7 +61,7 @@ export async function getInstrumentPositionsByFund(tradingday, symbol) {
 
     return { ok: true, positionsByFund };
   } catch (error) {
-    logError('getInstrumentPositionsByFund(): %o', error);
+    logger.error('getInstrumentPositionsByFund(): %j', error);
     throw error;
   }
 }

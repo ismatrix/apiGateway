@@ -1,10 +1,9 @@
-import createDebug from 'debug';
 import Boom from 'boom';
 import http from 'http';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import jwt from 'koa-jwt';
-import logger from 'koa-logger';
+import klogger from 'koa-logger';
 import compose from 'koa-compose';
 import cors from 'kcors';
 import serve from 'koa-static';
@@ -17,19 +16,16 @@ import koaError from './errors';
 import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
 import config from './config';
-
-const debug = createDebug('app');
-const logError = createDebug('app:error');
-logError.log = console.error.bind(console);
+import logger from 'sw-common';
 
 // 链数据库获取基金信息
 // 启动ｗｅｂ服务
 process
-  .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
-  .on('warning', warning => logError('process.on(warning): %o', warning))
+  .on('uncaughtException', error => logger.error('process.on(uncaughtException): %j', error))
+  .on('warning', warning => logger.error('process.on(warning): %j', warning))
   ;
 
-debug('API Gateway starting...');
+logger.info('API Gateway starting...');
 const koa = new Koa();
 const server = http.createServer(koa.callback());
 
@@ -59,11 +55,11 @@ async function init() {
       canOrder: dbFund.fundflag === 'simulation',
     }));
     config.fundConfigs = fundConfigs;
-    debug('dbFunds %o', config.fundConfigs.map(({ fundid, canOrder }) => ({ fundid, canOrder })));
+    logger.info('dbFunds %j', config.fundConfigs.map(({ fundid, canOrder }) => ({ fundid, canOrder })));
     ioRouter(io);
 
     // Koa koa REST API middleware
-    koa.use(logger());
+    koa.use(klogger());
     koa.use(cors());
     koa.use(koaError());
     koa.use(jwt({ secret: config.jwtSecret }).unless({ path: [/^\/api\/public/] }));
@@ -85,7 +81,7 @@ async function init() {
 
     server.listen(3000);
   } catch (error) {
-    logError('init(): %o', error);
+    logger.error('init(): %j', error);
     throw error;
   }
 }

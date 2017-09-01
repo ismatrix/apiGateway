@@ -1,14 +1,11 @@
-import createDebug from 'debug';
 import Boom from 'boom';
 import createGrpcClient from 'sw-grpc-client';
 import grpc from 'grpc';
 import { isNumber, isString } from 'lodash';
 import crud from 'sw-mongodb-crud';
 import config from '../config';
+import logger from 'sw-common';
 
-const debug = createDebug('app:api:orders');
-const logError = createDebug('app:api:orders:error');
-logError.log = console.error.bind(console);
 
 export async function getOrders(fundid, beginDate, endDate, product, instrumentid) {
   try {
@@ -24,7 +21,7 @@ export async function getOrders(fundid, beginDate, endDate, product, instrumenti
 
     return { ok: true, orders };
   } catch (error) {
-    logError('getOrders(): %o', error);
+    logger.error('getOrders(): %j', error);
     throw error;
   }
 }
@@ -43,7 +40,7 @@ export async function getOneDayOrders(fundid, tradingday) {
 
     return { ok: true, orders: [] };
   } catch (error) {
-    logError('getOneDayOrders(): %o', error);
+    logger.error('getOneDayOrders(): %j', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
@@ -62,12 +59,12 @@ export async function postOrder(order, token) {
     if (!isString(order.signalname)) throw Boom.badRequest('Missing signalname parameter');
     if (!isString(order.strategyid)) throw Boom.badRequest('Missing strategyid parameter');
     if (!isString(order.userid)) throw Boom.badRequest('Missing userid parameter');
-    debug('order %o', order);
+    logger.info('order %j', order);
 
     const fundid = order.fundid;
 
     const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid));
-    debug('fundConf %o', fundConf);
+    logger.info('fundConf %j', fundConf);
 
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot place order`);
     const smartwinFund = createGrpcClient(fundConf);
@@ -78,7 +75,7 @@ export async function postOrder(order, token) {
 
     return { ok: true };
   } catch (error) {
-    logError('postOrder(): %o', error);
+    logger.error('postOrder(): %j', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
@@ -91,12 +88,12 @@ export async function deleteOrder(orderToCancel, token) {
     if (!isString(orderToCancel.orderid)) throw Boom.badRequest('Missing orderid parameter');
     if (!isString(orderToCancel.instrumentid)) throw Boom.badRequest('Missing instrumentid parameter');
     if (!isString(orderToCancel.privateno)) throw Boom.badRequest('Missing privateno parameter');
-    debug('orderToCancel %o', orderToCancel);
+    logger.info('orderToCancel %j', orderToCancel);
 
     const fundid = orderToCancel.fundid;
 
     const fundConf = config.fundConfigs.find(fund => (fund.fundid === fundid));
-    debug('fundConf %o', fundConf);
+    logger.info('fundConf %j', fundConf);
 
     if (!fundConf) throw Boom.notFound(`Fundid ${fundid} cannot delete order`);
     const smartwinFund = createGrpcClient(fundConf);
@@ -107,7 +104,7 @@ export async function deleteOrder(orderToCancel, token) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteOrder(): %o', error);
+    logger.error('deleteOrder(): %j', error);
     if (error.message.includes('ice method invocation')) throw Boom.badRequest(error.message);
     throw error;
   }
@@ -123,7 +120,7 @@ export async function getConditionalOrders(fundid) {
 
     return { ok: true, orders };
   } catch (error) {
-    logError('getConditionalOrders(): %o', error);
+    logger.error('getConditionalOrders(): %j', error);
     throw error;
   }
 }
@@ -136,7 +133,7 @@ export async function postConditionalOrders(orders) {
 
     return { ok: true };
   } catch (error) {
-    logError('postConditionalOrder(): %o', error);
+    logger.error('postConditionalOrder(): %j', error);
     throw error;
   }
 }
@@ -149,7 +146,7 @@ export async function deleteConditionalOrder(orderID) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteConditionalOrder(): %o', error);
+    logger.error('deleteConditionalOrder(): %j', error);
     throw error;
   }
 }

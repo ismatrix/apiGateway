@@ -1,14 +1,11 @@
-import createDebug from 'debug';
 import jwt from 'jsonwebtoken';
 import createGrpcClient from 'sw-grpc-client';
 import { difference, upperFirst, isString } from 'lodash';
 import createGzh from 'sw-weixin-gzh';
 import config from './config';
+import logger from 'sw-common';
 
 // 负责路由ｗｅｂｓｏｃｋｅｔ
-const debug = createDebug('app:ioRouter');
-const logError = createDebug('app:ioRouter:error');
-logError.log = console.error.bind(console);
 
 const gzh = createGzh(config.wechatGZHConfig);
 
@@ -34,7 +31,7 @@ export default function ioRouter(io) {
     return next();
   });
   io.on('connection', (socket) => {
-    debug('%o connected to SOCKET', socket.id);
+    logger.info('%j connected to SOCKET', socket.id);
 
     socket.on('getQRCodeURL', async (data, callback) => {
       try {
@@ -51,7 +48,7 @@ appid=${config.wechatConfig.corpId}\
 
         if (callback) callback({ ok: true, qrCodeURL });
       } catch (error) {
-        logError('getQRCodeURL(): %o', error);
+        logger.error('getQRCodeURL(): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -61,20 +58,20 @@ appid=${config.wechatConfig.corpId}\
         jwt.verify(data.token, config.jwtSecret, (error, decodedToken) => {
           try {
             if (error) {
-              logError('jwt.verify() cb %o', error);
+              logger.error('jwt.verify() cb %j', error);
               throw new Error('cannot verify the jwt token');
             }
-            debug('decodedToken %o', decodedToken);
-            debug('socket.id %o', socket.id);
+            logger.info('decodedToken %j', decodedToken);
+            logger.info('socket.id %j', socket.id);
 
             const serverNsps = Object.keys(socket.server.nsps);
-            debug('serverNsps %o', serverNsps);
+            logger.info('serverNsps %j', serverNsps);
 
             const clientNsps = Object.keys(socket.client.nsps);
-            debug('clientNsps %o', clientNsps);
+            logger.info('clientNsps %j', clientNsps);
 
             const clientSockets = Object.keys(socket.client.sockets);
-            debug('clientSockets %o', clientSockets);
+            logger.info('clientSockets %j', clientSockets);
 
             clientSockets.forEach((clientSocketID) => {
               socket.client.sockets[clientSocketID].token = data.token;
@@ -84,18 +81,18 @@ appid=${config.wechatConfig.corpId}\
 
             if (callback) callback({ ok: true });
           } catch (err) {
-            logError('jwt.verify(): %o', err);
+            logger.error('jwt.verify(): %j', err);
             if (callback) callback({ ok: false, error: err.message });
           }
         });
       } catch (error) {
-        logError('setToken(): %o', error);
+        logger.error('setToken(): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
   })
   .on('authenticated', (socket) => {
-    debug('authenticated Socket.IO: %o', socket.user);
+    logger.info('authenticated Socket.IO: %j', socket.user);
   })
   ;
 
@@ -106,15 +103,15 @@ appid=${config.wechatConfig.corpId}\
   });
 
   marketsIO.on('connection', (socket) => {
-    debug('%o connected to Market.IO', socket.id);
+    logger.info('%j connected to Market.IO', socket.id);
   })
   .on('authenticated', (socket) => {
-    debug('authenticated Markets.IO: %o', socket.user);
+    logger.info('authenticated Markets.IO: %j', socket.user);
 
     socket.on('subscribe', async (data, callback) => {
       try {
         // await can.user(socket.user, 'get', 'fundid:all/basics');
-        debug('Markets.IO subscribed to %o with callback: %o', data, !!callback);
+        logger.info('Markets.IO subscribed to %j with callback: %j', data, !!callback);
         if (!data.symbol) throw new Error('Missing symbol parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
@@ -132,7 +129,7 @@ appid=${config.wechatConfig.corpId}\
           },
         );
       } catch (error) {
-        logError('marketsIO.on(subscribe): %o', error);
+        logger.error('marketsIO.on(subscribe): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -140,21 +137,21 @@ appid=${config.wechatConfig.corpId}\
     socket.on('unsubscribe', async (data, callback) => {
       try {
         // await can.user(socket.user, 'get', 'fundid:all/basics');
-        debug('Markets.IO unsubscribed to %o with callback: %o', data, !!callback);
+        logger.info('Markets.IO unsubscribed to %j with callback: %j', data, !!callback);
         if (!data.symbol) throw new Error('Missing fundid parameter');
         if (!data.resolution) throw new Error('Missing resolution parameter');
 
         const prevMarketsRooms = Object.keys(marketsIO.adapter.rooms);
-        debug('prevMarketsRooms %o', prevMarketsRooms);
+        logger.info('prevMarketsRooms %j', prevMarketsRooms);
 
         if (data.symbol === ALL) {
           const socketRooms = Object.keys(socket.rooms);
-          debug('Markets.IO all socket socketRooms: %o', socketRooms);
+          logger.info('Markets.IO all socket socketRooms: %j', socketRooms);
 
           const leaveAllRooms = socketRooms
             .filter(room => !room.includes('/markets#'))
             .map((room) => {
-              debug('leaving room %o', room);
+              logger.info('leaving room %j', room);
               return new Promise((resolve, reject) => {
                 socket.leave(room, (error) => {
                   if (error) reject(error);
@@ -173,10 +170,10 @@ appid=${config.wechatConfig.corpId}\
         }
 
         const newMarketsRooms = Object.keys(marketsIO.adapter.rooms);
-        debug('newMarketsRooms %o', newMarketsRooms);
+        logger.info('newMarketsRooms %j', newMarketsRooms);
 
         const removedMarketsRooms = difference(prevMarketsRooms, newMarketsRooms);
-        debug('removedMarketsRooms %o', removedMarketsRooms);
+        logger.info('removedMarketsRooms %j', removedMarketsRooms);
 
         removedMarketsRooms.forEach((removedRoom) => {
           const [symbol] = removedRoom.split(':');
@@ -187,30 +184,30 @@ appid=${config.wechatConfig.corpId}\
           });
         });
       } catch (error) {
-        logError('marketsIO.on(unsubscribe): %o', error);
+        logger.error('marketsIO.on(unsubscribe): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
 
     socket.on('disconnecting', () => {
       try {
-        debug('disconnecting %o', socket.id);
+        logger.info('disconnecting %j', socket.id);
         globalPrevMarketsRooms = Object.keys(marketsIO.adapter.rooms).filter(room => !room.includes('/markets#'));
-        debug('globalPrevMarketsRooms %o', globalPrevMarketsRooms);
+        logger.info('globalPrevMarketsRooms %j', globalPrevMarketsRooms);
       } catch (error) {
-        logError('marketsIO.on(disconnecting): %o', error);
+        logger.error('marketsIO.on(disconnecting): %j', error);
       }
     });
 
 
     socket.on('disconnect', () => {
       try {
-        debug('%o disconnected', socket.id);
+        logger.info('%j disconnected', socket.id);
         const newMarketsRooms = Object.keys(marketsIO.adapter.rooms).filter(room => !room.includes('/markets#'));
-        debug('newMarketsRooms %o', newMarketsRooms);
+        logger.info('newMarketsRooms %j', newMarketsRooms);
 
         const removedMarketsRooms = difference(globalPrevMarketsRooms, newMarketsRooms);
-        debug('removedMarketsRooms %o', removedMarketsRooms);
+        logger.info('removedMarketsRooms %j', removedMarketsRooms);
 
         removedMarketsRooms.forEach((removedRoom) => {
           const [symbol] = removedRoom.split(':');
@@ -221,7 +218,7 @@ appid=${config.wechatConfig.corpId}\
           });
         });
       } catch (error) {
-        logError('marketsIO.on(disconnect): %o', error);
+        logger.error('marketsIO.on(disconnect): %j', error);
       }
     });
   })
@@ -232,33 +229,33 @@ appid=${config.wechatConfig.corpId}\
 
   const unregisterEmptyRoom = (previousRoomsSnapshot, currentRoomsSnapshot) => {
     const removedFundsRooms = difference(previousRoomsSnapshot, currentRoomsSnapshot);
-    debug('removedFundsRooms %o', removedFundsRooms);
+    logger.info('removedFundsRooms %j', removedFundsRooms);
 
     removedFundsRooms.forEach((removedRoom) => {
       const needUnregisterEventIndex =
         fundsRegisteredEvents.findIndex(obj => obj.roomName === removedRoom);
 
       if (needUnregisterEventIndex !== -1) {
-        debug('needUnregisterEventIndex %o: %o', removedRoom, needUnregisterEventIndex);
+        logger.info('needUnregisterEventIndex %j: %j', removedRoom, needUnregisterEventIndex);
         clearInterval(fundsRegisteredEvents[needUnregisterEventIndex].recursiveCall.stop());
 
         const removedFundsEvent = fundsRegisteredEvents.splice(needUnregisterEventIndex, 1);
-        debug('removedFundsEvent %o', removedFundsEvent);
+        logger.info('removedFundsEvent %j', removedFundsEvent);
       }
     });
   };
 
   const fundsIO = io.of('/funds');
   fundsIO.on('connection', (socket) => {
-    debug('%o connected to Funds.IO', socket.id);
+    logger.info('%j connected to Funds.IO', socket.id);
   })
   .on('authenticated', (socket) => {
-    debug('authenticated Funds.IO: %o', socket.user);
+    logger.info('authenticated Funds.IO: %j', socket.user);
 
     socket.on('subscribe', async (data, callback) => {
       try {
         // await can.user(socket.user, 'get', 'fundid:all/basics');
-        debug('Funds.IO subscribed to %o with callback: %o', data, !!callback);
+        logger.info('Funds.IO subscribed to %j with callback: %j', data, !!callback);
         if (!data) throw new Error('Missing main data object');
         if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
         if (!isString(data.eventName)) throw new Error('Missing eventName parameter or not a string');
@@ -282,7 +279,7 @@ appid=${config.wechatConfig.corpId}\
                 const theFundRegisteredEvents = theFundStreams.eventNames();
 
                 const needRegisterEvents = difference(basicEventNames, theFundRegisteredEvents);
-                debug('need add listener on these basic events %o', needRegisterEvents);
+                logger.info('need add listener on these basic events %j', needRegisterEvents);
 
                 needRegisterEvents.forEach((eventName) => {
                   theFundStreams.on(eventName, (eventData) => {
@@ -292,7 +289,7 @@ appid=${config.wechatConfig.corpId}\
 
                 if (callback) callback({ ok: true });
               } catch (err) {
-                logError('fundsIO.on(subscribe): %o', err);
+                logger.error('fundsIO.on(subscribe): %j', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
             },
@@ -308,7 +305,7 @@ appid=${config.wechatConfig.corpId}\
                 const isNeedRegisterGetAndEmitOnInterval = !fundsRegisteredEvents
                   .map(obj => obj.roomName)
                   .includes(roomName);
-                debug('isNeedRegister %o: %o', roomName, isNeedRegisterGetAndEmitOnInterval);
+                logger.info('isNeedRegister %j: %j', roomName, isNeedRegisterGetAndEmitOnInterval);
 
                 if (isNeedRegisterGetAndEmitOnInterval) {
                   const getAndEmitFunction = async () => {
@@ -317,7 +314,7 @@ appid=${config.wechatConfig.corpId}\
                       const dataFromGet = await smartwinFund[functionName]();
                       fundsIO.to(roomName).emit(data.eventName, dataFromGet);
                     } catch (err) {
-                      logError('getAndEmitFunction(): roomName: %o, %o', roomName, err);
+                      logger.error('getAndEmitFunction(): roomName: %j, %j', roomName, err);
                       fundsIO.to(roomName).emit(data.eventName, { ok: false, error: `${data.fundid}: ${err.message}` });
                     }
                   };
@@ -339,19 +336,19 @@ appid=${config.wechatConfig.corpId}\
                     roomName,
                     recursiveCall,
                   });
-                  debug('number of getAndEmit functions', fundsRegisteredEvents.length);
+                  logger.info('number of getAndEmit functions', fundsRegisteredEvents.length);
                 }
 
                 if (callback) callback({ ok: true });
               } catch (err) {
-                logError('fundsIO.on(subscribe): %o', err);
+                logger.error('fundsIO.on(subscribe): %j', err);
                 if (callback) callback({ ok: false, error: err.message });
               }
             },
           );
         }
       } catch (error) {
-        logError('fundsIO.on(subscribe): %o', error);
+        logger.error('fundsIO.on(subscribe): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
@@ -359,7 +356,7 @@ appid=${config.wechatConfig.corpId}\
     socket.on('unsubscribe', async (data, callback) => {
       try {
         // await can.user(socket.user, 'get', 'fundid:all/basics');
-        debug('Funds.IO unsubscribed to %o with callback: %o', data, !!callback);
+        logger.info('Funds.IO unsubscribed to %j with callback: %j', data, !!callback);
         if (!data) throw new Error('Missing main data object');
         if (!isString(data.fundid)) throw new Error('Missing fundid parameter or not a string');
         if (!isString(data.eventName)) throw new Error('Missing eventName parameter or not a string');
@@ -372,17 +369,17 @@ appid=${config.wechatConfig.corpId}\
         }
 
         const prevFundsRooms = Object.keys(fundsIO.adapter.rooms);
-        debug('prevFundsRooms %o', prevFundsRooms);
+        logger.info('prevFundsRooms %j', prevFundsRooms);
 
         if (data.fundid === ALL) {
           const rooms = Object.keys(socket.rooms);
-          debug('Funds.IO all socket rooms: %o', rooms);
+          logger.info('Funds.IO all socket rooms: %j', rooms);
 
           const leaveAllRooms = rooms
             .filter(room => !room.includes('/funds#'))
             .map((room) => {
               if (room.includes(data.eventName)) {
-                debug('leaving room %o', room);
+                logger.info('leaving room %j', room);
                 return new Promise((resolve, reject) => {
                   socket.leave(room, (error) => {
                     if (error) reject(error);
@@ -416,35 +413,35 @@ appid=${config.wechatConfig.corpId}\
         }
 
         const newFundsRooms = Object.keys(fundsIO.adapter.rooms);
-        debug('newFundsRooms %o', newFundsRooms);
+        logger.info('newFundsRooms %j', newFundsRooms);
 
         unregisterEmptyRoom(prevFundsRooms, newFundsRooms);
       } catch (error) {
-        logError('fundsIO.on(unsubscribe): %o', error);
+        logger.error('fundsIO.on(unsubscribe): %j', error);
         if (callback) callback({ ok: false, error: error.message });
       }
     });
 
     socket.on('disconnecting', () => {
       try {
-        debug('disconnecting %o', socket.id);
+        logger.info('disconnecting %j', socket.id);
         globalPrevFundsRooms = Object.keys(fundsIO.adapter.rooms).filter(room => !room.includes('/funds#'));
-        debug('globalPrevFundsRooms %o', globalPrevFundsRooms);
+        logger.info('globalPrevFundsRooms %j', globalPrevFundsRooms);
       } catch (error) {
-        logError('fundsIO.on(disconnecting): %o', error);
+        logger.error('fundsIO.on(disconnecting): %j', error);
       }
     });
 
 
     socket.on('disconnect', () => {
       try {
-        debug('%o disconnected', socket.id);
+        logger.info('%j disconnected', socket.id);
         const newFundsRooms = Object.keys(fundsIO.adapter.rooms).filter(room => !room.includes('/funds#'));
-        debug('newFundsRooms %o', newFundsRooms);
+        logger.info('newFundsRooms %j', newFundsRooms);
 
         unregisterEmptyRoom(globalPrevFundsRooms, newFundsRooms);
       } catch (error) {
-        logError('marketsIO.on(disconnect): %o', error);
+        logger.error('marketsIO.on(disconnect): %j', error);
       }
     });
   })

@@ -1,11 +1,7 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import { isNumber } from 'lodash';
 import crud from 'sw-mongodb-crud';
-
-const debug = createDebug('app:api:funds');
-const logError = createDebug('app:api:funds:error');
-logError.log = console.error.bind(console);
 
 export async function getFunds() {
   try {
@@ -17,7 +13,7 @@ export async function getFunds() {
 
     return { ok: true, funds };
   } catch (error) {
-    logError('getFunds(): %o', error);
+    logger.error('getFunds(): %j', error);
     throw error;
   }
 }
@@ -32,7 +28,7 @@ export async function getFund(fundid) {
 
     return { ok: true, fund };
   } catch (error) {
-    logError('getFund(): %o', error);
+    logger.error('getFund(): %j', error);
     throw error;
   }
 }
@@ -46,7 +42,7 @@ export async function postFund(fundid, fund) {
 
     return { ok: true };
   } catch (error) {
-    logError('postFund(): %o', error);
+    logger.error('postFund(): %j', error);
     throw error;
   }
 }
@@ -59,7 +55,7 @@ export async function deleteFund(fundid) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteFund(): %o', error);
+    logger.error('deleteFund(): %j', error);
     throw error;
   }
 }
@@ -74,7 +70,7 @@ export async function postEquity(fundid, tradingday, equity) {
 
     return { ok: true };
   } catch (error) {
-    logError('postEquity(): %o', error);
+    logger.error('postEquity(): %j', error);
     throw error;
   }
 }
@@ -89,7 +85,7 @@ export async function putEquity(fundid, tradingday, equity) {
 
     return { ok: true };
   } catch (error) {
-    logError('putEquity(): %o', error);
+    logger.error('putEquity(): %j', error);
     throw error;
   }
 }
@@ -103,7 +99,7 @@ export async function deleteEquity(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteEquity(): %o', error);
+    logger.error('deleteEquity(): %j', error);
     throw error;
   }
 }
@@ -116,7 +112,7 @@ export async function getTotal(fundid, tradingday) {
 
     return { ok: true, total };
   } catch (error) {
-    logError('getTotal(): %o', error);
+    logger.error('getTotal(): %j', error);
     throw error;
   }
 }
@@ -130,7 +126,7 @@ export async function getNetValue(fundid, tradingday) {
 
     return { ok: true, netValues };
   } catch (error) {
-    logError('getNetValue(): %o', error);
+    logger.error('getNetValue(): %j', error);
     throw error;
   }
 }
@@ -141,13 +137,13 @@ export async function getReturnByDateRange(fundid, beginDate, endDate) {
     if (!beginDate) throw Boom.badRequest('Missing beginDate parameter');
     if (!endDate) throw Boom.badRequest('Missing endDate parameter');
 
-    debug('fundid %o  beginDate %o endDate %o', fundid, beginDate, endDate);
+    logger.info('fundid %j  beginDate %j endDate %j', fundid, beginDate, endDate);
     const returnReport = await crud.equity.getReturnsByRange(fundid, beginDate, endDate);
-    debug('returnReport %o', returnReport);
+    logger.info('returnReport %j', returnReport);
 
     return { ok: true, returnReport };
   } catch (error) {
-    logError('getReturnByDateRange(): %o', error);
+    logger.error('getReturnByDateRange(): %j', error);
     throw error;
   }
 }
@@ -160,7 +156,7 @@ export async function getNetValues(fundid) {
 
     return { ok: true, netLines };
   } catch (error) {
-    logError('getNetValues(): %o', error);
+    logger.error('getNetValues(): %j', error);
     throw error;
   }
 }
@@ -173,7 +169,7 @@ export async function getFixedIncomes(fundid) {
 
     return { ok: true, fixedIncomes };
   } catch (error) {
-    logError('getFixedIncomes(): %o', error);
+    logger.error('getFixedIncomes(): %j', error);
     throw error;
   }
 }
@@ -189,7 +185,7 @@ export async function putFixedIncome(fundid, tradingday, fixedincome) {
 
     return { ok: true };
   } catch (error) {
-    logError('putFixedIncome(): %o', error);
+    logger.error('putFixedIncome(): %j', error);
     throw error;
   }
 }
@@ -203,7 +199,7 @@ export async function deleteFixedIncome(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteFixedIncome(): %o', error);
+    logger.error('deleteFixedIncome(): %j', error);
     throw error;
   }
 }
@@ -216,7 +212,7 @@ export async function getAppends(fundid) {
 
     return { ok: true, appends };
   } catch (error) {
-    logError('getAppends(): %o', error);
+    logger.error('getAppends(): %j', error);
     throw error;
   }
 }
@@ -232,7 +228,7 @@ export async function putAppend(fundid, tradingday, append) {
 
     return { ok: true };
   } catch (error) {
-    logError('putAppend(): %o', error);
+    logger.error('putAppend(): %j', error);
     throw error;
   }
 }
@@ -246,7 +242,7 @@ export async function deleteAppend(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteAppend(): %o', error);
+    logger.error('deleteAppend(): %j', error);
     throw error;
   }
 }
@@ -259,7 +255,7 @@ export async function getRedemptions(fundid) {
 
     return { ok: true, redemptions };
   } catch (error) {
-    logError('getRedemptions(): %o', error);
+    logger.error('getRedemptions(): %j', error);
     throw error;
   }
 }
@@ -275,7 +271,7 @@ export async function putRedemption(fundid, tradingday, redemption) {
 
     return { ok: true };
   } catch (error) {
-    logError('putRedemption(): %o', error);
+    logger.error('putRedemption(): %j', error);
     throw error;
   }
 }
@@ -289,7 +285,7 @@ export async function deleteRedemption(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteRedemption(): %o', error);
+    logger.error('deleteRedemption(): %j', error);
     throw error;
   }
 }
@@ -302,7 +298,7 @@ export async function getDividends(fundid) {
 
     return { ok: true, dividends };
   } catch (error) {
-    logError('getFund(): %o', error);
+    logger.error('getFund(): %j', error);
     throw error;
   }
 }
@@ -318,7 +314,7 @@ export async function putDividend(fundid, tradingday, dividend) {
 
     return { ok: true };
   } catch (error) {
-    logError('putDividend(): %o', error);
+    logger.error('putDividend(): %j', error);
     throw error;
   }
 }
@@ -332,7 +328,7 @@ export async function deleteDividend(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteDividend(): %o', error);
+    logger.error('deleteDividend(): %j', error);
     throw error;
   }
 }
@@ -345,7 +341,7 @@ export async function getCostOuts(fundid) {
 
     return { ok: true, costOuts };
   } catch (error) {
-    logError('getCostOuts(): %o', error);
+    logger.error('getCostOuts(): %j', error);
     throw error;
   }
 }
@@ -361,7 +357,7 @@ export async function putFixedCost(fundid, tradingday, fixedcost) {
 
     return { ok: true };
   } catch (error) {
-    logError('putFixedCost(): %o', error);
+    logger.error('putFixedCost(): %j', error);
     throw error;
   }
 }
@@ -375,7 +371,7 @@ export async function deleteFixedCost(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteFixedCost(): %o', error);
+    logger.error('deleteFixedCost(): %j', error);
     throw error;
   }
 }
@@ -388,7 +384,7 @@ export async function getHostingAccounts(fundid) {
 
     return { ok: true, hostingAccounts };
   } catch (error) {
-    logError('getHostingAccounts(): %o', error);
+    logger.error('getHostingAccounts(): %j', error);
     throw error;
   }
 }
@@ -404,7 +400,7 @@ export async function putHostingAccount(fundid, tradingday, hostingaccount) {
 
     return { ok: true };
   } catch (error) {
-    logError('putHostingAccount(): %o', error);
+    logger.error('putHostingAccount(): %j', error);
     throw error;
   }
 }
@@ -418,7 +414,7 @@ export async function deleteHostingAccount(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteHostingAccount(): %o', error);
+    logger.error('deleteHostingAccount(): %j', error);
     throw error;
   }
 }
@@ -431,7 +427,7 @@ export async function getStockAccounts(fundid) {
 
     return { ok: true, stockAccounts };
   } catch (error) {
-    logError('getStockAccounts(): %o', error);
+    logger.error('getStockAccounts(): %j', error);
     throw error;
   }
 }
@@ -447,7 +443,7 @@ export async function putStockAccount(fundid, tradingday, stockaccount) {
 
     return { ok: true };
   } catch (error) {
-    logError('putStockAccount(): %o', error);
+    logger.error('putStockAccount(): %j', error);
     throw error;
   }
 }
@@ -461,7 +457,7 @@ export async function deleteStockAccount(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteStockAccount(): %o', error);
+    logger.error('deleteStockAccount(): %j', error);
     throw error;
   }
 }
@@ -474,7 +470,7 @@ export async function getBondAccounts(fundid) {
 
     return { ok: true, bondAccounts };
   } catch (error) {
-    logError('getBondAccounts(): %o', error);
+    logger.error('getBondAccounts(): %j', error);
     throw error;
   }
 }
@@ -490,7 +486,7 @@ export async function putBondAccount(fundid, tradingday, bondaccount) {
 
     return { ok: true };
   } catch (error) {
-    logError('putBondAccount(): %o', error);
+    logger.error('putBondAccount(): %j', error);
     throw error;
   }
 }
@@ -504,7 +500,7 @@ export async function deleteBondAccount(fundid, tradingday) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteBondAccount(): %o', error);
+    logger.error('deleteBondAccount(): %j', error);
     throw error;
   }
 }
@@ -517,7 +513,7 @@ export async function getDynamicEquity(fundid) {
 
     return { ok: true, dynamicEquity };
   } catch (error) {
-    logError('getDynamicEquity(): %o', error);
+    logger.error('getDynamicEquity(): %j', error);
     throw error;
   }
 }
@@ -527,13 +523,13 @@ export async function getTradingdays(fundid, tradingdayCount = 2) {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
     if (!isNumber(tradingdayCount, 10)) throw Boom.badRequest('tradingdayCount is not a number');
 
-    debug('fundid %o tradingdayCount %o', fundid, tradingdayCount);
+    logger.info('fundid %j tradingdayCount %j', fundid, tradingdayCount);
 
     const tradingdays = await crud.equity.getTradingdays(fundid, tradingdayCount);
 
     return { ok: true, tradingdays };
   } catch (error) {
-    logError('getTradingdays(): %o', error);
+    logger.error('getTradingdays(): %j', error);
     throw error;
   }
 }
@@ -546,7 +542,7 @@ export async function getPositionLevels(fundid) {
 
     return { ok: true, positionLevels };
   } catch (error) {
-    logError('getPositionLevels(): %o', error);
+    logger.error('getPositionLevels(): %j', error);
     throw error;
   }
 }

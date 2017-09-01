@@ -1,7 +1,4 @@
-import createDebug from 'debug';
-
-const logError = createDebug('app:errors:error');
-logError.log = console.error.bind(console);
+import logger from 'sw-common';
 
 export default function koaError() {
   return async (ctx, next) => {
@@ -9,12 +6,12 @@ export default function koaError() {
       await next();
     } catch (error) {
       if (error.isBoom) {
-        logError('koaError(): %o', error.output);
+        logger.error('koaError(): %j', error.output);
         ctx.status = error.output.statusCode;
         ctx.body = { ok: false, error: error.output.payload.message };
         return;
       } else if (error.status === 401 && error.message === 'Invalid token\n') {
-        logError('koaError(): %o', error);
+        logger.error('koaError(): %j', error);
         ctx.status = 401;
         ctx.body = {
           ok: false,
@@ -22,7 +19,7 @@ export default function koaError() {
         };
         return;
       } else if (ctx.status === 404 && error.message === 'No authentication token found\n') {
-        logError('koaError(): %o', error);
+        logger.error('koaError(): %j', error);
         ctx.status = 404;
         ctx.body = {
           ok: false,
@@ -30,7 +27,7 @@ export default function koaError() {
         };
         return;
       }
-      logError('koaError(): %o', error);
+      logger.error('koaError(): %j', error);
       ctx.status = 500;
       ctx.body = {
         ok: false,
