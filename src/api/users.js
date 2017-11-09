@@ -17,8 +17,8 @@ export async function setUserPassword(userid, newPassword, password) {
     if (!user) throw Boom.notFound('User not found');
 
     if (newPassword && !user.password) {
-      const salt = await argon2.generateSalt();
-      const hashedPassword = await argon2.hash(newPassword, salt);
+      // const salt = await argon2.generateSalt();
+      const hashedPassword = await argon2.hash(newPassword);
 
       const set = { password: hashedPassword };
       const filter = { userid };
@@ -30,8 +30,8 @@ export async function setUserPassword(userid, newPassword, password) {
 
       if (await argon2.verify(dbHashedPassword, password)) {
         debug(`getTokenByPassword(). ${userid} oldPassword is correct. Changing for new one`);
-        const salt = await argon2.generateSalt();
-        const hashedPassword = await argon2.hash(newPassword, salt);
+        // const salt = await argon2.generateSalt();
+        const hashedPassword = await argon2.hash(newPassword);
 
         const set = { password: hashedPassword };
         const filter = { userid };

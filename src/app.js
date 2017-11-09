@@ -52,7 +52,7 @@ async function init() {
       serviceName: 'smartwinFuturesFund',
       fundid: dbFund.fundid,
       server: {
-        ip: 'funds.invesmart.net',
+        ip: 'funds.quantowin.com',
         port: '50051',
       },
       jwtoken: config.jwtoken,
