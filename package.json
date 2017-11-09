@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@code.invesmart.net:8800/smartwin/apiGateway.git"
+    "url": "ssh://git@git.quantowin.com:8800/smartwin/apiGateway.git"
   },
   "author": "",
   "license": "ISC",
@@ -49,12 +49,12 @@
     "node-fetch": "^1.7.1",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "sw-can": "git+ssh://git@code.invesmart.net:8800/npm/sw-can.git#v1.0.5",
-    "sw-grpc-client": "git+ssh://git@code.invesmart.net:8800/npm/sw-grpc-client.git#v1.1.35",
-    "sw-mongodb": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb.git#v1.0.6",
-    "sw-mongodb-crud": "git+ssh://git@code.invesmart.net:8800/npm/sw-mongodb-crud#v2.0.17",
-    "sw-weixin-gzh": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-gzh.git#v1.0.0",
-    "sw-weixin-qydev": "git+ssh://git@code.invesmart.net:8800/npm/sw-weixin-qydev.git#v1.0.2",
+    "sw-can": "git+ssh://git@git.quantowin.com:8800/npm/sw-can.git#v1.0.5",
+    "sw-grpc-client": "git+ssh://git@git.quantowin.com:8800/npm/sw-grpc-client.git#v1.1.35",
+    "sw-mongodb": "git+ssh://git@git.quantowin.com:8800/npm/sw-mongodb.git#v1.0.6",
+    "sw-mongodb-crud": "git+ssh://git@git.quantowin.com:8800/npm/sw-mongodb-crud#v2.0.17",
+    "sw-weixin-gzh": "git+ssh://git@git.quantowin.com:8800/npm/sw-weixin-gzh.git#v1.0.0",
+    "sw-weixin-qydev": "git+ssh://git@git.quantowin.com:8800/npm/sw-weixin-qydev.git#v1.0.2",
     "through2": "^2.0.3"
   }
 }
