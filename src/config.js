@@ -7,9 +7,9 @@ const productionConfig = {
   wechatConfig: {
     encodingAESKey: 'zC5bDgdQObhGEAOSQT2T0fzBQ6iCYgxObD5DgKH4GrS',
     token: 'GT5jrEUG8qZ4dtWrBieilrhjWVdIX9D',
-    corpId: 'wxf81392ac6d39f547',
+    corpId: 'wwb684dd509851f6d3',
     corpSecret: 'cWd1SUkX8hU-sLyuGovGwvFzHcVqpXfufpomDhOtc_5hcGVUKc6wJJTb4yo3k3tJ',
-    authorizeCallbackURL: 'https://invesmart.net/api/public/weixin/qy/id=13/callback',
+    authorizeCallbackURL: 'https://quantowin.com/api/public/weixin/qy/id=13/callback',
   },
   wechatGZHConfig: {
     encodingAESKey: 'e9e4ba5a860d272f09af9073d1067c07c838c777f10',

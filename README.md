@@ -23,7 +23,7 @@ pm2 logs apiGateway
 ```
 
 ## 文档
-地址：https://invesmart.net/api/public/doc
+地址：https://quantowin.com/api/public/doc
 
 ## Init
 ```

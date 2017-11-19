@@ -38,7 +38,7 @@ export default function ioRouter(io) {
 
     socket.on('getQRCodeURL', async (data, callback) => {
       try {
-        const redirectURI = `https://invesmart.net/api/public/auth/wechat\
+        const redirectURI = `https://quantowin.com/api/public/auth/wechat\
 &response_type=code\
 &scope=snsapi_base\
 &state=${socket.id}`;
@@ -101,7 +101,7 @@ appid=${config.wechatConfig.corpId}\
 
   const marketsIO = io.of('/markets');
 
-  smartwinMd.getStreams('ticker').on('ticker', (ticker) => {
+  smartwinMd.getStreams('marketDepth').on('marketDepth', (ticker) => {
     marketsIO.to(ticker.symbol.concat(':', ticker.dataType)).emit('tick', ticker);
   });
 

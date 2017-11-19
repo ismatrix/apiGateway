@@ -3,9 +3,9 @@ info:
   title: Smartwin API doc
   description: >-
     Feed your trading app with Smartwin API.
-    [Edit](http://editor.swagger.io/#/?import=https://invesmart.net/api/public/doc/swagger.yaml)
+    [Edit](http://editor.swagger.io/#/?import=https://quantowin.com/api/public/doc/swagger.yaml)
   version: 1.0.0
-host: invesmart.net
+host: quantowin.com
 schemes:
   - https
 basePath: /api
@@ -25,7 +25,7 @@ paths:
         The Wechat auth endpoint is called by qiyehao, following a QRcode scan
         using the user Wechat. The QRcode url contain the client socket.io ID,
         so the server can push the jwt token to the client, and then redirect the user browser
-        to https://invesmart.net/api/public/wxclose with a 302 redirect status.
+        to https://quantowin.com/api/public/wxclose with a 302 redirect status.
       parameters:
         - name: code
           in: query
@@ -42,7 +42,7 @@ paths:
           description: Success
           headers:
             Location:
-              description: https://invesmart.net/api/public/wxclose
+              description: https://quantowin.com/api/public/wxclose
               type: string
         '401':
           description: Invalid user
@@ -3076,7 +3076,7 @@ definitions:
       email:
         type: string
         description: Email from qiyehao
-        example: victor.bonhomme@invesmart.cn
+        example: tristan.wwl@gmail.com
       avatar:
         type: string
         description: Avatar url from qiyehao
