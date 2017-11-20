@@ -101,7 +101,8 @@ appid=${config.wechatConfig.corpId}\
 
   const marketsIO = io.of('/markets');
 
-  smartwinMd.getStreams('marketDepth').on('marketDepth', (ticker) => {
+  smartwinMd.getStreams('ticker').on('ticker', (ticker) => {
+  // smartwinMd.getStreams('marketDepth').on('marketDepth', (ticker) => {
     marketsIO.to(ticker.symbol.concat(':', ticker.dataType)).emit('tick', ticker);
   });
 
