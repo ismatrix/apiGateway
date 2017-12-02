@@ -45,7 +45,7 @@ export async function getOneDayPositions(fundid, tradingday) {
 
 export async function getAllFundsMergedPositions(tradingday) {
   try {
-    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    // if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
 
     const positions = await crud.position.getAllFundsInstrumentSum(tradingday);
 
@@ -58,7 +58,7 @@ export async function getAllFundsMergedPositions(tradingday) {
 
 export async function getInstrumentPositionsByFund(tradingday, symbol) {
   try {
-    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    // if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
     if (!symbol) throw Boom.badRequest('Missing symbol parameter');
 
     const positionsByFund = await crud.position.getFundsPositionsByInstrument(tradingday, symbol);
