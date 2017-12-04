@@ -401,10 +401,12 @@ apiRouter
     ctx.body = await markets.contractDailyPriceSpeed(symbols);
   })
   .post('/markets/futures/indicators/bidaskSymbols', async (ctx) => {
+    debug('------bidaskSymbols: ', ctx.request.body.tradingday);
     const tradingday = ctx.request.body.tradingday;
     ctx.body = await markets.getSymbolsInBidaskByTradingday(tradingday);
   })
   .post('/markets/futures/indicators/bidask', async (ctx) => {
+    debug('-------bidask: ', ctx.request.body.tradingday);
     const tradingday = ctx.request.body.tradingday;
     const symbol = ctx.request.body.symbol;
     ctx.body = await markets.getBidAsk(tradingday, symbol);
