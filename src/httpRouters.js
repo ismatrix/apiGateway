@@ -68,6 +68,9 @@ apiRouter.use('/fund', can.koamw('get', 'fundid:all/basics'));
 apiRouter.use('/funds', can.koamw('get', 'fundid:all/basics'));
 apiRouter
   .get('/funds', async (ctx) => { ctx.body = await funds.getFunds(); })
+  .get('/funds/maxtradingday', async (ctx) => {
+    ctx.body = await funds.getMaxTradingday();
+  })
   .get('/funds/:fundid', async (ctx) => {
     const fundid = ctx.params.fundid;
     ctx.body = await funds.getFund(fundid);
@@ -396,6 +399,15 @@ apiRouter
   .post('/markets/futures/indicators/contractDailyPriceSpeed', async (ctx) => {
     const symbols = ctx.request.body.symbols;
     ctx.body = await markets.contractDailyPriceSpeed(symbols);
+  })
+  .post('/markets/futures/indicators/bidaskSymbols', async (ctx) => {
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await markets.getSymbolsInBidaskByTradingday(tradingday);
+  })
+  .post('/markets/futures/indicators/bidask', async (ctx) => {
+    const tradingday = ctx.request.body.tradingday;
+    const symbol = ctx.request.body.symbol;
+    ctx.body = await markets.getBidAsk(tradingday, symbol);
   })
   .post('/markets/futures/lastSnapshot', async (ctx) => {
     const symbols = ctx.request.body.symbols;

@@ -538,6 +538,17 @@ export async function getTradingdays(fundid, tradingdayCount = 2) {
   }
 }
 
+export async function getMaxTradingday() {
+  try {
+    const tradingday = await crud.tradingday.get();
+
+    return { ok: true, tradingday };
+  } catch (error) {
+    logError('getMaxTradingday(): %o', error);
+    throw error;
+  }
+}
+
 export async function getPositionLevels(fundid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');

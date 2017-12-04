@@ -238,3 +238,30 @@ export async function getFuturesLastSnapshot(symbols) {
     throw error;
   }
 }
+
+export async function getSymbolsInBidaskByTradingday(tradingday) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    const symbols = await crud.bidask.getSymbolsByTradingday(tradingday);
+
+    return { ok: true, symbols };
+  } catch (error) {
+    logError('getSymbolsInBidaskByTradingday(): %o', error);
+    throw error;
+  }
+}
+
+export async function getBidAsk(tradingday, symbol) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!symbol) throw Boom.badRequest('Missing symbol parameter');
+
+    const bidask = await crud.bidask.get(tradingday, symbol);
+
+    return { ok: true, bidask };
+  } catch (error) {
+    logError('getBidAsk(): %o', error);
+    throw error;
+  }
+}
