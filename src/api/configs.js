@@ -73,3 +73,57 @@ export async function deleteFollowingConfig(master) {
     throw error;
   }
 }
+
+export async function getStrongweakConfigs() {
+  try {
+    const strongweakConfigs = await crud.strongweakconfig.getList({}, { _id: 0 });
+    debug('strongweakConfigs', strongweakConfigs);
+
+    if (!strongweakConfigs) throw Boom.notFound('StrongweakConfigs not found');
+
+    return { ok: true, strongweakConfigs };
+  } catch (error) {
+    logError('getStrongweakConfigs(): %o', error);
+    throw error;
+  }
+}
+
+export async function postStrongweakConfigs(configs) {
+  try {
+    if (!configs) throw Boom.badRequest('Missing configs parameter');
+
+    await crud.strongweakconfig.add(configs);
+
+    return { ok: true };
+  } catch (error) {
+    logError('postStrongweakConfigs(): %o', error);
+    throw error;
+  }
+}
+
+export async function putStrongweakConfig(plate, update) {
+  try {
+    if (!plate) throw Boom.badRequest('Missing plate parameter');
+    if (!update) throw Boom.badRequest('Missing update parameter');
+
+    await crud.strongweakconfig.set(plate, update);
+
+    return { ok: true };
+  } catch (error) {
+    logError('putStrongweakConfig(): %o', error);
+    throw error;
+  }
+}
+
+export async function deleteStrongweakConfig(plate) {
+  try {
+    if (!plate) throw Boom.badRequest('Missing plate parameter');
+
+    await crud.strongweakconfig.remove(plate);
+
+    return { ok: true };
+  } catch (error) {
+    logError('deleteStrongweakConfig(): %o', error);
+    throw error;
+  }
+}

@@ -435,6 +435,22 @@ apiRouter
     const masterid = ctx.params.masterid;
     ctx.body = await configs.deleteFollowingConfig(masterid);
   })
+  .get('/configs/strongweakConfigs', can.koamw('get', 'configs'), async (ctx) => {
+    ctx.body = await configs.getStrongweakConfigs();
+  })
+  .post('/configs/strongweakConfigs', can.koamw('add', 'configs'), async (ctx) => {
+    const strongweakConfigs = ctx.request.body.strongweakConfigs;
+    ctx.body = await configs.postStrongweakConfigs(strongweakConfigs);
+  })
+  .put('/configs/strongweakConfigs/:plate', can.koamw('update', 'configs'), async (ctx) => {
+    const plate = ctx.params.plate;
+    const strongweakConfig = ctx.request.body.strongweakConfig;
+    ctx.body = await configs.putStrongweakConfig(plate, strongweakConfig);
+  })
+  .delete('/configs/strongweakConfigs/:plate', can.koamw('delete', 'configs'), async (ctx) => {
+    const plate = ctx.params.plate;
+    ctx.body = await configs.deleteStrongweakConfig(plate);
+  })
   ;
 
 apiRouter
