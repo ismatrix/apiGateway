@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import http from 'http';
 import Koa from 'koa';
@@ -18,18 +18,14 @@ import apiRouter from './httpRouters';
 import ioRouter from './ioRouter';
 import config from './config';
 
-const debug = createDebug('app');
-const logError = createDebug('app:error');
-logError.log = console.error.bind(console);
-
 // 链数据库获取基金信息
 // 启动ｗｅｂ服务
-process
-  .on('uncaughtException', error => logError('process.on(uncaughtException): %o', error))
-  .on('warning', warning => logError('process.on(warning): %o', warning))
-  ;
+// process
+//   .on('uncaughtException', error => logger.error('process.on(uncaughtException): %j', error))
+//   .on('warning', warning => logger.error('process.on(warning): %j', warning))
+//   ;
 
-debug('API Gateway starting...');
+logger.debug('API Gateway starting...');
 const koa = new Koa();
 const server = http.createServer(koa.callback());
 
@@ -59,7 +55,7 @@ async function init() {
       canOrder: dbFund.fundflag === 'simulation',
     }));
     config.fundConfigs = fundConfigs;
-    debug('dbFunds %o', config.fundConfigs.map(({ fundid, canOrder }) => ({ fundid, canOrder })));
+    logger.debug('dbFunds %j', config.fundConfigs.map(({ fundid, canOrder }) => ({ fundid, canOrder })));
     ioRouter(io);
 
     // Koa koa REST API middleware
@@ -85,7 +81,7 @@ async function init() {
 
     server.listen(3000);
   } catch (error) {
-    logError('init(): %o', error);
+    logger.error('init(): %j', error);
     throw error;
   }
 }

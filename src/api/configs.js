@@ -1,21 +1,17 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import crud from 'sw-mongodb-crud';
-
-const debug = createDebug('app:api:configs');
-const logError = createDebug('app:api:configs:error');
-logError.log = console.error.bind(console);
 
 export async function getNotifyConfigs() {
   try {
     const notifyConfigs = await crud.notifyconfig.getList({}, { _id: 0 });
-    debug('notifyConfigs', notifyConfigs);
+    logger.debug('notifyConfigs', notifyConfigs);
 
     if (!notifyConfigs) throw Boom.notFound('Notifyconfigs not found');
 
     return { ok: true, notifyConfigs };
   } catch (error) {
-    logError('getNotifyConfig(): %o', error);
+    logger.error('getNotifyConfig(): %j', error);
     throw error;
   }
 }
@@ -23,13 +19,13 @@ export async function getNotifyConfigs() {
 export async function getFollowingConfigs() {
   try {
     const followingConfigs = await crud.followinconfig.getList({}, { _id: 0 });
-    debug('followingConfigs', followingConfigs);
+    logger.debug('followingConfigs', followingConfigs);
 
     if (!followingConfigs) throw Boom.notFound('FollowinConfigs not found');
 
     return { ok: true, followingConfigs };
   } catch (error) {
-    logError('getFollowingConfigs(): %o', error);
+    logger.error('getFollowingConfigs(): %j', error);
     throw error;
   }
 }
@@ -42,7 +38,7 @@ export async function postFollowingConfigs(configs) {
 
     return { ok: true };
   } catch (error) {
-    logError('postFollowingConfigs(): %o', error);
+    logger.error('postFollowingConfigs(): %j', error);
     throw error;
   }
 }
@@ -56,7 +52,7 @@ export async function putFollowingConfig(master, update) {
 
     return { ok: true };
   } catch (error) {
-    logError('putFollowingConfig(): %o', error);
+    logger.error('putFollowingConfig(): %j', error);
     throw error;
   }
 }
@@ -69,7 +65,7 @@ export async function deleteFollowingConfig(master) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteFollowingConfig(): %o', error);
+    logger.error('deleteFollowingConfig(): %j', error);
     throw error;
   }
 }
@@ -77,13 +73,13 @@ export async function deleteFollowingConfig(master) {
 export async function getStrongweakConfigs() {
   try {
     const strongweakConfigs = await crud.strongweakconfig.getList({}, { _id: 0 });
-    debug('strongweakConfigs', strongweakConfigs);
+    logger.debug('strongweakConfigs', strongweakConfigs);
 
     if (!strongweakConfigs) throw Boom.notFound('StrongweakConfigs not found');
 
     return { ok: true, strongweakConfigs };
   } catch (error) {
-    logError('getStrongweakConfigs(): %o', error);
+    logger.error('getStrongweakConfigs(): %j', error);
     throw error;
   }
 }
@@ -96,7 +92,7 @@ export async function postStrongweakConfigs(configs) {
 
     return { ok: true };
   } catch (error) {
-    logError('postStrongweakConfigs(): %o', error);
+    logger.error('postStrongweakConfigs(): %j', error);
     throw error;
   }
 }
@@ -110,7 +106,7 @@ export async function putStrongweakConfig(plate, update) {
 
     return { ok: true };
   } catch (error) {
-    logError('putStrongweakConfig(): %o', error);
+    logger.error('putStrongweakConfig(): %j', error);
     throw error;
   }
 }
@@ -123,7 +119,7 @@ export async function deleteStrongweakConfig(plate) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteStrongweakConfig(): %o', error);
+    logger.error('deleteStrongweakConfig(): %j', error);
     throw error;
   }
 }

@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import through from 'through2';
 import { uniq, sortedIndex, sortedLastIndex } from 'lodash';
@@ -6,10 +6,6 @@ import createGrpcClient from 'sw-grpc-client';
 import grpc from 'grpc';
 import crud from 'sw-mongodb-crud';
 import config from '../config';
-
-const debug = createDebug('app:api:market');
-const logError = createDebug('app:api:market:error');
-logError.log = console.error.bind(console);
 
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
@@ -31,7 +27,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
       symbols = await crud.indicators.distinct(key, query);
     }
 
-    debug('bullBearTrend() req symbols %o', symbols);
+    logger.debug('bullBearTrend() req symbols %j', symbols);
 
     const instrumentOptions = {
       instruments: symbols,
@@ -74,7 +70,7 @@ export async function bullBearTrend(sym, startDate, endDate) {
 
     return { ok: true, timeline, indicators };
   } catch (error) {
-    logError('bullBearTrend(): %o', error);
+    logger.error('bullBearTrend(): %j', error);
     throw error;
   }
 }
@@ -90,9 +86,9 @@ export async function contractDailyPriceSpeed(symbols) {
     };
 
     const contracts = await crud.instrument.getList(options);
-    debug(contracts);
+    logger.debug(contracts);
     const contractSymbols = contracts.map(contract => contract.instrumentid);
-    debug('contractDailyPriceSpeed() contractSymbols: %o', contractSymbols);
+    logger.debug('contractDailyPriceSpeed() contractSymbols: %j', contractSymbols);
 
     const indicatorsOptions = {
       symbols: contractSymbols,
@@ -124,7 +120,7 @@ export async function contractDailyPriceSpeed(symbols) {
 
     return { ok: true, timeline, indicators };
   } catch (error) {
-    logError('contractDailyPriceSpeed(): %o', error);
+    logger.error('contractDailyPriceSpeed(): %j', error);
     throw error;
   }
 }
@@ -166,7 +162,7 @@ export async function getFuturesQuotes({ symbol, resolution, startDate, endDate 
 
     return quotes.pipe(stringifyIce);
   } catch (error) {
-    logError('getFuturesQuotes(): %o', error);
+    logger.error('getFuturesQuotes(): %j', error);
     throw error;
   }
 }
@@ -184,7 +180,7 @@ export async function getFuturesContracts(options = {}) {
 
     return { ok: true, contracts };
   } catch (error) {
-    logError('getFuturesContracts(): %o', error);
+    logger.error('getFuturesContracts(): %j', error);
     throw error;
   }
 }
@@ -195,7 +191,7 @@ export async function getFuturesProducts() {
 
     return { ok: true, products };
   } catch (error) {
-    logError('getFuturesProducts(): %o', error);
+    logger.error('getFuturesProducts(): %j', error);
     throw error;
   }
 }
@@ -205,12 +201,12 @@ export async function getFuturesProductsByExchange() {
     const products = await crud.product.getList();
 
     const exchangesid = [...new Set(products.map(product => product.exchangeid))];
-    debug('exchangesid %o', exchangesid);
+    logger.debug('exchangesid %j', exchangesid);
     const productsByExchange = exchangesid.map((exchangeid) => {
       const productsPerExchange = products.filter(
         product => !!(product.exchangeid === exchangeid)
       );
-      debug('contractsPerExchange %o', productsPerExchange);
+      logger.debug('contractsPerExchange %j', productsPerExchange);
       const exchange = {
         exchangeid,
         products: productsPerExchange,
@@ -219,7 +215,7 @@ export async function getFuturesProductsByExchange() {
     });
     return { ok: true, productsByExchange };
   } catch (error) {
-    logError('getFuturesProductsByExchange(): %o', error);
+    logger.error('getFuturesProductsByExchange(): %j', error);
     throw error;
   }
 }
@@ -234,7 +230,7 @@ export async function getFuturesLastSnapshot(symbols) {
 
     return { ok: true, lastSnapshot };
   } catch (error) {
-    logError('getDayBar(): %o', error);
+    logger.error('getDayBar(): %j', error);
     throw error;
   }
 }
@@ -247,7 +243,7 @@ export async function getSymbolsInBidaskByTradingday(tradingday) {
 
     return { ok: true, symbols };
   } catch (error) {
-    logError('getSymbolsInBidaskByTradingday(): %o', error);
+    logger.error('getSymbolsInBidaskByTradingday(): %j', error);
     throw error;
   }
 }
@@ -261,7 +257,7 @@ export async function getBidAsk(tradingday, symbol) {
 
     return { ok: true, bidask };
   } catch (error) {
-    logError('getBidAsk(): %o', error);
+    logger.error('getBidAsk(): %j', error);
     throw error;
   }
 }

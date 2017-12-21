@@ -1,10 +1,6 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import crud from 'sw-mongodb-crud';
-
-const debug = createDebug('app:api:codemap');
-const logError = createDebug('app:api:codemap:error');
-logError.log = console.error.bind(console);
 
 export async function getCatalogs() {
   try {
@@ -12,7 +8,7 @@ export async function getCatalogs() {
 
     return { ok: true, catalogs };
   } catch (error) {
-    logError('getCatalogs(): %o', error);
+    logger.error('getCatalogs(): %j', error);
     throw error;
   }
 }
@@ -20,13 +16,13 @@ export async function getCatalogs() {
 export async function getCatalog(catalogKey) {
   try {
     if (!catalogKey) throw Boom.badRequest('Missing catalogKey parameter');
-    debug(catalogKey);
+    logger.debug(catalogKey);
 
     const catalog = await crud.codemap.get(catalogKey);
 
     return { ok: true, catalog };
   } catch (error) {
-    logError('getCatalog(): %o', error);
+    logger.error('getCatalog(): %j', error);
     throw error;
   }
 }
@@ -40,7 +36,7 @@ export async function postCatalog(catalogKey, catalog) {
 
     return { ok: true };
   } catch (error) {
-    logError('postCatalog(): %o', error);
+    logger.error('postCatalog(): %j', error);
     throw error;
   }
 }
@@ -53,7 +49,7 @@ export async function deleteCatalog(catalogKey) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteCatalog(): %o', error);
+    logger.error('deleteCatalog(): %j', error);
     throw error;
   }
 }
@@ -66,7 +62,7 @@ export async function getCatalogItems(catalogKey) {
 
     return { ok: true, items };
   } catch (error) {
-    logError('getCatalogItems(): %o', error);
+    logger.error('getCatalogItems(): %j', error);
     throw error;
   }
 }
@@ -82,7 +78,7 @@ export async function getCatalogItem(catalogKey, itemKey) {
 
     return { ok: true, item };
   } catch (error) {
-    logError('getCatalogItem(): %o', error);
+    logger.error('getCatalogItem(): %j', error);
     throw error;
   }
 }
@@ -97,7 +93,7 @@ export async function putCatalogItem(catalogKey, itemKey, item) {
 
     return { ok: true };
   } catch (error) {
-    logError('postCatalogItem(): %o', error);
+    logger.error('postCatalogItem(): %j', error);
     throw error;
   }
 }
@@ -111,7 +107,7 @@ export async function postCatalogItem(catalogKey, item) {
 
     return { ok: true };
   } catch (error) {
-    logError('postCatalogItem(): %o', error);
+    logger.error('postCatalogItem(): %j', error);
     throw error;
   }
 }
@@ -125,7 +121,7 @@ export async function deleteCatalogItem(catalogKey, itemKey) {
 
     return { ok: true };
   } catch (error) {
-    logError('deleteCatalogItem(): %o', error);
+    logger.error('deleteCatalogItem(): %j', error);
     throw error;
   }
 }

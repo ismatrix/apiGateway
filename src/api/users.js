@@ -1,11 +1,7 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import Boom from 'boom';
 import argon2 from 'argon2';
 import crud from 'sw-mongodb-crud';
-
-const debug = createDebug('app:api:users');
-const logError = createDebug('app:api:users:error');
-logError.log = console.error.bind(console);
 
 export async function setUserPassword(userid, newPassword, password) {
   try {
@@ -29,7 +25,7 @@ export async function setUserPassword(userid, newPassword, password) {
       const dbHashedPassword = user.password;
 
       if (await argon2.verify(dbHashedPassword, password)) {
-        debug(`getTokenByPassword(). ${userid} oldPassword is correct. Changing for new one`);
+        logger.debug(`getTokenByPassword(). ${userid} oldPassword is correct. Changing for new one`);
         // const salt = await argon2.generateSalt();
         const hashedPassword = await argon2.hash(newPassword);
 
@@ -43,7 +39,7 @@ export async function setUserPassword(userid, newPassword, password) {
     }
     throw Boom.badImplementation('Method not implemented');
   } catch (error) {
-    logError('setUserPassword(): %o', error);
+    logger.error('setUserPassword(): %j', error);
     throw error;
   }
 }
@@ -61,7 +57,7 @@ export async function getMeProfile(userid) {
 
     return { ok: true, profile };
   } catch (error) {
-    logError('getMeProfile(): %o', error);
+    logger.error('getMeProfile(): %j', error);
     throw error;
   }
 }
@@ -74,7 +70,7 @@ export async function getUsers() {
 
     return { ok: true, users };
   } catch (error) {
-    logError('getUsers(): %o', error);
+    logger.error('getUsers(): %j', error);
     throw error;
   }
 }

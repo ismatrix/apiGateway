@@ -1,4 +1,4 @@
-import createDebug from 'debug';
+import logger from 'sw-common';
 import can from 'sw-can';
 import * as wechat from './api/wechat';
 import * as auth from './api/auth';
@@ -16,7 +16,6 @@ import * as strategy from './api/strategy';
 import * as productGroup from './api/productGroup';
 
 // 负责路由ｗｅｂ
-const debug = createDebug('routers');
 const apiRouter = require('koa-router')({ prefix: '/api' });
 
 apiRouter
@@ -34,7 +33,7 @@ apiRouter
       await auth.getTokenByWechatScan(code, state);
       ctx.redirect('/api/public/wxlogin?success=true');
     } catch (error) {
-      debug('/public/auth/wechat %o', error);
+      logger.debug('/public/auth/wechat %j', error);
       ctx.redirect('/api/public/wxlogin?success=false');
     }
   })
