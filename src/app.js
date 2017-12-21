@@ -4,7 +4,7 @@ import http from 'http';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import jwt from 'koa-jwt';
-import koa-logger from 'koa-logger';
+import koalogger from 'koa-logger';
 import compose from 'koa-compose';
 import cors from 'kcors';
 import serve from 'koa-static';
@@ -59,7 +59,7 @@ async function init() {
     ioRouter(io);
 
     // Koa koa REST API middleware
-    koa.use(koa-logger());
+    koa.use(koalogger());
     koa.use(cors());
     koa.use(koaError());
     koa.use(jwt({ secret: config.jwtSecret }).unless({ path: [/^\/api\/public/] }));
