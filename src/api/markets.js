@@ -146,7 +146,7 @@ export async function getFuturesQuotes({ symbol, resolution, startDate, endDate 
       function flush(callback) {
         this.push(cl);
         callback();
-      }
+      },
     );
 
     const meta = new grpc.Metadata();
@@ -204,7 +204,7 @@ export async function getFuturesProductsByExchange() {
     logger.debug('exchangesid %j', exchangesid);
     const productsByExchange = exchangesid.map((exchangeid) => {
       const productsPerExchange = products.filter(
-        product => !!(product.exchangeid === exchangeid)
+        product => !!(product.exchangeid === exchangeid),
       );
       logger.debug('contractsPerExchange %j', productsPerExchange);
       const exchange = {
@@ -256,6 +256,33 @@ export async function getBidAsk(tradingday, symbol) {
     const bidask = await crud.bidask.get(tradingday, symbol);
 
     return { ok: true, bidask };
+  } catch (error) {
+    logger.error('getBidAsk(): %j', error);
+    throw error;
+  }
+}
+
+export async function getSymbolsInBigorderByTradingday(tradingday) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+
+    const symbols = await crud.mdbigorder.getSymbolsByTradingday(tradingday);
+
+    return { ok: true, symbols };
+  } catch (error) {
+    logger.error('getSymbolsInBigorderByTradingday(): %j', error);
+    throw error;
+  }
+}
+
+export async function getBigorder(symbol, tradingday) {
+  try {
+    if (!tradingday) throw Boom.badRequest('Missing tradingday parameter');
+    if (!symbol) throw Boom.badRequest('Missing symbol parameter');
+
+    const bigorder = await crud.mdbigorder.get(symbol, tradingday);
+
+    return { ok: true, bigorder };
   } catch (error) {
     logger.error('getBidAsk(): %j', error);
     throw error;

@@ -408,6 +408,15 @@ apiRouter
     const symbol = ctx.request.body.symbol;
     ctx.body = await markets.getBidAsk(tradingday, symbol);
   })
+  .post('/markets/futures/indicators/bigorderSymbols', async (ctx) => {
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await markets.getSymbolsInBigorderByTradingday(tradingday);
+  })
+  .post('/markets/futures/indicators/bigorder', async (ctx) => {
+    const symbol = ctx.request.body.symbol;
+    const tradingday = ctx.request.body.tradingday;
+    ctx.body = await markets.getBigorder(symbol, tradingday);
+  })
   .post('/markets/futures/lastSnapshot', async (ctx) => {
     const symbols = ctx.request.body.symbols;
     ctx.body = await markets.getFuturesLastSnapshot(symbols);
