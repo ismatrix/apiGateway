@@ -152,7 +152,15 @@ export async function getFuturesQuotes({ symbol, resolution, startDate, endDate 
     const meta = new grpc.Metadata();
     meta.add('Authorization', token);
 
-    const quotes = smartwinMd.getPastBarStream({
+    const quotes = resolution === 'day' ?
+    smartwinMd.getPastDayBarStream({
+      symbol,
+      dataType: 'dayBar',
+      resolution,
+      startDate,
+      endDate,
+    }, meta) :
+    smartwinMd.getPastBarStream({
       symbol,
       dataType: 'bar',
       resolution,
