@@ -310,3 +310,16 @@ export async function getBigorder(symbol, tradingday) {
     throw error;
   }
 }
+
+export async function getSpotDatas(id, startDate, endDate) {
+  try {
+    if (!id) throw Boom.badRequest('Missing spot id parameter');
+
+    const spotdatas = await crud.spotdata.getList(id, startDate, endDate);
+
+    return { ok: true, spotdatas };
+  } catch (error) {
+    logger.error('getSpotDatas(): %j', error);
+    throw error;
+  }
+}
