@@ -323,3 +323,13 @@ export async function getSpotDatas(id, startDate, endDate) {
     throw error;
   }
 }
+export async function getSpotTitle() {
+  try {
+    const spottitle = await crud.spotdata.getTitle();
+
+    return { ok: true, spottitle };
+  } catch (error) {
+    logger.error('getSpotTitle(): %j', error);
+    throw error;
+  }
+}

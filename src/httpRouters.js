@@ -417,6 +417,9 @@ apiRouter
     const tradingday = ctx.request.body.tradingday;
     ctx.body = await markets.getBigorder(symbol, tradingday);
   })
+  .get('/markets/futures/indicators/spottitle', async (ctx) => {
+    ctx.body = await markets.getSpotTitle();
+  })
   .post('/markets/futures/indicators/spotdata', async (ctx) => {
     const id = ctx.request.body.id;
     const startDate = ctx.request.body.startdate;
