@@ -333,3 +333,45 @@ export async function getSpotTitle() {
     throw error;
   }
 }
+
+export async function getWildcard(tablename, query = {}, projection = {}) {
+  try {
+    if (!tablename) throw Boom.badRequest('Missing tablename parameter');
+
+    const wildcards = await crud.wildcard.getList(tablename, query, projection);
+
+    return { ok: true, wildcards };
+  } catch (error) {
+    logger.error('%j getWildcard(): %j', tablename, error);
+    throw error;
+  }
+}
+
+export async function removeWildcard(tablename, filter) {
+  try {
+    if (!tablename) throw Boom.badRequest('Missing tablename parameter');
+    if (!filter) throw Boom.badRequest('Missing filter parameter');
+
+    const wildcards = await crud.wildcard.remove(tablename, filter);
+
+    return { ok: true, wildcards };
+  } catch (error) {
+    logger.error('%j removeWildcard(): %j', tablename, error);
+    throw error;
+  }
+}
+
+export async function upsertWildcard(tablename, filter, setObject) {
+  try {
+    if (!tablename) throw Boom.badRequest('Missing tablename parameter');
+    if (!filter) throw Boom.badRequest('Missing filter parameter');
+    if (!setObject) throw Boom.badRequest('Missing setObject parameter');
+
+    const wildcards = await crud.wildcard.upsert(tablename, filter, setObject);
+
+    return { ok: true, wildcards };
+  } catch (error) {
+    logger.error('%j upsertWildcard(): %j', tablename, error);
+    throw error;
+  }
+}

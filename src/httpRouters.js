@@ -471,6 +471,26 @@ apiRouter
   ;
 
 apiRouter
+  .get('/wildcard/:tablename', async (ctx) => {
+    const tablename = ctx.params.tablename;
+    const query = ctx.request.body.query;
+    const projection = ctx.request.body.projection;
+    ctx.body = await markets.getWildcard(tablename, query, projection);
+  })
+  .post('/wildcard/:tablename', async (ctx) => {
+    const tablename = ctx.params.tablename;
+    const query = ctx.request.body.query;
+    const wildcards = ctx.request.body.wildcards;
+    ctx.body = await markets.upsertWildcard(tablename, query, wildcards);
+  })
+  .delete('/wildcard/:tablename', async (ctx) => {
+    const tablename = ctx.params.tablename;
+    const query = ctx.request.body.query;
+    ctx.body = await markets.removeWildcard(tablename, query);
+  })
+  ;
+
+apiRouter
   .get('/acls', async (ctx) => {
     ctx.body = await acls.getACLs();
   })
