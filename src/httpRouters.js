@@ -471,10 +471,11 @@ apiRouter
   ;
 
 apiRouter
-  .get('/wildcard/:tablename', async (ctx) => {
+  .post('/wildcard/get/:tablename', async (ctx) => {
     const tablename = ctx.params.tablename;
     const query = ctx.request.body.query;
     const projection = ctx.request.body.projection;
+    logger.debug('query:%j, projection: %j', query, projection);
     ctx.body = await markets.getWildcard(tablename, query, projection);
   })
   .post('/wildcard/:tablename', async (ctx) => {
