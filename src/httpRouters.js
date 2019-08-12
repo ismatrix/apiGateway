@@ -272,7 +272,7 @@ apiRouter
     const instrumentid = ctx.query.instrumentid;
     ctx.body = await orders.getSignalByProduct(fundid, beginDate, endDate, product, instrumentid);
   })
-  .get('/getSignalByCatalog', async (ctx) => {
+  .get('/signalByCatalog', async (ctx) => {
     const fundid = ctx.query.fundid;
     const beginDate = ctx.query.beginDate;
     const endDate = ctx.query.endDate;
