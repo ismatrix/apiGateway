@@ -6,7 +6,7 @@ import { isNumber, isString } from 'lodash';
 import crud from 'sw-mongodb-crud';
 import config from '../config';
 
-export async function getOrders(fundid, beginDate, endDate, product, instrumentid) {
+export async function getSignalByProduct(fundid, beginDate, endDate, product, instrumentid) {
   try {
     if (!fundid) throw Boom.badRequest('Missing fundid parameter');
 
@@ -20,7 +20,25 @@ export async function getOrders(fundid, beginDate, endDate, product, instrumenti
 
     return { ok: true, orders };
   } catch (error) {
-    logger.error('getOrders(): %j', error);
+    logger.error('getSignalByProduct(): %j', error);
+    throw error;
+  }
+}
+
+export async function getSignalByCatalog(fundid, beginDate, endDate, traded) {
+  try {
+    if (!fundid) throw Boom.badRequest('Missing fundid parameter');
+
+    const orders = await crud.order.getSignalByCatalog(
+      fundid,
+      beginDate,
+      endDate,
+      traded,
+    );
+
+    return { ok: true, orders };
+  } catch (error) {
+    logger.error('getSignalByCatalog(): %j', error);
     throw error;
   }
 }
