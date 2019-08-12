@@ -264,19 +264,19 @@ apiRouter
   ;
 
 apiRouter
-  .get('/signalByProduct', async (ctx) => {
-    const fundid = ctx.query.fundid;
-    const beginDate = ctx.query.beginDate;
-    const endDate = ctx.query.endDate;
-    const product = ctx.query.product;
-    const instrumentid = ctx.query.instrumentid;
+  .post('/signalByProduct', async (ctx) => {
+    const fundid = ctx.request.body.fundid;
+    const beginDate = ctx.request.body.beginDate;
+    const endDate = ctx.request.body.endDate;
+    const product = ctx.request.body.product;
+    const instrumentid = ctx.request.body.instrumentid;
     ctx.body = await orders.getSignalByProduct(fundid, beginDate, endDate, product, instrumentid);
   })
-  .get('/signalByCatalog', async (ctx) => {
-    const fundid = ctx.query.fundid;
-    const beginDate = ctx.query.beginDate;
-    const endDate = ctx.query.endDate;
-    const traded = ctx.query.traded;
+  .post('/signalByCatalog', async (ctx) => {
+    const fundid = ctx.request.body.fundid;
+    const beginDate = ctx.request.body.beginDate;
+    const endDate = ctx.request.body.endDate;
+    const traded = ctx.request.body.traded;
     ctx.body = await orders.getSignalByCatalog(fundid, beginDate, endDate, traded);
   })
   .get('/oneDayOrders', async (ctx) => {
