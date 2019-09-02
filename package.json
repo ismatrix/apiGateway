@@ -29,6 +29,7 @@
   "dependencies": {
     "argon2": "^0.16.1",
     "babel-register": "^6.24.1",
+    "babel-runtime": "^6.26.0",
     "bluebird": "^3.5.0",
     "boom": "^5.2.0",
     "grpc": "^1.9.1",
@@ -48,8 +49,8 @@
     "node-fetch": "^1.7.1",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "sw-common": "git+ssh://git@github.com:ismatrix/sw-common.git#v3.0.0",
     "sw-can": "git+ssh://git@github.com:ismatrix/sw-can.git#v3.0.0",
+    "sw-common": "git+ssh://git@github.com:ismatrix/sw-common.git#v3.0.0",
     "sw-grpc-client": "git+ssh://git@github.com:ismatrix/sw-grpc-client.git#v3.0.0",
     "sw-mongodb": "git+ssh://git@github.com:ismatrix/sw-mongodb.git#v3.0.0",
     "sw-mongodb-crud": "git+ssh://git@github.com:ismatrix/sw-mongodb-crud#v3.0.0",
