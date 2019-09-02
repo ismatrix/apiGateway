@@ -1,6 +1,6 @@
 {
   "name": "api-gateway",
-  "version": "1.2.0",
+  "version": "3.0.0",
   "description": "Provide access to backend services",
   "main": "dist/app",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@git.quantowin.com:8800/smartwin/apiGateway.git"
+    "url": "ssh://git@github.com:ismatrix/apiGateway.git"
   },
   "author": "",
   "license": "ISC",
@@ -48,13 +48,13 @@
     "node-fetch": "^1.7.1",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "sw-common": "git+ssh://git@git.quantowin.com:8800/npm/sw-common.git#v1.1.0",
-    "sw-can": "git+ssh://git@git.quantowin.com:8800/npm/sw-can.git#v1.1.0",
-    "sw-grpc-client": "git+ssh://git@git.quantowin.com:8800/npm/sw-grpc-client.git#v1.2.2",
-    "sw-mongodb": "git+ssh://git@git.quantowin.com:8800/npm/sw-mongodb.git#v1.1.0",
-    "sw-mongodb-crud": "git+ssh://git@git.quantowin.com:8800/npm/sw-mongodb-crud#v2.1.4",
-    "sw-weixin-gzh": "git+ssh://git@git.quantowin.com:8800/npm/sw-weixin-gzh.git#v1.1.0",
-    "sw-weixin-qydev": "git+ssh://git@git.quantowin.com:8800/npm/sw-weixin-qydev.git#v1.1.0",
+    "sw-common": "git+ssh://git@github.com:ismatrix/sw-common.git#v3.0.0",
+    "sw-can": "git+ssh://git@github.com:ismatrix/sw-can.git#v3.0.0",
+    "sw-grpc-client": "git+ssh://git@github.com:ismatrix/sw-grpc-client.git#v3.0.0",
+    "sw-mongodb": "git+ssh://git@github.com:ismatrix/sw-mongodb.git#v3.0.0",
+    "sw-mongodb-crud": "git+ssh://git@github.com:ismatrix/sw-mongodb-crud#v3.0.0",
+    "sw-weixin-gzh": "git+ssh://git@github.com:ismatrix/sw-weixin-gzh.git#v3.0.0",
+    "sw-weixin-qydev": "git+ssh://git@github.com:ismatrix/sw-weixin-qydev.git#v3.0.0",
     "through2": "^2.0.3"
   }
 }
