@@ -334,11 +334,11 @@ export async function getSpotTitle() {
   }
 }
 
-export async function getWildcard(tablename, query = {}, projection = {}) {
+export async function getWildcard(tablename, query = {}, projection = {}, orderby = {}, nums = 0) {
   try {
     if (!tablename) throw Boom.badRequest('Missing tablename parameter');
 
-    const wildcards = await crud.wildcard.getList(tablename, query, projection);
+    const wildcards = await crud.wildcard.getList(tablename, query, projection, orderby, nums);
 
     return { ok: true, wildcards };
   } catch (error) {

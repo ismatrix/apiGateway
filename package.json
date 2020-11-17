@@ -53,7 +53,7 @@
     "sw-common": "git+ssh://git@github.com:ismatrix/sw-common.git#v3.0.0",
     "sw-grpc-client": "git+ssh://git@github.com:ismatrix/sw-grpc-client.git#v3.0.0",
     "sw-mongodb": "git+ssh://git@github.com:ismatrix/sw-mongodb.git#v3.0.0",
-    "sw-mongodb-crud": "git+ssh://git@github.com:ismatrix/sw-mongodb-crud#v3.0.0",
+    "sw-mongodb-crud": "git+ssh://git@github.com:ismatrix/sw-mongodb-crud#v3.0.1",
     "sw-weixin-gzh": "git+ssh://git@github.com:ismatrix/sw-weixin-gzh.git#v3.0.0",
     "sw-weixin-qydev": "git+ssh://git@github.com:ismatrix/sw-weixin-qydev.git#v3.0.0",
     "through2": "^2.0.3"
