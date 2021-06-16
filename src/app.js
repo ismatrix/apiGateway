@@ -48,7 +48,8 @@ async function init() {
       serviceName: 'smartwinFuturesFund',
       fundid: dbFund.fundid,
       server: {
-        ip: 'funds.quantowin.com',
+        // ip: 'funds.quantowin.com',
+        ip: '10.0.0.88',
         port: '50051',
       },
       jwtoken: config.jwtoken,

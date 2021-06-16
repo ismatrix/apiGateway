@@ -17,7 +17,8 @@ const ALL = 'all';
 const smartwinMd = createGrpcClient({
   serviceName: 'smartwinFuturesMd',
   server: {
-    ip: 'markets.quantowin.com',
+    // ip: 'markets.quantowin.com',
+    ip: '10.0.0.88',
     port: '50052',
   },
   jwtoken: config.jwtoken,
