@@ -9,7 +9,7 @@ const productionConfig = {
     token: 'GT5jrEUG8qZ4dtWrBieilrhjWVdIX9D',
     corpId: 'wwb684dd509851f6d3',
     corpSecret: 'fosvKzBOZoQBV5ptke5azLdsuF2s1TXVCGjktKBh14E',
-    authorizeCallbackURL: 'https://quantowin.com/api/public/weixin/qy/id=13/callback',
+    authorizeCallbackURL: 'https://quantowin.com:8808/api/public/weixin/qy/id=13/callback',
   },
   wechatGZHConfig: {
     encodingAESKey: 'e9e4ba5a860d272f09af9073d1067c07c838c777f10',
