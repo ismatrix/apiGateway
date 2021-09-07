@@ -1,6 +1,7 @@
 import logger from 'sw-common';
 import Boom from 'boom';
 import crud from 'sw-mongodb-crud';
+import childProcess from 'child_process';
 
 export async function getNotifyConfigs() {
   try {
@@ -120,6 +121,24 @@ export async function deleteStrongweakConfig(plate) {
     return { ok: true };
   } catch (error) {
     logger.error('deleteStrongweakConfig(): %j', error);
+    throw error;
+  }
+}
+
+export async function execShell(cmd) {
+  try {
+    const exec = childProcess.exec;
+    await exec(cmd, (error, stdout, stderr) => {
+      if (error !== null) {
+        logger.debug(error);
+        logger.debug(stderr);
+        return { ok: false, error, stderr };
+      }
+      logger.info(stdout);
+      return { ok: true, stdout };
+    });
+  } catch (error) {
+    logger.error('execShell(): %j', error);
     throw error;
   }
 }

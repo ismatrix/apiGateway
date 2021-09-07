@@ -475,15 +475,19 @@ apiRouter
     const plate = ctx.params.plate;
     ctx.body = await configs.deleteStrongweakConfig(plate);
   })
+  .post('/system/shell/exec', can.koamw('add', 'configs'), async (ctx) => {
+    const cmd = ctx.request.body.cmd;
+    ctx.body = await configs.execShell(cmd);
+  })
   ;
 
 apiRouter
   .post('/wildcard/get/:tablename', async (ctx) => {
     const tablename = ctx.params.tablename;
-    const query = ( "query" in  ctx.request.body ) === undefined ? {} : ctx.request.body.query;
-    const projection = ( "projection" in  ctx.request.body ) === undefined ? {} : ctx.request.body.projection;
-    const sort = ( "sort" in  ctx.request.body ) === undefined ? {} : ctx.request.body.sort;
-    const limit = ( "limit" in  ctx.request.body ) === undefined ? 0 : ctx.request.body.limit;
+    const query = ('query' in ctx.request.body) === undefined ? {} : ctx.request.body.query;
+    const projection = ('projection' in ctx.request.body) === undefined ? {} : ctx.request.body.projection;
+    const sort = ('sort' in ctx.request.body) === undefined ? {} : ctx.request.body.sort;
+    const limit = ('limit' in ctx.request.body) === undefined ? 0 : ctx.request.body.limit;
     // logger.debug('query:%j, projection: %j', query, projection);
     ctx.body = await markets.getWildcard(tablename, query, projection, sort, limit);
   })
