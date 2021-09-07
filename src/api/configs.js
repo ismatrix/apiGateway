@@ -127,6 +127,8 @@ export async function deleteStrongweakConfig(plate) {
 
 export async function execShell(cmd, callback) {
   try {
+    if (!cmd) throw Boom.badRequest('Missing cmd parameter');
+
     await childProcess.exec(cmd, (stderr, stdout) => {
       logger.debug('stdout:', stdout);
       logger.debug('stderr:', stderr);
