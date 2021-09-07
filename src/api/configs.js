@@ -127,10 +127,11 @@ export async function deleteStrongweakConfig(plate) {
 
 export async function execShell(cmd, callback) {
   try {
-    const { stdout, stderr } = await childProcess.exec(cmd);
-    logger.debug('stdout:', stdout);
-    logger.debug('stderr:', stderr);
-    return { ok: true, stdout, stderr };
+    await childProcess.exec(cmd, (stderr, stdout) => {
+      logger.debug('stdout:', stdout);
+      logger.debug('stderr:', stderr);
+      callback({ ok: true, stderr, stdout });
+    });
   } catch (error) {
     logger.error('execShell(): %j', error);
     throw error;

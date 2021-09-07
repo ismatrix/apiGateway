@@ -477,7 +477,7 @@ apiRouter
   })
   .post('/system/shell/exec', can.koamw('add', 'configs'), async (ctx) => {
     const cmd = ctx.request.body.cmd;
-    ctx.body = await configs.execShell(cmd);
+    await configs.execShell(cmd, (result) => { ctx.body = result; });
   })
   ;
 
