@@ -125,18 +125,13 @@ export async function deleteStrongweakConfig(plate) {
   }
 }
 
-export async function execShell(cmd) {
+export async function execShell(cmd, callback) {
   try {
     const exec = childProcess.exec;
-    await exec(cmd, (error, stdout, stderr) => {
-      if (error !== null) {
-        logger.debug(error);
-        logger.debug(stderr);
-        return { ok: false, error, stderr };
-      }
-      logger.info(stdout);
-      return { ok: true, stdout };
-    });
+    const { stdout, stderr } = await exec(cmd);
+    logger.debug('stdout:', stdout);
+    logger.debug('stderr:', stderr);
+    return { ok: true, stdout, stderr };
   } catch (error) {
     logger.error('execShell(): %j', error);
     throw error;
