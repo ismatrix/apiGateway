@@ -8,7 +8,7 @@
     <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
 </p>
 
-商品期货行情、交易RESTFUL服务，上游通过 [fundGateway](https://github.com/ismatrix/fundGateway) 接入 [marketdataGateway](https://github.com/ismatrix/marketDataGateway)， 通过[gRPC]对外提供https的行情及交易接口
+商品期货行情、交易RESTFUL服务，上游通过 [fundGateway](https://github.com/ismatrix/fundGateway) 接入 [marketdataGateway](https://github.com/ismatrix/marketDataGateway)， 通过http2、websocket[gRPC](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)对外提供行情及交易接口
 
 ## Install
 ```
@@ -17,6 +17,8 @@ npm install
 ```
 
 ## Prod
+* 配置文件 ./src/config.js
+
 ```
 NODE_ENV=production DEBUG_FD=1 DEBUG=*,-babel,-koa-router,-koa-mount,-engine*,-socket.io-parser,-socket.io:client DEBUG_COLORS=true pm2 start src/index.js  --log-date-format="MM-DD HH:mm:ss" --name apiGateway
 ```
