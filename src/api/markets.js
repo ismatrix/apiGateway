@@ -361,6 +361,20 @@ export async function removeWildcard(tablename, filter) {
   }
 }
 
+export async function addWildcard(tablename, objectArray) {
+  try {
+    if (!tablename) throw Boom.badRequest('Missing tablename parameter');
+    if (!objectArray) throw Boom.badRequest('Missing objectArray parameter');
+
+    const wildcards = await crud.wildcard.add(tablename, objectArray);
+
+    return { ok: true, wildcards };
+  } catch (error) {
+    logger.error('%j addWildcard(): %j', tablename, error);
+    throw error;
+  }
+}
+
 export async function upsertWildcard(tablename, filter, setObject) {
   try {
     if (!tablename) throw Boom.badRequest('Missing tablename parameter');

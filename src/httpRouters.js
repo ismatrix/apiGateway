@@ -491,6 +491,11 @@ apiRouter
     // logger.debug('query:%j, projection: %j', query, projection);
     ctx.body = await markets.getWildcard(tablename, query, projection, sort, limit);
   })
+  .post('/wildcard/add/:tablename', async (ctx) => {
+    const tablename = ctx.params.tablename;
+    const wildcards = ctx.request.body.wildcards;
+    ctx.body = await markets.addWildcard(tablename, wildcards);
+  })
   .post('/wildcard/:tablename', async (ctx) => {
     const tablename = ctx.params.tablename;
     const query = ctx.request.body.query;
