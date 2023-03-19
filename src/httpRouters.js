@@ -510,6 +510,12 @@ apiRouter
   ;
 
 apiRouter
+  .get('/collections', async (ctx) => {
+    ctx.body = await collections.getCollections();
+  })
+  ;
+
+apiRouter
   .get('/acls', async (ctx) => {
     ctx.body = await acls.getACLs();
   })
