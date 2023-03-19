@@ -3,7 +3,7 @@ import Boom from 'boom';
 import mongodb from 'sw-mongodb';
 import {
   productionConfig,
-} from './config';
+} from '../config';
 
 export async function getCollections() {
   try {
