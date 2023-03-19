@@ -12,6 +12,7 @@ import * as markets from './api/markets';
 import * as codemap from './api/codemap';
 import * as configs from './api/configs';
 import * as acls from './api/acls';
+import * as collections from './api/collections';
 import * as strategy from './api/strategy';
 import * as productGroup from './api/productGroup';
 
