@@ -1,6 +1,6 @@
 import logger from 'sw-common';
 import socketIOClient from 'socket.io-client';
-import * as markets from './api/markets';
+import * as markets from '../src/api/markets';
 
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Nzc2MmQ1ZGE3MDBjMGIxYjZhM2E0ZjkiLCJ1c2VyaWQiOiJ0cmlzdGFuIiwiZHB0IjpbIuezu-e7n-mDqCJdLCJpYXQiOjE2Nzc4MTMxNDB9.0bnf2vg4Mw-aF_qep7gtnMWhUBRPi_B-SHOqcekxnl0';
 
