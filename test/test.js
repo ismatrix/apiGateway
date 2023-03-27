@@ -1,12 +1,12 @@
 import logger from 'sw-common';
-import socketIOClient from 'socket.io-client';
+// import socketIOClient from 'socket.io-client';
 import * as markets from '../src/api/markets';
 
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Nzc2MmQ1ZGE3MDBjMGIxYjZhM2E0ZjkiLCJ1c2VyaWQiOiJ0cmlzdGFuIiwiZHB0IjpbIuezu-e7n-mDqCJdLCJpYXQiOjE2Nzc4MTMxNDB9.0bnf2vg4Mw-aF_qep7gtnMWhUBRPi_B-SHOqcekxnl0';
 
-const socket = socketIOClient('https://quantowin.com');
-// const markets = socketIOClient('http://localhost:3000/markets')
-const funds = socketIOClient('https://quantowin.com');
+// const socket = socketIOClient('https://quantowin.com');
+// // const markets = socketIOClient('http://localhost:3000/markets')
+// const funds = socketIOClient('https://quantowin.com');
 
 async function main() {
   try {
@@ -18,7 +18,7 @@ async function main() {
     }
     const jwtoken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1Nzc2MmQ1ZGE3MDBjMGIxYjZhM2E0ZjkiLCJ1c2VyaWQiOiJ0cmlzdGFuIiwiZHB0IjpbIuezu-e7n-mDqCJdLCJpYXQiOjE2Nzc4MTMxNDB9.0bnf2vg4Mw-aF_qep7gtnMWhUBRPi_B-SHOqcekxnl0';
     const ret = await markets.getFuturesQuotes(para, jwtoken);
-    // logger.debug('test main');
+    logger.debug(ret);
     // socket.on('connect', () => {
     //   socket.emit('setToken', { token }, (setTokenResult) => {
     //     if (!setTokenResult.ok) throw new Error(setTokenResult.error);
