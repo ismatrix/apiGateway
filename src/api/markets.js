@@ -138,6 +138,7 @@ export async function getFuturesQuotes({ symbol, resolution, startDate, endDate 
     const stringifyIce = through.obj(
       (chunk, enc, callback) => {
         const json = JSON.stringify(chunk, null, 0);
+        logger.info(json);
         if (first) {
           first = false;
           callback(null, op.concat(json));
